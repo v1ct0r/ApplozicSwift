@@ -229,7 +229,6 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
                             let channeldb = messageDb.updateMessageMetaData(viewModel.messageKey, withMetadata:nsmutable)
                             
                         }else{
-                            print("paymentHeader paymentHeader  --->",nsmutable!["paymentHeader"] as? String)
                             paymentTitle.text = requestedString + (nsmutable!["paymentHeader"] as? String)!
                         }
                         

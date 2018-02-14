@@ -69,7 +69,6 @@ class ALKAmountPayController: UIViewController,ALKCustomAmountProtocol{
                 
             }
             
-            
             let paymentId =  nsmutable["paymentId"]
             let  paymentMessage = nsmutable["paymentMessage"]
             let  paymentSubject = nsmutable["paymentSubject"]
@@ -86,6 +85,8 @@ class ALKAmountPayController: UIViewController,ALKCustomAmountProtocol{
                     nsmutableMeatdata =   (dbMessage?.metadata)!
                     
                     if(nsmutableMeatdata["paymentStatus"] != nil &&  nsmutableMeatdata["paymentStatus"] as! String == "paymentAccepted"){
+                        
+                        nsmutableMeatdata["usersRequested"] = nil;
                         
                         let message =  ALMessage();
                         
@@ -111,7 +112,7 @@ class ALKAmountPayController: UIViewController,ALKCustomAmountProtocol{
                         nsmutableMeatdata["paymentId"] =  nsmutableMeatdata["paymentId"]
                         
                         nsmutableMeatdata["hiddenStatus"] = "false"
-                        nsmutableMeatdata["paymentStatus"] = "paymentSent"
+                        nsmutableMeatdata["paymentStatus"] = "paymentAccepted"
                         nsmutableMeatdata["richMessageType"] = "paymentMessage"
                         message.metadata = nsmutableMeatdata
                         
