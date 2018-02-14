@@ -85,6 +85,9 @@ extension ALMessage: ALKChatViewModelProtocol {
             return "Video"
         case .html:
             return "Text"
+        case .payment:
+            return "payment"
+
         }
     }
 

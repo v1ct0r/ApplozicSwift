@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12120" systemVersion="16F73" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="8Me-ai-yhR">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="8Me-ai-yhR">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12088"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -114,6 +114,90 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="OU1-lO-E9K" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="118" y="801"/>
+        </scene>
+        <!--Amount Pay Controller-->
+        <scene sceneID="fec-yA-paD">
+            <objects>
+                <viewController storyboardIdentifier="ALKAmountPayController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="bet-4e-6qA" customClass="ALKAmountPayController" customModule="ApplozicSwift" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="gTr-zU-kJe"/>
+                        <viewControllerLayoutGuide type="bottom" id="SUR-mL-RHw"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="e5z-op-546">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="amount" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="VPs-U5-bx2">
+                                <rect key="frame" x="84" y="38" width="275" height="30"/>
+                                <nil key="textColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="subject" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="OQh-4t-p4T">
+                                <rect key="frame" x="84" y="89" width="275" height="30"/>
+                                <nil key="textColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Amount" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bfq-xP-sye">
+                                <rect key="frame" x="16" y="38" width="60" height="30"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Payment" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tJY-Zy-eHD">
+                                <rect key="frame" x="16" y="89" width="67" height="30"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gsX-hu-rOZ">
+                                <rect key="frame" x="147" y="164" width="30" height="30"/>
+                                <state key="normal" title="Pay"/>
+                                <connections>
+                                    <action selector="paybutton:" destination="bet-4e-6qA" eventType="touchUpInside" id="zQ7-bJ-m0N"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aQO-po-xFd">
+                                <rect key="frame" x="147" y="202" width="48" height="30"/>
+                                <state key="normal" title="Cancel"/>
+                                <connections>
+                                    <action selector="cancel:" destination="bet-4e-6qA" eventType="touchUpInside" id="gJv-uY-D60"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="aQO-po-xFd" firstAttribute="leading" secondItem="gsX-hu-rOZ" secondAttribute="leading" id="8LZ-KL-rt9"/>
+                            <constraint firstItem="VPs-U5-bx2" firstAttribute="leading" secondItem="bfq-xP-sye" secondAttribute="trailing" constant="8" symbolic="YES" id="9mw-JQ-3ca"/>
+                            <constraint firstItem="tJY-Zy-eHD" firstAttribute="leading" secondItem="bfq-xP-sye" secondAttribute="leading" id="IrZ-qQ-XNf"/>
+                            <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="gsX-hu-rOZ" secondAttribute="trailingMargin" id="RD3-lF-fSP"/>
+                            <constraint firstItem="OQh-4t-p4T" firstAttribute="top" secondItem="VPs-U5-bx2" secondAttribute="bottom" constant="21" id="RiD-Ii-VJb"/>
+                            <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="tJY-Zy-eHD" secondAttribute="trailingMargin" id="Ttv-eA-mb2"/>
+                            <constraint firstItem="tJY-Zy-eHD" firstAttribute="leading" secondItem="e5z-op-546" secondAttribute="leadingMargin" id="Udb-ES-hOd"/>
+                            <constraint firstItem="VPs-U5-bx2" firstAttribute="trailing" secondItem="OQh-4t-p4T" secondAttribute="trailing" id="ZTf-ED-vjP"/>
+                            <constraint firstItem="aQO-po-xFd" firstAttribute="top" secondItem="gsX-hu-rOZ" secondAttribute="bottom" constant="8" symbolic="YES" id="aDh-2I-LFM"/>
+                            <constraint firstItem="VPs-U5-bx2" firstAttribute="trailing" secondItem="e5z-op-546" secondAttribute="trailingMargin" id="bh3-Bi-Rtb"/>
+                            <constraint firstItem="VPs-U5-bx2" firstAttribute="leading" secondItem="OQh-4t-p4T" secondAttribute="leading" id="dz1-K3-Q3D"/>
+                            <constraint firstItem="VPs-U5-bx2" firstAttribute="bottom" secondItem="bfq-xP-sye" secondAttribute="bottom" id="f1q-gF-cVg"/>
+                            <constraint firstItem="VPs-U5-bx2" firstAttribute="top" secondItem="gTr-zU-kJe" secondAttribute="bottom" constant="18" id="fAG-4E-y5n"/>
+                            <constraint firstItem="OQh-4t-p4T" firstAttribute="top" secondItem="tJY-Zy-eHD" secondAttribute="top" id="gck-Zv-gtU"/>
+                            <constraint firstItem="gsX-hu-rOZ" firstAttribute="top" secondItem="OQh-4t-p4T" secondAttribute="bottom" constant="45" id="nQw-nc-n1Y"/>
+                            <constraint firstItem="gsX-hu-rOZ" firstAttribute="leading" secondItem="e5z-op-546" secondAttribute="leadingMargin" constant="131" id="s3m-n0-YD5"/>
+                            <constraint firstItem="OQh-4t-p4T" firstAttribute="bottom" secondItem="tJY-Zy-eHD" secondAttribute="bottom" id="t14-YT-aN9"/>
+                            <constraint firstItem="VPs-U5-bx2" firstAttribute="top" secondItem="bfq-xP-sye" secondAttribute="top" id="wJA-U4-GCA"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="amountTextFeild" destination="VPs-U5-bx2" id="Cvi-CC-hLf"/>
+                        <outlet property="cancel" destination="aQO-po-xFd" id="RlM-jf-Osj"/>
+                        <outlet property="paybutton" destination="gsX-hu-rOZ" id="RYn-fj-Vb7"/>
+                        <outlet property="paymentSbject" destination="OQh-4t-p4T" id="gpP-Ua-2We"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ngS-rI-cdI" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="266.39999999999998" y="1482.9085457271365"/>
         </scene>
         <!--View Controller-->
         <scene sceneID="Z9C-rV-QIS">

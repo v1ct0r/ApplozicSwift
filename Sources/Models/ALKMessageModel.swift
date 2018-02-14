@@ -1,6 +1,6 @@
 //
 //  ALKMessageModel.swift
-//  
+//
 //
 //  Created by Mukesh Thawani on 04/05/17.
 //  Copyright © 2017 Applozic. All rights reserved.
@@ -12,7 +12,7 @@ import Applozic
 let MessageProgressKey = "Message.ProgressKey"
 
 public class ALKMessageModel: ALKMessageViewModel {
-
+    
     public var message: String? = ""
     public var isMyMessage: Bool = false
     public var messageType: ALKMessageType = .text
@@ -39,6 +39,8 @@ public class ALKMessageModel: ALKMessageViewModel {
     public var voiceData: Data?
     public var fileMetaInfo: ALFileMetaInfo?
     public var receiverId: String?
+    public var metaData: NSMutableDictionary?
+    public var messageKey: String?
 }
 
 extension ALKMessageModel: Equatable {
@@ -46,3 +48,4 @@ extension ALKMessageModel: Equatable {
         return lhs.identifier == rhs.identifier
     }
 }
+

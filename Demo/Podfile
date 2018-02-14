@@ -5,6 +5,8 @@ use_frameworks!
 
 target 'ApplozicSwiftDemo' do
     pod 'ApplozicSwift', :path => '../ApplozicSwift.podspec'
+    pod 'Applozic', :git => 'https://github.com/AppLozic/Applozic-Chat-iOS-Framework.git', :branch => 'payment'
+
 end
 
 target 'ApplozicSwiftDemoTests' do

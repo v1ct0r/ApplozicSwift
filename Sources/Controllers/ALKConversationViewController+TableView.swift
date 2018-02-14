@@ -1,6 +1,6 @@
 //
 //  ALKConversationViewController+TableView.swift
-//  
+//
 //
 //  Created by Mukesh Thawani on 04/05/17.
 //  Copyright © 2017 Applozic. All rights reserved.
@@ -12,15 +12,15 @@ import AVFoundation
 import Applozic
 
 extension ALKConversationViewController: UITableViewDelegate, UITableViewDataSource {
-
+    
     public func numberOfSections(in tableView: UITableView) -> Int {
         return viewModel.numberOfSections()
     }
-
+    
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return viewModel.numberOfRows(section: section)
     }
-
+    
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard var message = viewModel.messageForRow(indexPath: indexPath) else {
             return UITableViewCell()
@@ -29,12 +29,12 @@ extension ALKConversationViewController: UITableViewDelegate, UITableViewDataSou
         switch message.messageType {
         case .text, .html:
             if message.isMyMessage {
-
+                
                 let cell: ALKMyMessageCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
                 cell.update(viewModel: message)
                 cell.update(chatBar: self.chatBar)
                 return cell
-
+                
             } else {
                 let cell: ALKFriendMessageCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
                 cell.update(viewModel: message)
@@ -68,7 +68,7 @@ extension ALKConversationViewController: UITableViewDelegate, UITableViewDataSou
                         self?.attachmentViewDidTapDownload(view: cell, indexPath: indexPath)
                     }
                     return cell
-
+                    
                 } else {
                     let cell: ALKMyPhotoLandscapeCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
                     cell.update(viewModel: message)
@@ -78,10 +78,10 @@ extension ALKConversationViewController: UITableViewDelegate, UITableViewDataSou
                     }
                     return cell
                 }
-
+                
             } else {
                 if message.ratio < 1 {
-
+                    
                     let cell: ALKFriendPhotoPortalCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
                     cell.update(viewModel: message)
                     cell.downloadTapped = {[weak self]
@@ -93,7 +93,7 @@ extension ALKConversationViewController: UITableViewDelegate, UITableViewDataSou
                         self?.messageAvatarViewDidTap(messageVM: currentModel, indexPath: indexPath)
                     }
                     return cell
-
+                    
                 } else {
                     let cell: ALKFriendPhotoLandscapeCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
                     cell.update(viewModel: message)
@@ -104,7 +104,7 @@ extension ALKConversationViewController: UITableViewDelegate, UITableViewDataSou
             print("voice cell loaded with url", message.filePath as Any)
             print("current voice state: ", message.voiceCurrentState, "row", indexPath.row, message.voiceTotalDuration, message.voiceData as Any)
             print("voice identifier: ", message.identifier, "and row: ", indexPath.row)
-
+            
             if message.isMyMessage {
                 let cell: ALKMyVoiceCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
                 cell.update(viewModel: message)
@@ -132,7 +132,7 @@ extension ALKConversationViewController: UITableViewDelegate, UITableViewDataSou
                 cell.update(viewModel: message)
                 cell.setDelegate(locDelegate: self)
                 return cell
-
+                
             } else {
                 let cell: ALKFriendLocationCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
                 cell.update(viewModel: message)
@@ -178,26 +178,42 @@ extension ALKConversationViewController: UITableViewDelegate, UITableViewDataSou
                 }
                 return cell
             }
+            
+        case .payment:
+            
+            if message.isMyMessage {
+                let cell:ALKMyPaymentMessage  = tableView.dequeueReusableCell(forIndexPath: indexPath)
+                cell.update(viewModel: message)
+                return cell
+                
+            }else{
+                
+                let cell: ALKPaymentCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
+                cell.update(viewModel: message)
+                
+                return cell
+            }
+            
         }
     }
-
+    
     public func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return viewModel.heightForRow(indexPath: indexPath, cellFrame: self.view.frame)
     }
-
+    
     public func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         let heightForHeaderInSection: CGFloat = 40.0
-
+        
         guard let message1 = viewModel.messageForRow(indexPath: IndexPath(row: 0, section: section)) else {
             return 0.0
         }
-
+        
         // If it is the first section then no need to check the difference,
         // just show the start date. (message list is not empty)
         if section == 0 {
             return heightForHeaderInSection
         }
-
+        
         // Get previous message
         guard let message2 = viewModel.messageForRow(indexPath: IndexPath(row: 0, section: section - 1)) else {
             return 0.0
@@ -212,38 +228,38 @@ extension ALKConversationViewController: UITableViewDelegate, UITableViewDataSou
             return 0.0
         }
     }
-
+    
     public func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         guard let message = viewModel.messageForRow(indexPath: IndexPath(row: 0, section: section)) else {
             return nil
         }
-
+        
         // Get message creation date
         let date = message.date
-
+        
         let dateView = ALKDateSectionHeaderView.instanceFromNib()
         dateView.backgroundColor = UIColor.clear
-
+        
         // Set date text
         dateView.setupDate(withDateFormat: date.stringCompareCurrentDate())
         return dateView
     }
-
+    
     //MARK: Paging
-
+    
     public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         if (decelerate) {return}
         configurePaginationWindow()
     }
-
+    
     public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         configurePaginationWindow()
     }
-
+    
     public func scrollViewDidScrollToTop(_ scrollView: UIScrollView) {
         configurePaginationWindow()
     }
-
+    
     func configurePaginationWindow() {
         if (self.tableView.frame.equalTo(CGRect.zero)) {return}
         if (self.tableView.isDragging) {return}
@@ -256,7 +272,7 @@ extension ALKConversationViewController: UITableViewDelegate, UITableViewDataSou
         
         self.viewModel.nextPage()
     }
-
+    
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if tableView.isCellVisible(section: viewModel.messageModels.count-2, row: 0) {
             unreadScrollButton.isHidden = true
@@ -268,30 +284,30 @@ extension ALTopicDetail: ALKContextTitleDataType {
     public var titleText: String {
         return title ?? ""
     }
-
+    
     public var subtitleText: String {
         return subtitle
     }
-
+    
     public var imageURL: URL? {
         guard let urlStr = link, let url = URL(string: urlStr) else {
             return nil
         }
         return url
     }
-
+    
     public var infoLabel1Text: String? {
         guard let key = key1, let value = value1 else {
             return nil
         }
         return "\(key): \(value)"
     }
-
+    
     public var infoLabel2Text: String? {
         guard let key = key2, let value = value2 else {
             return nil
         }
         return "\(key): \(value)"
     }
-
+    
 }
