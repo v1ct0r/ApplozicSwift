@@ -150,7 +150,7 @@ class ALKMyPaymentMessage: ALKChatBaseCell<ALKMessageViewModel> {
         self.viewModel = viewModel
         activityIndicator.color = .black
         
-        var nsmutable =  viewModel.metaData
+        var nsmutable =  viewModel.metadata
         
         if viewModel.isAllRead {
             stateView.image = UIImage(named: "read_state_3", in: Bundle.applozic, compatibleWith: nil)
@@ -180,6 +180,8 @@ class ALKMyPaymentMessage: ALKChatBaseCell<ALKMessageViewModel> {
             let amountString = "\(doller) \(amount as! String)"
             
             if(viewModel.isMyMessage){
+                
+
                 if(paymentStatus != nil && "paymentRequested"  ==  paymentStatus as! String!){
                     
                     paymentMoney.text = amountString
@@ -191,12 +193,12 @@ class ALKMyPaymentMessage: ALKChatBaseCell<ALKMessageViewModel> {
                         if(nsmutable!["paymentHeader"] == nil){
                             
                             
-                            let groupNames = channelService.string(fromChannelUserMetaData:viewModel.metaData , paymentMessageTitle: true)
+                            let groupNames = channelService.string(fromChannelUserMetaData: NSMutableDictionary(dictionary: nsmutable!), paymentMessageTitle: true)
                             
                             nsmutable!["paymentHeader"] = groupNames
                             paymentTitle.text = requestedString + groupNames!
                             
-                            let channeldb = messageDb.updateMessageMetaData(viewModel.messageKey, withMetadata:nsmutable )
+                            let channeldb = messageDb.updateMessageMetaData(viewModel.identifier, withMetadata:NSMutableDictionary(dictionary: nsmutable!))
                             
                         }else{
                             paymentTitle.text = requestedString + (nsmutable!["paymentHeader"] as? String)!
@@ -235,7 +237,7 @@ class ALKMyPaymentMessage: ALKChatBaseCell<ALKMessageViewModel> {
                                     nsmutable!["paymentHeader"] = groupNames
                                     paymentTitle.text = groupNames
                                     
-                                    let channeldb = messageDb.updateMessageMetaData(viewModel.messageKey, withMetadata:nsmutable )
+                                    let channeldb = messageDb.updateMessageMetaData(viewModel.identifier, withMetadata:NSMutableDictionary(dictionary: nsmutable!))
                                 }
                                 
                             }
@@ -271,7 +273,7 @@ class ALKMyPaymentMessage: ALKChatBaseCell<ALKMessageViewModel> {
                                     nsmutable!["paymentHeader"] = groupNames
                                     paymentTitle.text = groupNames
                                     
-                                    let channeldb = messageDb.updateMessageMetaData(viewModel.messageKey, withMetadata:nsmutable )
+                                    let channeldb = messageDb.updateMessageMetaData(viewModel.identifier, withMetadata:NSMutableDictionary(dictionary: nsmutable! ))
                                 }
                                 
                             }else{
@@ -295,11 +297,11 @@ class ALKMyPaymentMessage: ALKChatBaseCell<ALKMessageViewModel> {
                             if(nsmutable!["paymentHeader"] == nil){
                                 
                                 
-                                let groupNames = channelService.string(fromChannelUserMetaData:viewModel.metaData , paymentMessageTitle: true)
+                                let groupNames = channelService.string(fromChannelUserMetaData:NSMutableDictionary(dictionary: nsmutable!) , paymentMessageTitle: true)
                                 nsmutable!["paymentHeader"] = groupNames
                                 paymentTitle.text = payedString + groupNames!
                                 
-                                let channeldb = messageDb.updateMessageMetaData(viewModel.messageKey, withMetadata:nsmutable )
+                                let channeldb = messageDb.updateMessageMetaData(viewModel.identifier, withMetadata:NSMutableDictionary(dictionary: nsmutable!))
                                 
                             }else{
                                 paymentTitle.text = payedString + (nsmutable!["paymentHeader"] as? String)!
@@ -332,7 +334,7 @@ class ALKMyPaymentMessage: ALKChatBaseCell<ALKMessageViewModel> {
                             nsmutable!["paymentHeader"] = groupName
                             paymentTitle.text = groupName
                             
-                            messageDb.updateMessageMetaData(viewModel.messageKey, withMetadata:nsmutable )
+                            messageDb.updateMessageMetaData(viewModel.identifier, withMetadata:NSMutableDictionary(dictionary: nsmutable!))
                             
                         }else{
                             
@@ -501,8 +503,8 @@ class ALKMyPaymentMessage: ALKChatBaseCell<ALKMessageViewModel> {
             
             var  viewController = firstVC as! ALPaymentUsersController
             
-            var nsmutableMeatdata = NSMutableDictionary();
-            nsmutableMeatdata =   (viewModel?.metaData)!
+            var nsmutableMeatdata = Dictionary<String, Any>();
+            nsmutableMeatdata =   (viewModel?.metadata)!
             
             let ns = nsmutableMeatdata["usersRequested"] as? String;
             if(ns != nil){

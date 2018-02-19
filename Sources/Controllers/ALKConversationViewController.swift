@@ -12,7 +12,7 @@ import AVFoundation
 import Applozic
 
 open class ALKConversationViewController: ALKBaseViewController {
-    
+
     public var viewModel: ALKConversationViewModel! {
         willSet(updatedVM) {
             guard viewModel != nil else {return}
@@ -23,38 +23,48 @@ open class ALKConversationViewController: ALKBaseViewController {
             }
         }
     }
-    
+
     /// Enables group detail button on navigation bar
     public var isGroupDetailActionEnabled = true
-    
+
     /// If enabled then opens the individual chat on
     /// click of avatar (Only for group chat)
     public var isProfileTapActionEnabled = true
-    
+
     private var isFirstTime = true
     private var bottomConstraint: NSLayoutConstraint?
     private var leftMoreBarConstraint: NSLayoutConstraint?
     private var typingNoticeViewHeighConstaint: NSLayoutConstraint?
     private var isJustSent: Bool = false
-    
+
     //MQTT connection retry
     fileprivate var mqttRetryCount = 0
     fileprivate var maxMqttRetryCount = 3
-    
+
     fileprivate let audioPlayer = ALKAudioPlayer()
-    
+
     fileprivate let moreBar: ALKMoreBar = ALKMoreBar(frame: .zero)
     fileprivate let typingNoticeView = TypingNotice()
     fileprivate var alMqttConversationService: ALMQTTConversationService!
     fileprivate let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.gray)
-    
+
     fileprivate var keyboardSize: CGRect?
-    fileprivate var contextViewHeight = 100.0
-    
-    enum ConstraintIdentifier: String {
-        case contextTitleView = "contextTitleView"
+
+    fileprivate enum ConstraintIdentifier {
+        static let contextTitleView = "contextTitleView"
+        static let replyMessageViewHeight = "replyMessageViewHeight"
     }
-    
+
+    fileprivate enum Padding {
+
+        enum ContextView {
+            static let height: CGFloat = 100.0
+        }
+        enum ReplyMessageView {
+            static let height: CGFloat = 70.0
+        }
+    }
+
     let tableView : UITableView = {
         let tv = UITableView(frame: .zero, style: .grouped)
         tv.separatorStyle   = .none
@@ -64,16 +74,16 @@ open class ALKConversationViewController: ALKBaseViewController {
         tv.keyboardDismissMode = UIScrollViewKeyboardDismissMode.onDrag
         return tv
     }()
-    
+
     fileprivate let titleButton : UIButton = {
         let titleButton = UIButton(frame: CGRect(x: 0, y: 0, width: 200, height: 200))
         titleButton.setTitleColor(UIColor.black, for: .normal)
         titleButton.titleLabel?.font  = UIFont.boldSystemFont(ofSize: 17.0)
         return titleButton
     }()
-    
+
     let chatBar: ALKChatBar = ALKChatBar(frame: .zero)
-    
+
     let unreadScrollButton: UIButton = {
         let button = UIButton()
         button.backgroundColor = UIColor.lightText
@@ -82,57 +92,63 @@ open class ALKConversationViewController: ALKBaseViewController {
         button.layer.cornerRadius = 15
         return button
     }()
-    
+
     open var backgroundView: UIView = {
         let view = UIView(frame: CGRect.zero)
         view.backgroundColor = UIColor.white
         return view
     }()
-    
+
     open var contextTitleView: ALKContextTitleView = {
         let contextView = ALKContextTitleView(frame: CGRect.zero)
         contextView.backgroundColor = UIColor.orange
         return contextView
     }()
-    
+
     open var templateView: ALKTemplateMessagesView?
-    
+
+    open var replyMessageView: ALKReplyMessageView = {
+        let view = ALKReplyMessageView(frame: CGRect.zero)
+        view.backgroundColor = UIColor.gray
+        return view
+    }()
+
     required public init() {
         super.init(nibName: nil, bundle: nil)
     }
-    
+
     required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
-    
+
     override func addObserver() {
         NotificationCenter.default.addObserver(forName: NSNotification.Name.UIKeyboardWillShow, object: nil, queue: nil, using: { [weak self]
             notification in
             print("keyboard will show")
             guard let weakSelf = self else {return}
-            
+
             if let keyboardSize = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
-                
+
                 weakSelf.keyboardSize = keyboardSize
-                
+
                 let tableView = weakSelf.tableView
                 let isAtBotom = tableView.isAtBottom
                 let isJustSent = weakSelf.isJustSent
-                
+
                 let view = weakSelf.view
                 _ = weakSelf.navigationController
-                
-                
+
+
                 var h = CGFloat(0)
                 h = keyboardSize.height-h
-                
+
                 let newH = -1*h
                 if weakSelf.bottomConstraint?.constant == newH {return}
-                
+
                 weakSelf.bottomConstraint?.constant = newH
-                
+
                 let duration = (notification.userInfo?[UIKeyboardAnimationDurationUserInfoKey] as? NSNumber)?.doubleValue ?? 0.05
-                
+
                 UIView.animate(withDuration: duration, animations: {
                     view?.layoutIfNeeded()
                 }, completion: { (_) in
@@ -143,27 +159,27 @@ open class ALKConversationViewController: ALKBaseViewController {
                 })
             }
         })
-        
-        
+
+
         NotificationCenter.default.addObserver(forName: NSNotification.Name.UIKeyboardWillHide, object: nil, queue: nil, using: {[weak self]
             (notification) in
-            
+
             guard let weakSelf = self else {return}
             let view = weakSelf.view
-            
+
             weakSelf.bottomConstraint?.constant = 0
-            
+
             let duration = (notification.userInfo?[UIKeyboardAnimationDurationUserInfoKey] as? NSNumber)?.doubleValue ?? 0.05
-            
+
             UIView.animate(withDuration: duration, animations: {
                 view?.layoutIfNeeded()
             }, completion: { (_) in
                 guard let vm = weakSelf.viewModel else { return }
                 vm.sendKeyboardDoneTyping()
             })
-            
+
         })
-        
+
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: "newMessageNotification"), object: nil, queue: nil, using: { [weak self]
             notification in
             guard let weakSelf = self else { return }
@@ -173,15 +189,15 @@ open class ALKConversationViewController: ALKBaseViewController {
             weakSelf.viewModel.addMessagesToList(list)
             //            weakSelf.handlePushNotification = false
         })
-        
-        
+
+
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: "messageMetaDataUpdateNotification"), object: nil, queue: nil, using: { [weak self]
             notification in
-            
+
             guard let weakSelf = self, let message = notification.object as? ALMessage else { return }
-            
+
             print("new messageMetaDataUpdateNotification received: ", message.dictionary().description)
-            
+
             weakSelf.viewModel.updateMessageMetaData(message:message)
             //            weakSelf.handlePushNotification = false
         })
@@ -189,35 +205,35 @@ open class ALKConversationViewController: ALKBaseViewController {
             notification in
             print("notification individual chat received")
         })
-        
+
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: "report_DELIVERED"), object: nil, queue: nil, using: {[weak self]
             notification in
             guard let weakSelf = self, let key = notification.object as? String else { return }
             weakSelf.viewModel.updateDeliveryReport(messageKey: key, status: Int32(DELIVERED.rawValue))
             print("report delievered notification received")
         })
-        
+
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: "report_DELIVERED_READ"), object: nil, queue: nil, using: {[weak self]
             notification in
             guard let weakSelf = self, let key = notification.object as? String else { return }
             weakSelf.viewModel.updateDeliveryReport(messageKey: key, status: Int32(DELIVERED_AND_READ.rawValue))
             print("report delievered and read notification received")
         })
-        
+
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: "report_CONVERSATION_DELIVERED_READ"), object: nil, queue: nil, using: {[weak self]
             notification in
             guard let weakSelf = self, let key = notification.object as? String else { return }
             weakSelf.viewModel.updateStatusReportForConversation(contactId: key, status: Int32(DELIVERED_AND_READ.rawValue))
             print("report conversation delievered and read notification received")
         })
-        
+
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: "UPDATE_MESSAGE_SEND_STATUS"), object: nil, queue: nil, using: {[weak self]
             notification in
             print("Message sent notification received")
             guard let weakSelf = self, let message = notification.object as? ALMessage else { return }
             weakSelf.viewModel.updateSendStatus(message: message)
         })
-        
+
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: "USER_DETAILS_UPDATE_CALL"), object: nil, queue: nil, using: {[weak self] notification in
             NSLog("update user detail notification received")
             guard let weakSelf = self, let userId = notification.object as? String else { return }
@@ -230,7 +246,7 @@ open class ALKConversationViewController: ALKBaseViewController {
                 weakSelf.titleButton.setTitle(detail.getDisplayName(), for: .normal)
             })
         })
-        
+
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: "UPDATE_CHANNEL_NAME"), object: nil, queue: nil, using: {[weak self] notification in
             NSLog("update group name notification received")
             guard let weakSelf = self else { return }
@@ -241,9 +257,9 @@ open class ALKConversationViewController: ALKBaseViewController {
             weakSelf.titleButton.setTitle(name, for: .normal)
         })
     }
-    
+
     override func removeObserver() {
-        
+
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIKeyboardWillShow, object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIKeyboardWillHide, object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: "newMessageNotification"), object: nil)
@@ -256,7 +272,7 @@ open class ALKConversationViewController: ALKBaseViewController {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: "UPDATE_CHANNEL_NAME"), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: "messageMetaDataUpdateNotification"), object: nil)
     }
-    
+
     override open func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         if UIApplication.shared.userInterfaceLayoutDirection == .rightToLeft {
@@ -277,13 +293,13 @@ open class ALKConversationViewController: ALKBaseViewController {
             alMqttConversationService.mqttConversationDelegate = self
             alMqttConversationService.subscribeToConversation()
         }
-        
+
         if self.viewModel.isGroup == true {
             self.setTypingNotiDisplayName(displayName: "Somebody")
         } else {
             self.setTypingNotiDisplayName(displayName: self.title ?? "")
         }
-        
+
         viewModel.delegate = self
         viewModel.prepareController()
         if let templates = viewModel.getMessageTemplates(){
@@ -301,14 +317,14 @@ open class ALKConversationViewController: ALKBaseViewController {
         subscribeChannelToMqtt()
         print("id: ", viewModel.messageModels.first?.contactId as Any)
     }
-    
+
     override open func viewDidAppear(_ animated: Bool) {
     }
-    
+
     override open func viewDidLoad() {
         super.viewDidLoad()
     }
-    
+
     override open func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         if self.isFirstTime && tableView.isCellVisible(section: 0, row: 0) {
@@ -316,7 +332,7 @@ open class ALKConversationViewController: ALKBaseViewController {
             isFirstTime = false
         }
     }
-    
+
     override open func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         stopAudioPlayer()
@@ -328,120 +344,138 @@ open class ALKConversationViewController: ALKBaseViewController {
         }
         unsubscribingChannel()
     }
-    
+
     override func backTapped() {
         print("back tapped")
         self.viewModel.sendKeyboardDoneTyping()
         _ = navigationController?.popToRootViewController(animated: true)
     }
-    
+
     func setupView() {
-        
+
         unreadScrollButton.isHidden = true
         unreadScrollButton.addTarget(self, action: #selector(unreadScrollDownAction(_:)), for: .touchUpInside)
-        
+
         setupConstraints()
         prepareTable()
         prepareMoreBar()
         prepareChatBar()
+        replyMessageView.closeButtonTapped = {[weak self] _ in
+            self?.hideReplyMessageView()
+        }
         guard viewModel.isContextBasedChat else { return }
         prepareContextView()
     }
-    
+
     func prepareContextView(){
         guard let topicDetail = viewModel.getContextTitleData() else {return }
         contextTitleView.configureWith(value: topicDetail)
-        contextTitleView.constraint(withIdentifier: ConstraintIdentifier.contextTitleView.rawValue)?.constant = CGFloat(contextViewHeight)
+        contextTitleView.constraint(
+            withIdentifier: ConstraintIdentifier.contextTitleView)?
+            .constant = Padding.ContextView.height
     }
-    
+
     private func setupConstraints() {
-        
-        var allViews = [backgroundView, contextTitleView, tableView,moreBar,chatBar,typingNoticeView, unreadScrollButton]
+
+        var allViews = [backgroundView, contextTitleView, tableView,moreBar,chatBar,typingNoticeView, unreadScrollButton, replyMessageView]
         if let templateView = templateView {
             allViews.append(templateView)
         }
         view.addViewsForAutolayout(views: allViews)
-        
+
         backgroundView.topAnchor.constraint(equalTo: contextTitleView.bottomAnchor).isActive = true
         backgroundView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         backgroundView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        backgroundView.bottomAnchor.constraint(equalTo: typingNoticeView.topAnchor).isActive = true
-        
+        backgroundView.bottomAnchor.constraint(equalTo: chatBar.topAnchor).isActive = true
+
         contextTitleView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
         contextTitleView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         contextTitleView.widthAnchor.constraint(equalTo: self.view.widthAnchor).isActive = true
-        contextTitleView.heightAnchor.constraintEqualToAnchor(constant: 0, identifier: ConstraintIdentifier.contextTitleView.rawValue).isActive = true
-        
+        contextTitleView.heightAnchor.constraintEqualToAnchor(constant: 0, identifier: ConstraintIdentifier.contextTitleView).isActive = true
+
         templateView?.bottomAnchor.constraint(equalTo: typingNoticeView.topAnchor, constant: -5.0).isActive = true
         templateView?.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 5.0).isActive = true
         templateView?.widthAnchor.constraint(equalTo: self.view.widthAnchor, constant: -10.0).isActive = true
         templateView?.heightAnchor.constraint(equalToConstant: 45).isActive = true
-        
+
         tableView.topAnchor.constraint(equalTo: contextTitleView.bottomAnchor).isActive = true
         tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         tableView.bottomAnchor.constraint(equalTo: (templateView != nil) ? templateView!.topAnchor:typingNoticeView.topAnchor).isActive = true
-        
-        
+
+
         typingNoticeViewHeighConstaint = typingNoticeView.heightAnchor.constraint(equalToConstant: 0)
         typingNoticeViewHeighConstaint?.isActive = true
-        
+
         typingNoticeView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 8).isActive = true
         typingNoticeView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -12).isActive = true
-        typingNoticeView.bottomAnchor.constraint(equalTo: chatBar.topAnchor).isActive = true
-        
+        typingNoticeView.bottomAnchor.constraint(equalTo: replyMessageView.topAnchor).isActive = true
+
         chatBar.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         chatBar.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         bottomConstraint = chatBar.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         bottomConstraint?.isActive = true
-        
+
+
+        replyMessageView.leadingAnchor.constraint(
+            equalTo: view.leadingAnchor).isActive = true
+        replyMessageView.trailingAnchor.constraint(
+            equalTo: view.trailingAnchor).isActive = true
+        replyMessageView.heightAnchor.constraintEqualToAnchor(
+            constant: 0,
+            identifier: ConstraintIdentifier.replyMessageViewHeight)
+            .isActive = true
+        replyMessageView.bottomAnchor.constraint(
+            equalTo: chatBar.topAnchor,
+            constant: 0).isActive = true
+
         unreadScrollButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
         unreadScrollButton.widthAnchor.constraint(equalToConstant: 30).isActive = true
         unreadScrollButton.trailingAnchor.constraint(equalTo: tableView.trailingAnchor, constant: -10).isActive = true
-        unreadScrollButton.bottomAnchor.constraint(equalTo: chatBar.topAnchor, constant: -10).isActive = true
-        
+        unreadScrollButton.bottomAnchor.constraint(equalTo: replyMessageView.topAnchor, constant: -10).isActive = true
+
         leftMoreBarConstraint = moreBar.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 56)
         leftMoreBarConstraint?.isActive = true
     }
-    
+
     private func setupNavigation() {
-        
+
         titleButton.setTitle(self.title, for: .normal)
         titleButton.addTarget(self, action: #selector(showParticipantListChat), for: .touchUpInside)
         titleButton.isEnabled = isGroupDetailActionEnabled
         self.navigationItem.titleView = titleButton
     }
-    
+
     private func prepareTable() {
-        
+
         let gesture = UITapGestureRecognizer(target: self, action: #selector(tableTapped(gesture:)))
         gesture.numberOfTapsRequired = 1
         tableView.addGestureRecognizer(gesture)
-        
+
         tableView.delegate = self
         tableView.dataSource = self
         tableView.allowsSelection = false
         tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         tableView.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-        
+
         tableView.sectionHeaderHeight = 0.0
         tableView.sectionFooterHeight = 0.0
         tableView.tableHeaderView = UIView(frame: CGRect(x: 0.0, y: 0.0, width: tableView.bounds.size.width, height: 0.1))
         tableView.tableFooterView = UIView(frame: CGRect(x: 0.0, y: 0.0, width: tableView.bounds.size.width, height: 8))
-        
+
         self.automaticallyAdjustsScrollViewInsets = false
-        
+
         if #available(iOS 11.0, *) {
             tableView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentBehavior.never
         }
         tableView.estimatedRowHeight = 0
-        
+
         tableView.register(ALKMyMessageCell.self)
         tableView.register(ALKPaymentCell.self)
         tableView.register(ALKFriendMessageCell.self)
         tableView.register(ALKMyPhotoPortalCell.self)
         tableView.register(ALKMyPhotoLandscapeCell.self)
-        
+
         tableView.register(ALKFriendPhotoPortalCell.self)
         tableView.register(ALKFriendPhotoLandscapeCell.self)
         tableView.register(ALKMyPaymentMessage.self)
@@ -453,18 +487,18 @@ open class ALKConversationViewController: ALKBaseViewController {
         tableView.register(ALKMyVideoCell.self)
         tableView.register(ALKFriendVideoCell.self)
     }
-    
-    
+
+
     private func prepareMoreBar() {
-        
+
         moreBar.bottomAnchor.constraint(equalTo: chatBar.topAnchor).isActive = true
         moreBar.isHidden = true
         moreBar.setHandleAction { [weak self] (actionType) in
             self?.hideMoreBar()
         }
     }
-    
-    
+
+
     private func prepareChatBar() {
         if viewModel.isOpenGroup {
             hideMediaOptions()
@@ -474,55 +508,55 @@ open class ALKConversationViewController: ALKBaseViewController {
         chatBar.accessibilityIdentifier = "chatBar"
         chatBar.setComingSoonDelegate(delegate: self.view)
         chatBar.action = { [weak self] (action) in
-            
+
             guard let weakSelf = self else {
                 return
             }
-            
+
             if case .more(_) = action {
-                
+
                 if weakSelf.moreBar.isHidden == true {
                     weakSelf.showMoreBar()
                 } else {
                     weakSelf.hideMoreBar()
                 }
-                
+
                 return
             }
-            
+
             weakSelf.hideMoreBar()
-            
+
             switch action {
-                
+
             case .sendText(let button, let message):
-                
+
                 if message.characters.count < 1 {
                     return
                 }
-                
+
                 button.isUserInteractionEnabled = false
                 weakSelf.viewModel.sendKeyboardDoneTyping()
-                
+
                 weakSelf.isJustSent = true
-                
+
                 weakSelf.chatBar.clear()
-                
+
                 NSLog("Sent: ", message)
-                
+
                 weakSelf.viewModel.send(message: message, isOpenGroup: weakSelf.viewModel.isOpenGroup)
                 button.isUserInteractionEnabled = true
             case .chatBarTextChange(_):
-                
+
                 weakSelf.viewModel.sendKeyboardBeginTyping()
-                
+
                 UIView.animate(withDuration: 0.05, animations: { () in
                     weakSelf.view.layoutIfNeeded()
                 }, completion: { [weak self] (_) in
-                    
+
                     guard let weakSelf = self else {
                         return
                     }
-                    
+
                     if weakSelf.tableView.isAtBottom == true && weakSelf.isJustSent == false {
                         weakSelf.tableView.scrollToBottomByOfset(animated: false)
                     }
@@ -530,14 +564,14 @@ open class ALKConversationViewController: ALKBaseViewController {
             case .sendPhoto(let button, let image):
                 print("Image call done")
                 weakSelf.isJustSent = true
-                
+
                 let (message, indexPath) =  weakSelf.viewModel.send(photo: image)
                 guard let _ = message, let newIndexPath = indexPath else { return }
                 weakSelf.tableView.beginUpdates()
                 weakSelf.tableView.insertSections(IndexSet(integer: newIndexPath.section), with: .automatic)
                 weakSelf.tableView.endUpdates()
                 weakSelf.tableView.scrollToBottom(animated: false)
-                
+
                 guard let cell = weakSelf.tableView.cellForRow(at: newIndexPath) as? ALKMyPhotoPortalCell else { return }
                 guard ALDataNetworkConnection.checkDataNetworkAvailable() else {
                     let notificationView = ALNotificationView()
@@ -545,14 +579,14 @@ open class ALKConversationViewController: ALKBaseViewController {
                     return
                 }
                 weakSelf.viewModel.uploadImage(view: cell, indexPath: newIndexPath)
-                
+
                 button.isUserInteractionEnabled = true
                 button.isUserInteractionEnabled = true
-                
+
             case .sendVoice(let voice):
                 weakSelf.viewModel.send(voiceMessage: voice as Data)
                 break;
-                
+
             case .startVideoRecord():
                 if UIImagePickerController.isSourceTypeAvailable(.camera) {
                     AVCaptureDevice.requestAccess(forMediaType: AVMediaTypeVideo, completionHandler: {
@@ -583,7 +617,7 @@ open class ALKConversationViewController: ALKBaseViewController {
                 }
             case .showLocation():
                 let storyboard = UIStoryboard.name(storyboard: UIStoryboard.Storyboard.MapView, bundle: Bundle.applozic)
-                
+
                 guard let nav = storyboard.instantiateInitialViewController() as? UINavigationController else { return }
                 guard let mapViewVC = nav.viewControllers.first as? ALKMapViewController else { return }
                 mapViewVC.delegate = self
@@ -593,56 +627,23 @@ open class ALKConversationViewController: ALKBaseViewController {
             }
         }
     }
-    
+
     //MARK: public Control Typing notification
     func setTypingNotiDisplayName(displayName:String)
     {
         typingNoticeView.setDisplayName(displayName: displayName)
     }
-    
+
     func tableTapped(gesture: UITapGestureRecognizer) {
         hideMoreBar()
         view.endEditing(true)
     }
-    
-    private func showMoreBar() {
-        
-        self.moreBar.isHidden = false
-        self.leftMoreBarConstraint?.constant = 0
-        
-        UIView.animate(withDuration: 0.5, delay: 0.0, options: .curveEaseInOut, animations: { [weak self] () in
-            self?.view.layoutIfNeeded()
-            }, completion: { [weak self] (finished) in
-                
-                guard let strongSelf = self else {return}
-                
-                strongSelf.view.bringSubview(toFront: strongSelf.moreBar)
-                strongSelf.view.sendSubview(toBack: strongSelf.tableView)
-        })
-        
-    }
-    
-    private func hideMoreBar() {
-        
-        if self.leftMoreBarConstraint?.constant == 0 {
-            
-            self.leftMoreBarConstraint?.constant = 56
-            
-            UIView.animate(withDuration: 0.5, delay: 0.0, options: .curveEaseInOut, animations: { [weak self] () in
-                self?.view.layoutIfNeeded()
-                }, completion: { [weak self] (finished) in
-                    self?.moreBar.isHidden = true
-            })
-            
-        }
-        
-    }
-    
+
     public func scrollViewWillBeginDecelerating(_ scrollView: UIScrollView) {
         UIMenuController.shared.setMenuVisible(false, animated: true)
         hideMoreBar()
     }
-    
+
     // Called from the parent VC
     func showTypingLabel(status: Bool, userId: String) {
         typingNoticeViewHeighConstaint?.constant = status ? 30:0
@@ -651,41 +652,25 @@ open class ALKConversationViewController: ALKBaseViewController {
             tableView.scrollToBottomByOfset(animated: false)
         }
     }
-    
+
     func sync(message: ALMessage) {
         viewModel.sync(message: message)
     }
-    
-    @objc private func showParticipantListChat() {
-        if viewModel.isGroup {
-            let storyboard = UIStoryboard.name(storyboard: UIStoryboard.Storyboard.createGroupChat, bundle: Bundle.applozic)
-            if let vc = storyboard.instantiateViewController(withIdentifier: "ALKCreateGroupViewController") as? ALKCreateGroupViewController {
-                
-                if viewModel.groupProfileImgUrl().isEmpty {
-                    vc.setCurrentGroupSelected(groupName: viewModel.groupName(),groupProfileImg:nil, groupSelected: viewModel.friends(), delegate: self)
-                } else {
-                    vc.setCurrentGroupSelected(groupName: viewModel.groupName(),groupProfileImg:viewModel.groupProfileImgUrl(), groupSelected: viewModel.friends(), delegate: self)
-                }
-                vc.addContactMode = .existingChat
-                navigationController?.pushViewController(vc, animated: true)
-            }
-        }
-    }
-    
+
     func updateDeliveryReport(messageKey: String?, contactId: String?, status: Int32?) {
         guard let key = messageKey, let status = status else {
             return
         }
         viewModel.updateDeliveryReport(messageKey: key, status: status)
     }
-    
+
     func updateStatusReport(contactId: String?, status: Int32?) {
         guard let id = contactId, let status = status else {
             return
         }
         viewModel.updateStatusReportForConversation(contactId: id, status: status)
     }
-    
+
     fileprivate func subscribeChannelToMqtt() {
         let channelService = ALChannelService()
         if viewModel.isGroup, let groupId = viewModel.channelKey, !channelService.isChannelLeft(groupId) && !ALChannelService.isChannelDeleted(groupId) {
@@ -700,29 +685,20 @@ open class ALKConversationViewController: ALKBaseViewController {
         if viewModel.isGroup, ALUserDefaultsHandler.isUserLoggedInUserSubscribedMQTT(){
             self.alMqttConversationService.unSubscribe(toChannelConversation: nil)
         }
-        
+
     }
-    
-    private func unsubscribingChannel() {
-        if !viewModel.isOpenGroup {
-            self.alMqttConversationService.sendTypingStatus(ALUserDefaultsHandler.getApplicationKey(), userID: viewModel.contactId, andChannelKey: viewModel.channelKey, typing: false)
-            self.alMqttConversationService.unSubscribe(toChannelConversation: viewModel.channelKey)
-        } else {
-            self.alMqttConversationService.unSubscribe(toOpenChannel: viewModel.channelKey)
-        }
-    }
-    
-    
+
+
     func unreadScrollDownAction(_ sender: UIButton) {
         tableView.scrollToBottom()
         unreadScrollButton.isHidden = true
     }
-    
+
     func attachmentViewDidTapDownload(view: UIView, indexPath: IndexPath) {
         guard let message = viewModel.messageForRow(indexPath: indexPath) else { return }
         viewModel.downloadAttachment(message: message, view: view)
     }
-    
+
     func attachmentViewDidTapUpload(view: UIView, indexPath: IndexPath) {
         guard ALDataNetworkConnection.checkDataNetworkAvailable() else {
             let notificationView = ALNotificationView()
@@ -731,43 +707,135 @@ open class ALKConversationViewController: ALKBaseViewController {
         }
         viewModel.uploadImage(view: view, indexPath: indexPath)
     }
-    
+
     func attachmentUploadDidCompleteWith(response: Any?, indexPath: IndexPath) {
         viewModel.uploadAttachmentCompleted(responseDict: response, indexPath: indexPath)
     }
-    
+
     func messageAvatarViewDidTap(messageVM: ALKMessageViewModel, indexPath: IndexPath) {
         // Open chat thread
         guard viewModel.isGroup && isProfileTapActionEnabled else {return}
-        
+
         // Get the user id of that user
         guard let receiverId = messageVM.receiverId else {return}
-        
+
         let vm = ALKConversationViewModel(contactId: receiverId, channelKey: nil)
         let conversationVC = ALKConversationViewController()
         conversationVC.viewModel = vm
         conversationVC.title = messageVM.displayName
-        
+
         navigationController?.pushViewController(conversationVC, animated: true)
     }
-    
+
+    func menuItemSelected(action: ALKChatBaseCell<ALKMessageViewModel>.MenuActionType,
+                          message: ALKMessageViewModel) {
+        switch action {
+        case .reply:
+            print("Reply selected")
+            viewModel.setSelectedMessageToReply(message)
+            replyMessageView.update(message: message)
+            showReplyMessageView()
+        }
+    }
+
+    func showReplyMessageView() {
+        replyMessageView.constraint(
+            withIdentifier: ConstraintIdentifier.replyMessageViewHeight)?
+            .constant = Padding.ReplyMessageView.height
+    }
+
+    func hideReplyMessageView() {
+        replyMessageView.constraint(
+            withIdentifier: ConstraintIdentifier.replyMessageViewHeight)?
+            .constant = 0
+    }
+
+    func scrollTo(message: ALKMessageViewModel) {
+        let messageService = ALMessageService()
+        guard
+            let metadata = message.metadata,
+            let replyId = metadata[AL_MESSAGE_REPLY_KEY] as? String
+            else {return}
+        let actualMessage = messageService.getALMessage(byKey: replyId).messageModel
+        guard let indexPath = viewModel.getIndexpathFor(message: actualMessage)
+            else {return}
+        tableView.scrollToRow(at: indexPath, at: .top, animated: true)
+
+    }
+
     fileprivate func hideMediaOptions() {
         chatBar.hideMediaView()
     }
-    
+
     fileprivate func showMediaOptions() {
         chatBar.showMediaView()
     }
-    
-    
+
+    private func showMoreBar() {
+
+        self.moreBar.isHidden = false
+        self.leftMoreBarConstraint?.constant = 0
+
+        UIView.animate(withDuration: 0.5, delay: 0.0, options: .curveEaseInOut, animations: { [weak self] () in
+            self?.view.layoutIfNeeded()
+            }, completion: { [weak self] (finished) in
+
+                guard let strongSelf = self else {return}
+
+                strongSelf.view.bringSubview(toFront: strongSelf.moreBar)
+                strongSelf.view.sendSubview(toBack: strongSelf.tableView)
+        })
+
+    }
+
+    private func hideMoreBar() {
+
+        if self.leftMoreBarConstraint?.constant == 0 {
+
+            self.leftMoreBarConstraint?.constant = 56
+
+            UIView.animate(withDuration: 0.5, delay: 0.0, options: .curveEaseInOut, animations: { [weak self] () in
+                self?.view.layoutIfNeeded()
+                }, completion: { [weak self] (finished) in
+                    self?.moreBar.isHidden = true
+            })
+
+        }
+
+    }
+
+    private func unsubscribingChannel() {
+        if !viewModel.isOpenGroup {
+            self.alMqttConversationService.sendTypingStatus(ALUserDefaultsHandler.getApplicationKey(), userID: viewModel.contactId, andChannelKey: viewModel.channelKey, typing: false)
+            self.alMqttConversationService.unSubscribe(toChannelConversation: viewModel.channelKey)
+        } else {
+            self.alMqttConversationService.unSubscribe(toOpenChannel: viewModel.channelKey)
+        }
+    }
+
+    @objc private func showParticipantListChat() {
+        if viewModel.isGroup {
+            let storyboard = UIStoryboard.name(storyboard: UIStoryboard.Storyboard.createGroupChat, bundle: Bundle.applozic)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "ALKCreateGroupViewController") as? ALKCreateGroupViewController {
+
+                if viewModel.groupProfileImgUrl().isEmpty {
+                    vc.setCurrentGroupSelected(groupName: viewModel.groupName(),groupProfileImg:nil, groupSelected: viewModel.friends(), delegate: self)
+                } else {
+                    vc.setCurrentGroupSelected(groupName: viewModel.groupName(),groupProfileImg:viewModel.groupProfileImgUrl(), groupSelected: viewModel.friends(), delegate: self)
+                }
+                vc.addContactMode = .existingChat
+                navigationController?.pushViewController(vc, animated: true)
+            }
+        }
+    }
 }
 
 extension ALKConversationViewController: ALKConversationViewModelDelegate {
-    
+
     public func loadingStarted() {
         activityIndicator.startAnimating()
     }
-    
+
     public func loadingFinished(error: Error?) {
         activityIndicator.stopAnimating()
         tableView.reloadData()
@@ -781,20 +849,20 @@ extension ALKConversationViewController: ALKConversationViewModelDelegate {
         guard !viewModel.isOpenGroup else {return}
         viewModel.markConversationRead()
     }
-    
+
     public func messageUpdated() {
         if activityIndicator.isAnimating {
             activityIndicator.stopAnimating()
         }
         tableView.reloadData()
     }
-    
+
     public func updateMessageAt(indexPath: IndexPath) {
         DispatchQueue.main.async {
             self.tableView.reloadSections(IndexSet(integer: indexPath.section), with: .none)
         }
     }
-    
+
     public func newMessagesAdded() {
         tableView.reloadData()
         if tableView.isCellVisible(section: viewModel.messageModels.count-1, row: 0) {
@@ -807,7 +875,7 @@ extension ALKConversationViewController: ALKConversationViewModelDelegate {
         }
         viewModel.markConversationRead()
     }
-    
+
     public func messageSent(at indexPath: IndexPath) {
         DispatchQueue.main.async {
             NSLog("current indexpath: %i and tableview section %i", indexPath.section, self.tableView.numberOfSections)
@@ -821,38 +889,44 @@ extension ALKConversationViewController: ALKConversationViewModelDelegate {
             self.tableView.scrollToBottom(animated: false)
         }
     }
-    
+
     public func updateDisplay(name: String) {
         self.title = name
         titleButton.setTitle(name, for: .normal)
     }
-    
+
     func addRefreshButton() {
         let refreshButton = UIBarButtonItem(barButtonSystemItem: .refresh, target: self, action: #selector(ALKConversationViewController.refreshButtonAction(_:)))
         self.navigationItem.rightBarButtonItem = refreshButton
     }
-    
+
     func refreshButtonAction(_ selector: UIBarButtonItem) {
         viewModel.refresh()
     }
-    
+
+    public func willSendMessage() {
+        // Clear reply message and the view
+        viewModel.clearSelectedMessageToReply()
+        hideReplyMessageView()
+    }
+
 }
 
 extension ALKConversationViewController: ALKCreateGroupChatAddFriendProtocol {
-    
+
     func createGroupGetFriendInGroupList(friendsSelected: [ALKFriendViewModel], groupName: String, groupImgUrl: String, friendsAdded: [ALKFriendViewModel]) {
         if viewModel.isGroup {
             if !groupName.isEmpty {
                 self.title = groupName
                 titleButton.setTitle(self.title, for: .normal)
             }
-            
+
             viewModel.updateGroup(groupName: groupName, groupImage: groupImgUrl, friendsAdded: friendsAdded)
-            
+
             if let titleButton = navigationItem.titleView as? UIButton {
                 titleButton.setTitle(title, for: .normal)
             }
-            
+
             let _ = navigationController?.popToViewController(self, animated: true)
         }
     }
@@ -867,7 +941,7 @@ extension ALKConversationViewController: ALKShareLocationViewControllerDelegate 
         self.tableView.beginUpdates()
         self.tableView.insertSections(IndexSet(integer: (newIndexPath.section)), with: .automatic)
         self.tableView.endUpdates()
-        
+
         // Not scrolling down without the delay
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             self.tableView.scrollToBottom(animated: false)
@@ -883,12 +957,12 @@ extension ALKConversationViewController: ALKLocationCellDelegate {
         let locationString = String(format: "https://maps.google.com/maps?q=loc:%@", latLonString)
         guard let locationUrl = URL(string: locationString) else { return }
         UIApplication.shared.openURL(locationUrl)
-        
+
     }
 }
 
 extension ALKConversationViewController: ALKAudioPlayerProtocol, ALKVoiceCellProtocol {
-    
+
     func reloadVoiceCell() {
         for cell in tableView.visibleCells {
             guard let indexPath = tableView.indexPath(for: cell) else {return}
@@ -901,19 +975,19 @@ extension ALKConversationViewController: ALKAudioPlayerProtocol, ALKVoiceCellPro
             }
         }
     }
-    
+
     //MAKR: Voice and Audio Delegate
     func playAudioPress(identifier: String) {
         DispatchQueue.main.async { [weak self] in
             NSLog("play audio pressed")
             guard let weakSelf = self else { return }
-            
+
             //if we have previously play audio, stop it first
             if !weakSelf.audioPlayer.getCurrentAudioTrack().isEmpty && weakSelf.audioPlayer.getCurrentAudioTrack() != identifier {
                 //pause
                 NSLog("already playing, change it to pause")
                 guard var lastMessage =  weakSelf.viewModel.messageForRow(identifier: weakSelf.audioPlayer.getCurrentAudioTrack()) else {return}
-                
+
                 if Int(lastMessage.voiceCurrentDuration) > 0 {
                     lastMessage.voiceCurrentState = .pause
                     lastMessage.voiceCurrentDuration = weakSelf.audioPlayer.secLeft
@@ -938,7 +1012,7 @@ extension ALKConversationViewController: ALKAudioPlayerProtocol, ALKVoiceCellPro
                 if currentVoice.voiceCurrentState  == .stop || currentVoice.voiceCurrentDuration < 1 {
                     currentVoice.voiceCurrentDuration = currentVoice.voiceTotalDuration
                 }
-                
+
                 if let data = currentVoice.voiceData {
                     let voice = data as NSData
                     //start playing
@@ -949,16 +1023,16 @@ extension ALKConversationViewController: ALKAudioPlayerProtocol, ALKVoiceCellPro
                 }
             }
         }
-        
+
     }
-    
+
     func audioPlaying(maxDuratation: CGFloat, atSec: CGFloat,lastPlayTrack:String) {
-        
+
         DispatchQueue.main.async { [weak self] in
             guard let weakSelf = self else { return }
             guard var currentVoice =  weakSelf.viewModel.messageForRow(identifier: lastPlayTrack) else {return}
             if currentVoice.messageType == .voice {
-                
+
                 if currentVoice.identifier == lastPlayTrack {
                     if atSec <= 0 {
                         currentVoice.voiceCurrentState = .stop
@@ -973,12 +1047,12 @@ extension ALKConversationViewController: ALKAudioPlayerProtocol, ALKVoiceCellPro
             }
         }
     }
-    
+
     func audioStop(maxDuratation: CGFloat,lastPlayTrack:String) {
-        
+
         DispatchQueue.main.async { [weak self] in
             guard let weakSelf = self else { return }
-            
+
             guard var currentVoice =  weakSelf.viewModel.messageForRow(identifier: lastPlayTrack) else {return}
             if currentVoice.messageType == .voice {
                 if currentVoice.identifier == lastPlayTrack {
@@ -989,12 +1063,12 @@ extension ALKConversationViewController: ALKAudioPlayerProtocol, ALKVoiceCellPro
             weakSelf.reloadVoiceCell()
         }
     }
-    
+
     func stopAudioPlayer(){
         DispatchQueue.main.async { [weak self] in
             guard let weakSelf = self else { return }
             if var lastMessage = weakSelf.viewModel.messageForRow(identifier: weakSelf.audioPlayer.getCurrentAudioTrack()) {
-                
+
                 if lastMessage.voiceCurrentState == .playing {
                     weakSelf.audioPlayer.pauseAudio()
                     lastMessage.voiceCurrentState = .pause
@@ -1006,27 +1080,27 @@ extension ALKConversationViewController: ALKAudioPlayerProtocol, ALKVoiceCellPro
 }
 
 extension ALKConversationViewController: ALMQTTConversationDelegate {
-    
+
     public func mqttDidConnected() {
         if viewModel.individualLaunch {
             subscribeChannelToMqtt()
         }
     }
-    
+
     public func syncCall(_ alMessage: ALMessage!, andMessageList messageArray: NSMutableArray!) {
         print("sync call1 ", messageArray)
         guard let message = alMessage else { return }
         sync(message: message)
     }
-    
+
     public func delivered(_ messageKey: String!, contactId: String!, withStatus status: Int32) {
         updateDeliveryReport(messageKey: messageKey, contactId: contactId, status: status)
     }
-    
+
     public func updateStatus(forContact contactId: String!, withStatus status: Int32) {
         updateStatusReport(contactId: contactId, status: status)
     }
-    
+
     public func updateTypingStatus(_ applicationKey: String!, userId: String!, status: Bool) {
         print("Typing status is", status)
         guard viewModel.contactId == userId || viewModel.channelKey != nil else {
@@ -1034,28 +1108,28 @@ extension ALKConversationViewController: ALMQTTConversationDelegate {
         }
         print("Contact id matched")
         showTypingLabel(status: status, userId: userId)
-        
+
     }
-    
+
     public func updateLastSeen(atStatus alUserDetail: ALUserDetail!) {
         print("Last seen updated")
     }
-    
+
     public func mqttConnectionClosed() {
         if viewModel.isOpenGroup &&  mqttRetryCount < maxMqttRetryCount {
             subscribeChannelToMqtt()
         }
         NSLog("MQTT connection closed")
     }
-    
+
     public func reloadData(forUserBlockNotification userId: String!, andBlockFlag flag: Bool) {
         print("reload data")
     }
-    
+
     public func updateUserDetail(_ userId: String!) {
         guard let userId = userId else { return }
         print("update user detail")
-        
+
         ALUserService.updateUserDetail(userId, withCompletion: {
             userDetail in
             guard let detail = userDetail else { return }
@@ -1070,9 +1144,9 @@ extension ALKConversationViewController: UIImagePickerControllerDelegate, UINavi
     public func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         picker.dismiss(animated: true, completion: nil)
     }
-    
+
     public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
-        
+
         // Video attachment
         if let mediaType = info[UIImagePickerControllerMediaType] as? String, mediaType == "public.movie" {
             guard let url = info[UIImagePickerControllerMediaURL] as? URL else { return }
@@ -1097,7 +1171,7 @@ extension ALKConversationViewController: UIImagePickerControllerDelegate, UINavi
                 }
             })
         }
-        
+
         picker.dismiss(animated: true, completion: nil)
     }
 }
@@ -1138,7 +1212,7 @@ extension ALKConversationViewController: ALKCustomPickerDelegate {
                 }
                 self.viewModel.uploadVideo(view: cell, indexPath: newIndexPath)
             }
-            
+
         }
     }
 }

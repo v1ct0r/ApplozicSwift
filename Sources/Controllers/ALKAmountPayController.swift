@@ -69,13 +69,7 @@ class ALKAmountPayController: UIViewController,ALKCustomAmountProtocol{
                 
             }
             
-            let paymentId =  nsmutable["paymentId"]
-            let  paymentMessage = nsmutable["paymentMessage"]
-            let  paymentSubject = nsmutable["paymentSubject"]
-            let  paymentStatus = nsmutable["paymentStatus"]
-            let   richMessageType = nsmutable["richMessageType"]
-            
-            messsageService.updateMessageMetaData(paymentModleData?.messageKey, withMessageMetaData: nsmutable,withCompletionHandler:{
+           messsageService.updateMessageMetaData(paymentModleData?.messageKey, withMessageMetaData: nsmutable,withCompletionHandler:{
                 apirespone, error in
                 
                 if((error == nil) ){

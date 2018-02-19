@@ -183,7 +183,7 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
         
         nameLabel.text = viewModel.displayName
         
-        var nsmutable =  viewModel.metaData
+        var nsmutable =  viewModel.metadata
         
         if((nsmutable) != nil){
             let amount =     nsmutable!["amount"]
@@ -221,12 +221,12 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
                         
                         if(nsmutable!["paymentHeader"] == nil){
                             
-                            let groupNames = channelService.string(fromChannelUserMetaData:viewModel.metaData , paymentMessageTitle: true)
+                            let groupNames = channelService.string(fromChannelUserMetaData:NSMutableDictionary(dictionary: nsmutable!), paymentMessageTitle: true)
                             
                             nsmutable!["paymentHeader"] = groupNames
                             paymentTitle.text = requestedString + groupNames!
                             
-                            let channeldb = messageDb.updateMessageMetaData(viewModel.messageKey, withMetadata:nsmutable)
+                            let channeldb = messageDb.updateMessageMetaData(viewModel.identifier, withMetadata:NSMutableDictionary(dictionary: nsmutable!))
                             
                         }else{
                             paymentTitle.text = requestedString + (nsmutable!["paymentHeader"] as? String)!
@@ -302,8 +302,9 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
                                     nsmutable!["paymentHeader"] = groupNames
                                     paymentTitle.text = groupNames
                                     
-                                    let channeldb = messageDb.updateMessageMetaData(viewModel.messageKey, withMetadata:nsmutable )
+                                    let channeldb = messageDb.updateMessageMetaData(viewModel.identifier, withMetadata:NSMutableDictionary(dictionary: nsmutable!) )
                                 }
+                                
                                 
                             }
                         }else{
@@ -332,12 +333,12 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
                         if(nsmutable!["paymentHeader"] == nil){
                             
                             
-                            let groupNames = channelService.string(fromChannelUserMetaData:viewModel.metaData , paymentMessageTitle: true)
+                            let groupNames = channelService.string(fromChannelUserMetaData:NSMutableDictionary(dictionary: nsmutable!), paymentMessageTitle: true)
                             
                             nsmutable!["paymentHeader"] = groupNames
                             paymentTitle.text = requestedString + groupNames!
                             
-                            let channeldb = messageDb.updateMessageMetaData(viewModel.messageKey, withMetadata:nsmutable )
+                            let channeldb = messageDb.updateMessageMetaData(viewModel.identifier, withMetadata:NSMutableDictionary(dictionary: nsmutable!)  )
                             
                         }else{
                             
@@ -422,15 +423,8 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
         let model  =  ALKPaymentModel();
         
         model.userId =  viewModel?.contactId
-        model.messageKey =   viewModel?.messageKey
+        model.messageKey =   viewModel?.identifier
         model.groupId =   viewModel?.channelKey
-        var nsmutable = NSMutableDictionary();
-        
-        nsmutable =   (viewModel?.metaData)!
-        
-        nsmutable["paymentStatus"] = "paymentAccepted"
-        
-        
         viewController.paymentModleData = model
         
         UIViewController.topViewController()?.present(viewController, animated: true, completion: {
@@ -459,42 +453,43 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
     
     func processPaymentReject(){
         
-        var nsmutable = NSMutableDictionary();
         
-        nsmutable =   (viewModel?.metaData)!
+        
+        var dictionaryMetadata = Dictionary<String, Any>();
+        dictionaryMetadata =  (viewModel?.metadata)!
         
         let messageService = ALMessageService();
         let messagedb = ALMessageDBService();
         
-        if( viewModel?.messageKey != nil){
+        if( viewModel?.identifier != nil){
             
-            let message = messagedb.getMessage("key", value:viewModel?.messageKey);
+            let message = messagedb.getMessage("key", value:viewModel?.identifier);
             
-            nsmutable["hiddenStatus"] = "false"
+            dictionaryMetadata["hiddenStatus"] = "false"
             
-            let paymentId =  nsmutable["paymentId"]
-            let  paymentMessage = nsmutable["paymentMessage"]
-            let  paymentSubject = nsmutable["paymentSubject"]
-            let  paymentStatus = nsmutable["paymentStatus"]
-            let   richMessageType = nsmutable["richMessageType"]
-            let   usersRequested = nsmutable["usersRequested"]
+            let paymentId =  dictionaryMetadata["paymentId"]
+            let  paymentMessage = dictionaryMetadata["paymentMessage"]
+            let  paymentSubject = dictionaryMetadata["paymentSubject"]
+            let  paymentStatus = dictionaryMetadata["paymentStatus"]
+            let   richMessageType = dictionaryMetadata["richMessageType"]
+            let   usersRequested = dictionaryMetadata["usersRequested"]
             
-            if(nsmutable["paymentHeader"]  != nil){
-                nsmutable .removeObject(forKey: "paymentHeader")
+            if(dictionaryMetadata["paymentHeader"]  != nil){
+                dictionaryMetadata.removeValue(forKey: "paymentHeader")
             }
             
             if(usersRequested == nil ){
-                nsmutable["paymentStatus"] = "paymentRejected"
+                dictionaryMetadata["paymentStatus"] = "paymentRejected"
             }else{
-                nsmutable[ALUserDefaultsHandler.getUserId()]  = "done"
+                dictionaryMetadata[ALUserDefaultsHandler.getUserId()]  = "done"
             }
             
             if(message?.channelKey != nil){
-                nsmutable["paymentReceiver"] = message?.to
+                dictionaryMetadata["paymentReceiver"] = message?.to
             }
             
             
-            messageService.updateMessageMetaData(viewModel?.messageKey, withMessageMetaData: nsmutable,withCompletionHandler:{
+            messageService.updateMessageMetaData(viewModel?.identifier, withMessageMetaData: dictionaryMetadata as! NSMutableDictionary,withCompletionHandler:{
                 apirespone, error in
                 
                 if((error == nil) ){
@@ -502,7 +497,7 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
                     let dbMessage = messagedb.getMessage("key", value:message?.key)
                     var nsmutableMeatdata = NSMutableDictionary();
                     nsmutableMeatdata =   (dbMessage?.metadata)!
-                    let   usersRequestedArray = nsmutable["usersRequested"]
+                    let   usersRequestedArray = nsmutableMeatdata["usersRequested"]
                     
                     
                     if(nsmutableMeatdata["paymentStatus"] != nil &&  nsmutableMeatdata["paymentStatus"] as! String == "paymentRequested" && usersRequestedArray != nil){
@@ -694,8 +689,8 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
                 var  viewController = firstVC as! ALPaymentUsersController
                 
                 
-                var nsmutableMeatdata = NSMutableDictionary();
-                nsmutableMeatdata =   (viewModel?.metaData)!
+                var nsmutableMeatdata = Dictionary<String, Any>();
+                nsmutableMeatdata =   (viewModel?.metadata)!
                 
                 let ns = nsmutableMeatdata["usersRequested"] as? String;
                 if(ns != nil){
