@@ -46,14 +46,11 @@ class ALKMyPaymentMessage: ALKChatBaseCell<ALKMessageViewModel> {
     }()
     
     
-    
-    
-    
     var paymentTitle: UILabel = {
         let lb = UILabel()
         lb.textAlignment = .center
         lb.textColor=UIColor.black
-        lb.font = Font.bold(size: 12.0).font()
+        lb.font = Font.bold(size: 13.0).font()
         return lb
     }()
     
@@ -181,7 +178,7 @@ class ALKMyPaymentMessage: ALKChatBaseCell<ALKMessageViewModel> {
             
             if(viewModel.isMyMessage){
                 
-
+                
                 if(paymentStatus != nil && "paymentRequested"  ==  paymentStatus as! String!){
                     
                     paymentMoney.text = amountString
@@ -422,7 +419,6 @@ class ALKMyPaymentMessage: ALKChatBaseCell<ALKMessageViewModel> {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(titleClick))
         paymentTitle.addGestureRecognizer(tapGesture)
         
-        
         bubbleView.addViewsForAutolayout(views: [paymentTitle,paymentMoney,paymentSubjctTitle,paymentSubjctText])
         bubbleView.bringSubview(toFront:paymentTitle)
         bubbleView.bringSubview(toFront:paymentMoney)
@@ -430,12 +426,11 @@ class ALKMyPaymentMessage: ALKChatBaseCell<ALKMessageViewModel> {
         bubbleView.bringSubview(toFront:paymentSubjctText)
         
         bubbleView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8).isActive = true
-        bubbleView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 0).isActive = true
+        bubbleView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10).isActive = true
         let width = UIScreen.main.bounds.width * 0.40
         bubbleView.widthAnchor.constraint(equalToConstant: width)
         bubbleView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant:100).isActive = true
         bubbleView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant:-10).isActive = true
-        
         
         paymentTitle.topAnchor.constraint(equalTo: bubbleView.topAnchor,constant:10).isActive = true
         paymentTitle.leadingAnchor.constraint(equalTo: bubbleView.leadingAnchor, constant: 40).isActive = true
@@ -449,7 +444,6 @@ class ALKMyPaymentMessage: ALKChatBaseCell<ALKMessageViewModel> {
         paymentMoney.bottomAnchor.constraint(equalTo: paymentTitle.bottomAnchor, constant: 30).isActive = true
         paymentMoney.heightAnchor.constraint(equalToConstant: 15).isActive = true
         paymentMoney.widthAnchor.constraint(equalTo: bubbleView.widthAnchor, multiplier: 0.4).isActive = true
-        
         
         paymentSubjctTitle.topAnchor.constraint(equalTo: paymentMoney.bottomAnchor, constant: 1).isActive = true
         paymentSubjctTitle.leadingAnchor.constraint(equalTo: bubbleView.leadingAnchor, constant: 70).isActive = true

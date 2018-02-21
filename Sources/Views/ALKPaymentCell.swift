@@ -51,7 +51,7 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
         let lb = UILabel()
         lb.textAlignment = .center
         lb.numberOfLines = 2
-        lb.font = Font.bold(size: 12.0).font()
+        lb.font = Font.bold(size: 13.0).font()
         
         lb.backgroundColor=UIColor.clear
         return lb
@@ -122,7 +122,7 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
     }
     
     class func bottomPadding() -> CGFloat {
-        return 16
+        return 32
     }
     
     override class func rowHeigh(viewModel: ALKMessageViewModel,width: CGFloat) -> CGFloat {
@@ -147,8 +147,8 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
     private var nameLabel: UILabel = {
         let label = UILabel()
         label.numberOfLines = 1
-        label.font = UIFont.boldSystemFont(ofSize: 12)
-        label.textColor = UIColor.lightGray
+        label.font = UIFont.systemFont(ofSize: 14)
+        label.textColor = UIColor.gray
         return label
     }()
     
@@ -583,24 +583,20 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
         bubbleView.bringSubview(toFront:paymentRejectButton)
         contentView.bringSubview(toFront:nameLabel)
         
-        nameLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: -6).isActive = true
-        nameLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 57).isActive = true
-        nameLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -57).isActive = true
-        nameLabel.bottomAnchor.constraint(equalTo: bubbleView.topAnchor, constant: -10).isActive = true
+        nameLabel.leadingAnchor.constraint(equalTo: bubbleView.leadingAnchor, constant: 10).isActive = true
+        nameLabel.trailingAnchor.constraint(equalTo: bubbleView.trailingAnchor, constant: -10).isActive = true
+        nameLabel.bottomAnchor.constraint(equalTo: bubbleView.topAnchor, constant: -2).isActive = true
         nameLabel.heightAnchor.constraint(equalToConstant: 16).isActive = true
         
         avatarImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 18).isActive = true
         avatarImageView.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: 0).isActive = true
-        
         avatarImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 9).isActive = true
-        
         avatarImageView.trailingAnchor.constraint(equalTo: paymentTitle.leadingAnchor, constant: -18).isActive = true
-        
         avatarImageView.heightAnchor.constraint(equalToConstant: 37).isActive = true
         avatarImageView.widthAnchor.constraint(equalTo: avatarImageView.heightAnchor).isActive = true
         
-        bubbleView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 15).isActive = true
-        bubbleView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -5).isActive = true
+        bubbleView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20).isActive = true
+        bubbleView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -15).isActive = true
         //bubbleView.rightAnchor.constraint(equalTo: contentView.rightAnchor).isActive = true
         let width = UIScreen.main.bounds.width * 0.40
         bubbleView.widthAnchor.constraint(equalToConstant: width)
@@ -614,7 +610,7 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
         timeLabel.heightAnchor.constraint(equalToConstant: 15).isActive = true
         timeLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: 17).isActive = true
         timeLabel.widthAnchor.constraint(equalToConstant: 70).isActive = true
-        timeLabel.topAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -15).isActive  = true
+        timeLabel.topAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -23).isActive  = true
         
         
         paymentTitle.topAnchor.constraint(equalTo: bubbleView.topAnchor,constant:10).isActive = true
