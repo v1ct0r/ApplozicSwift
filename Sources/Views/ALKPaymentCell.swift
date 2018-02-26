@@ -107,7 +107,6 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
     
     
     fileprivate let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.gray)
-    
     var uploadTapped:((Bool) ->())?
     
     var accpetButtonTapped:((Bool) ->())?
@@ -152,9 +151,6 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
         return label
     }()
     
-    
-    
-    
     var url: URL? = nil
     enum state {
         case upload(filePath: String)
@@ -166,23 +162,16 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
     }
     
     override func update(viewModel: ALKMessageViewModel) {
-        
         self.viewModel = viewModel
         activityIndicator.color = .black
-        
         let placeHolder = UIImage(named: "placeholder", in: Bundle.applozic, compatibleWith: nil)
-        
         if let url = viewModel.avatarURL {
-            
             let resource = ImageResource(downloadURL: url, cacheKey: url.absoluteString)
             self.avatarImageView.kf.setImage(with: resource, placeholder: placeHolder, options: nil, progressBlock: nil, completionHandler: nil)
         } else {
-            
             self.avatarImageView.image = placeHolder
         }
-        
         nameLabel.text = viewModel.displayName
-        
         var nsmutable =  viewModel.metadata
         
         if((nsmutable) != nil){
@@ -220,7 +209,6 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
                         let requestedString = viewModel.displayName! + " requested from "
                         
                         if(nsmutable!["paymentHeader"] == nil){
-                            
                             let groupNames = channelService.string(fromChannelUserMetaData:NSMutableDictionary(dictionary: nsmutable!), paymentMessageTitle: true)
                             
                             nsmutable!["paymentHeader"] = groupNames
@@ -238,38 +226,26 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
                             
                             if (nsmutable![ALUserDefaultsHandler.getUserId()] != nil ){
                                 handlePaymentActionbuttonVisibality(isHidden: true)
-                                
                             }else{
                                 let usersRequested = nsmutable!["usersRequested"] as? String;
-                                
-                                
                                 let replacedString =   usersRequested?.replacingOccurrences(of: "[", with: "").replacingOccurrences(of: "]",with: "").replacingOccurrences(of: "\"",with: "")
                                 
-                                
                                 let arary : [String] = replacedString!.components(separatedBy: ",")
-                                
                                 if arary.contains(ALUserDefaultsHandler.getUserId()){
                                     handlePaymentActionbuttonVisibality(isHidden: false)
                                 }else{
                                     handlePaymentActionbuttonVisibality(isHidden: true)
                                 }
                             }
-                            
-                            
                         }else if (nsmutable![ALUserDefaultsHandler.getUserId()] != nil ){
                             handlePaymentActionbuttonVisibality(isHidden: true)
                         }else{
                             handlePaymentActionbuttonVisibality(isHidden: true)
                         }
-                        
-                        
-                        
                     }else if(viewModel.contactId != nil){
                         paymentTitle.text = viewModel.displayName! + " requested from You "
                         handlePaymentActionbuttonVisibality(isHidden: false)
-                        
                     }
-                    
                     paymentMoney.text = amountString
                 }else if("paymentRejected" == paymentStatus as! String!){
                     
@@ -283,9 +259,7 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
                         let  channelService = ALChannelDBService();
                         let  messageDb = ALMessageDBService();
                         if(nsmutable!["paymentHeader"] == nil){
-                            
                             let paymentReceiver =   nsmutable!["paymentReceiver"] as? String
-                            
                             if(paymentReceiver != nil){
                                 let contactDataBase = ALContactDBService()
                                 
@@ -304,15 +278,11 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
                                     
                                     let channeldb = messageDb.updateMessageMetaData(viewModel.identifier, withMetadata:NSMutableDictionary(dictionary: nsmutable!) )
                                 }
-                                
-                                
                             }
                         }else{
                             
                             paymentTitle.text =  (nsmutable!["paymentHeader"] as? String)!
                         }
-                        
-                        
                     }else{
                         paymentTitle.text = "You rejected"
                     }
@@ -321,18 +291,42 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
                 }else if("paymentAccepted" == paymentStatus as! String!){
                     paymentMoney.text = amountString
                     handlePaymentActionbuttonVisibality(isHidden: true)
-                    paymentTitle.text = viewModel.displayName! + " paid you"
+                    var paymentReceiver =   nsmutable!["paymentReceiver"] as? String
+                    if(viewModel.channelKey != nil){
+                        if(paymentReceiver != nil){
+                            let  channelService = ALChannelDBService();
+                            let  messageDb = ALMessageDBService();
+                            if(nsmutable!["paymentHeader"] == nil){
+                                let contactDataBase = ALContactDBService()
+                                let contact =  contactDataBase.loadContact(byKey: "userId", value: paymentReceiver);
+                                var displayName = "";
+                                if(paymentReceiver  ==  ALUserDefaultsHandler.getUserId()){
+                                    displayName = "You";
+                                }else{
+                                    displayName = (contact?.getDisplayName())!
+                                }
+                                if(contact != nil){
+                                    let groupNames = viewModel.contactId! + " paid to " + displayName
+                                    nsmutable!["paymentHeader"] = groupNames
+                                    paymentTitle.text = groupNames
+                                    let channeldb = messageDb.updateMessageMetaData(viewModel.identifier, withMetadata:NSMutableDictionary(dictionary: nsmutable! ))
+                                }
+                            }else{
+                                paymentTitle.text =  (nsmutable!["paymentHeader"] as? String)!
+                            }
+                        }else{
+                            paymentTitle.text = viewModel.displayName! + " paid you"
+                        }
+                    }else{
+                        paymentTitle.text = viewModel.displayName! + " paid you"
+                    }
                 }else{
                     let requestedString = viewModel.displayName! + " paid "
-                    
-                    
                     if(viewModel.channelKey != nil){
                         let  channelService = ALChannelDBService();
                         let  messageDb = ALMessageDBService();
                         
                         if(nsmutable!["paymentHeader"] == nil){
-                            
-                            
                             let groupNames = channelService.string(fromChannelUserMetaData:NSMutableDictionary(dictionary: nsmutable!), paymentMessageTitle: true)
                             
                             nsmutable!["paymentHeader"] = groupNames
@@ -341,28 +335,21 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
                             let channeldb = messageDb.updateMessageMetaData(viewModel.identifier, withMetadata:NSMutableDictionary(dictionary: nsmutable!)  )
                             
                         }else{
-                            
                             paymentTitle.text =   requestedString + (nsmutable!["paymentHeader"] as? String)!
                         }
-                        
                         handlePaymentActionbuttonVisibality(isHidden: true)
                         
                     }else if(viewModel.contactId != nil){
                         paymentTitle.text = viewModel.displayName! + " paid you"
                         handlePaymentActionbuttonVisibality(isHidden: false)
-                        
                     }
-                    
                     paymentMoney.text = amountString
-                    
                 }
             }
             
             paymentSubjctTitle.text = "Asunto:"
             paymentSubjctText.text = paymentSubject as? String
         }
-        
-        
         timeLabel.text   = viewModel.time
         
     }
@@ -373,8 +360,6 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
         paymentAceptButton.isHidden = isHidden;
         
     }
-    
-    
     
     func actionTapped(button: UIButton) {
         let storyboard = UIStoryboard.name(storyboard: UIStoryboard.Storyboard.mediaViewer, bundle: Bundle.applozic)
@@ -397,28 +382,21 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
     }
     
     func actionAccept(button: UIButton) {
-        
         if(viewModel?.channelKey != nil){
             let channelService = ALChannelDBService()
             if(channelService.isChannelLeft(viewModel?.channelKey)){
                 print("User is not in group !")
-                
             }else{
                 processPaymentAccept()
-                
             }
             
         }else{
             processPaymentAccept()
             
         }
-        
     }
     
-    
     func processPaymentAccept(){
-        
-        
         let viewController:ALKAmountPayController   = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "ALKAmountPayController") as UIViewController as! ALKAmountPayController
         let model  =  ALKPaymentModel();
         
@@ -432,8 +410,9 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
         
     }
     
-    
     func actionReject(button: UIButton) {
+        paymentRejectButton.isHidden = true
+        paymentAceptButton.isHidden = true
         
         if(viewModel?.channelKey != nil){
             let channelService = ALChannelDBService()
@@ -452,21 +431,14 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
     
     
     func processPaymentReject(){
-        
-        
-        
         var dictionaryMetadata = Dictionary<String, Any>();
         dictionaryMetadata =  (viewModel?.metadata)!
-        
         let messageService = ALMessageService();
         let messagedb = ALMessageDBService();
         
         if( viewModel?.identifier != nil){
-            
             let message = messagedb.getMessage("key", value:viewModel?.identifier);
-            
             dictionaryMetadata["hiddenStatus"] = "false"
-            
             let paymentId =  dictionaryMetadata["paymentId"]
             let  paymentMessage = dictionaryMetadata["paymentMessage"]
             let  paymentSubject = dictionaryMetadata["paymentSubject"]
@@ -487,30 +459,23 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
             if(message?.channelKey != nil){
                 dictionaryMetadata["paymentReceiver"] = message?.to
             }
-            
-            
-            messageService.updateMessageMetaData(viewModel?.identifier, withMessageMetaData: dictionaryMetadata as! NSMutableDictionary,withCompletionHandler:{
+            messageService.updateMessageMetaData(viewModel?.identifier, withMessageMetaData: NSMutableDictionary(dictionary: dictionaryMetadata),withCompletionHandler:{
                 apirespone, error in
-                
                 if((error == nil) ){
                     
                     let dbMessage = messagedb.getMessage("key", value:message?.key)
                     var nsmutableMeatdata = NSMutableDictionary();
                     nsmutableMeatdata =   (dbMessage?.metadata)!
                     let   usersRequestedArray = nsmutableMeatdata["usersRequested"]
-                    
-                    
                     if(nsmutableMeatdata["paymentStatus"] != nil &&  nsmutableMeatdata["paymentStatus"] as! String == "paymentRequested" && usersRequestedArray != nil){
                         
                         let message =  ALMessage();
-                        
                         if(dbMessage?.groupId != nil){
                             message.groupId = dbMessage?.groupId
                         }else if(dbMessage?.contactId != nil){
                             message.contactIds = dbMessage?.contactId
                             message.to = dbMessage?.contactId
                         }
-                        
                         message.key =  UUID().uuidString
                         let date = Date().timeIntervalSince1970*1000
                         message.createdAtTime = NSNumber(value: date)
@@ -529,12 +494,9 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
                         nsmutableMeatdata["paymentStatus"] = "paymentRejected"
                         nsmutableMeatdata["richMessageType"] = "paymentMessage"
                         nsmutableMeatdata["paymentReceiver"] = dbMessage?.to;
-                        
                         message.metadata = nsmutableMeatdata
-                        
                         ALMessageService.sendMessages(message, withCompletion: {
                             message, error in
-                            
                             if(message != nil){
                             }
                             self.delegate?.messageUpdated()
@@ -560,18 +522,15 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
         
         paymentRejectButton.isHidden = true;
         paymentAceptButton.isHidden = true;
-        
         actionButton.addTarget(self, action: #selector(actionTapped), for: .touchUpInside)
         paymentAceptButton.isUserInteractionEnabled = true
         paymentAceptButton.addTarget(self, action: #selector(actionAccept), for: .touchUpInside)
-        
         paymentTitle.isUserInteractionEnabled = true
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(titleClick))
         paymentTitle.addGestureRecognizer(tapGesture)
         
         paymentRejectButton.addTarget(self, action: #selector(actionReject), for: .touchUpInside)
         paymentRejectButton.isUserInteractionEnabled = true
-        
         
         contentView.addViewsForAutolayout(views: [avatarImageView,nameLabel,bubbleView,timeLabel])
         bubbleView.addViewsForAutolayout(views: [paymentTitle,paymentMoney,paymentSubjctTitle,paymentSubjctText,paymentAceptButton, paymentRejectButton])
@@ -602,7 +561,6 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
         bubbleView.widthAnchor.constraint(equalToConstant: width)
         bubbleView.leadingAnchor.constraint(equalTo: avatarImageView.trailingAnchor, constant:10).isActive = true
         
-        
         let image = UIImage.init(named: "chat_bubble_grey", in: Bundle.applozic, compatibleWith: nil)
         bubbleView.image = image?.imageFlippedForRightToLeftLayoutDirection()
         bubbleView.tintColor = UIColor(netHex: 0xF1F0F0)
@@ -611,8 +569,6 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
         timeLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: 17).isActive = true
         timeLabel.widthAnchor.constraint(equalToConstant: 70).isActive = true
         timeLabel.topAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -23).isActive  = true
-        
-        
         paymentTitle.topAnchor.constraint(equalTo: bubbleView.topAnchor,constant:10).isActive = true
         paymentTitle.leadingAnchor.constraint(equalTo: bubbleView.leadingAnchor, constant: 50).isActive = true
         paymentTitle.trailingAnchor.constraint(equalTo: bubbleView.trailingAnchor, constant: -50).isActive = true
@@ -625,8 +581,6 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
         paymentMoney.bottomAnchor.constraint(equalTo: paymentTitle.bottomAnchor, constant: 30).isActive = true
         paymentMoney.heightAnchor.constraint(equalToConstant: 15).isActive = true
         paymentMoney.widthAnchor.constraint(equalTo: bubbleView.widthAnchor, multiplier: 0.4).isActive = true
-        
-        
         paymentSubjctTitle.topAnchor.constraint(equalTo: paymentMoney.bottomAnchor, constant: 1).isActive = true
         paymentSubjctTitle.leadingAnchor.constraint(equalTo: bubbleView.leadingAnchor, constant: 50).isActive = true
         paymentSubjctTitle.heightAnchor.constraint(equalToConstant: 20).isActive = true
@@ -638,13 +592,9 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
         paymentSubjctText.widthAnchor.constraint(greaterThanOrEqualToConstant: 80)
         
         paymentAceptButton.topAnchor.constraint(equalTo: paymentSubjctTitle.bottomAnchor, constant: 1).isActive = true
-        
         paymentAceptButton.leadingAnchor.constraint(equalTo: bubbleView.leadingAnchor, constant: bubbleView.frame.width*0.2).isActive = true
-        
         paymentAceptButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
         paymentAceptButton.widthAnchor.constraint(equalTo: bubbleView.widthAnchor, multiplier: 0.4).isActive = true
-        
-        
         paymentRejectButton.topAnchor.constraint(equalTo: paymentSubjctText.bottomAnchor, constant: 1).isActive = true
         paymentRejectButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
         paymentRejectButton.widthAnchor.constraint(equalTo: bubbleView.widthAnchor, multiplier: 0.4).isActive = true
@@ -691,14 +641,8 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
                 let ns = nsmutableMeatdata["usersRequested"] as? String;
                 if(ns != nil){
                     let string1 =   ns?.replacingOccurrences(of: "[", with: "").replacingOccurrences(of: "]",with: "").replacingOccurrences(of: "\"",with: "")
-                    
-                    
                     let arary : [String] = string1!.components(separatedBy: ",")
-                    
-                    
                     viewController.groupMembers = arary as! [String]
-                    
-                    
                     UIViewController.topViewController()?.present(vc, animated: true, completion: {
                         
                     })
