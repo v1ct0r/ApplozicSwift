@@ -7,7 +7,7 @@
 */
 
 Back = "Back";
-ChatHere = "Type something...";
+ChatHere = "Type your message…";
 DeleteSingleConversation = "Are you sure you want to remove the chat with";
 DeleteGroupConversation = "Are you sure you want to remove the group";
 ButtonCancel = "Cancel";

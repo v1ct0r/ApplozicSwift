@@ -77,7 +77,7 @@ open class ALKConversationViewController: ALKBaseViewController {
 
     fileprivate let titleButton : UIButton = {
         let titleButton = UIButton(frame: CGRect(x: 0, y: 0, width: 200, height: 200))
-        titleButton.setTitleColor(UIColor.black, for: .normal)
+        titleButton.setTitleColor(UIColor.white, for: .normal)
         titleButton.titleLabel?.font  = UIFont.boldSystemFont(ofSize: 17.0)
         return titleButton
     }()

@@ -55,7 +55,7 @@ open class ALKChatBar: UIView {
     open let frameView: UIImageView = {
         
         let view = UIImageView()
-        view.backgroundColor = .clear
+        view.backgroundColor = UIColor(red: 242.0/255.0, green: 240.0/255.0, blue: 240.0/255.0, alpha: 1.0)
         view.contentMode = .scaleToFill
         view.isUserInteractionEnabled = false
         return view
@@ -63,7 +63,7 @@ open class ALKChatBar: UIView {
     
     open let grayView: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor.white
+        view.backgroundColor =  UIColor(red: 242.0/255.0, green: 240.0/255.0, blue: 240.0/255.0, alpha: 1.0)
         view.isUserInteractionEnabled = false
         return view
     }()
@@ -72,12 +72,12 @@ open class ALKChatBar: UIView {
         
         let view = UITextView()
         view.setFont(font: .normal(size: 14))
-        view.setTextColor(color: .gray9B)
+        view.textColor = UIColor(red: 143.0/255.0, green: 139.0/255.0, blue: 139.0/255.0, alpha: 1.0)
         view.text = NSLocalizedString("ChatHere", value: SystemMessage.Information.ChatHere, comment: "")
         view.isUserInteractionEnabled = false
         view.isScrollEnabled = false
         view.scrollsToTop = false
-        view.setBackgroundColor(color: .none)
+        view.backgroundColor = UIColor(red: 242.0/255.0, green: 240.0/255.0, blue: 240.0/255.0, alpha: 1.0)
         return view
     }()
     
@@ -87,13 +87,14 @@ open class ALKChatBar: UIView {
         var image = UIImage(named: "mic", in: Bundle.applozic, compatibleWith: nil)
         image = image?.imageFlippedForRightToLeftLayoutDirection()
         bt.setImage(image, for: .normal)
+        bt.isHidden = true
         return bt
     }()
     
     open let photoButton: UIButton = {
         
         let bt = UIButton(type: .custom)
-        var image = UIImage(named: "photo", in: Bundle.applozic, compatibleWith: nil)
+        var image = UIImage(named: "camera", in: Bundle.applozic, compatibleWith: nil)
         image = image?.imageFlippedForRightToLeftLayoutDirection()
         bt.setImage(image, for: .normal)
         return bt
@@ -101,7 +102,7 @@ open class ALKChatBar: UIView {
 
     open let galleryButton: UIButton = {
         let button = UIButton(type: .custom)
-        var image = UIImage(named: "gallery", in: Bundle.applozic, compatibleWith: nil)
+        var image = UIImage(named: "attachment", in: Bundle.applozic, compatibleWith: nil)
         image = image?.imageFlippedForRightToLeftLayoutDirection()
         button.setImage(image, for: .normal)
         return button
@@ -119,7 +120,7 @@ open class ALKChatBar: UIView {
     open let locationButton: UIButton = {
 
         let bt = UIButton(type: .custom)
-        var image = UIImage(named: "location_new", in: Bundle.applozic, compatibleWith: nil)
+        var image = UIImage(named: "kmlocaitonIcon", in: Bundle.applozic, compatibleWith: nil)
         image = image?.imageFlippedForRightToLeftLayoutDirection()
         bt.setImage(image, for: .normal)
         return bt
@@ -134,6 +135,7 @@ open class ALKChatBar: UIView {
 
     open let lineImageView: UIImageView = {
         let imageView = UIImageView(image: UIImage(named: "line", in: Bundle.applozic, compatibleWith: nil))
+        imageView.tintColor = UIColor(red: 242.0/255.0, green: 240.0/255.0, blue: 240.0/255.0, alpha: 1.0)
         return imageView
     }()
 
@@ -150,7 +152,7 @@ open class ALKChatBar: UIView {
     open var lineView: UIView = {
         let view = UIView()
         let layer = view.layer
-        view.backgroundColor = UIColor(red: 217.0/255.0, green: 217.0/255.0, blue: 217.0/255.0, alpha: 1.0)
+        view.backgroundColor = UIColor(red: 92.0/255.0, green: 90.0/255.0, blue: 167.0/255.0, alpha: 1.0)
         return view
     }()
 
@@ -313,7 +315,7 @@ open class ALKChatBar: UIView {
     
     private func setupConstraints() {
         plusButton.isHidden = true
-        addViewsForAutolayout(views: [bottomGrayView, micButton, plusButton, photoButton, grayView,  textView, sendButton, lineImageView, videoButton, galleryButton,locationButton, chatButton, lineView, frameView, placeHolder,soundRec])
+        addViewsForAutolayout(views: [bottomGrayView,  plusButton, photoButton, grayView,  textView, sendButton, lineImageView, galleryButton,locationButton, chatButton, lineView, frameView, placeHolder,soundRec])
 
         lineView.topAnchor.constraint(equalTo: topAnchor).isActive = true
         lineView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
@@ -329,30 +331,29 @@ open class ALKChatBar: UIView {
         photoButton.widthAnchor.constraint(equalToConstant: 30).isActive = true
         photoButton.heightAnchor.constraint(equalToConstant: 25).isActive = true
         photoButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -10).isActive = true
-        
-        micButton.leadingAnchor.constraint(equalTo: galleryButton.trailingAnchor, constant: 30).isActive = true
-        micButton.heightAnchor.constraint(equalToConstant: 25).isActive = true
-        micButton.widthAnchor.constraint(equalToConstant: 20).isActive = true
-        micButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -10).isActive = true
-        
-        
+//
+//        micButton.leadingAnchor.constraint(equalTo: galleryButton.trailingAnchor, constant: 30).isActive = true
+//        micButton.heightAnchor.constraint(equalToConstant: 25).isActive = true
+//        micButton.widthAnchor.constraint(equalToConstant: 20).isActive = true
+//        micButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -10).isActive = true
+//
         plusButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 0).isActive = true
         plusButton.heightAnchor.constraint(equalToConstant: 44).isActive = true
         plusButton.widthAnchor.constraint(equalToConstant: 38).isActive = true
         plusButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 0).isActive = true
 
-        videoButton.leadingAnchor.constraint(equalTo: micButton.trailingAnchor, constant: 30).isActive = true
-        videoButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
-        videoButton.widthAnchor.constraint(equalToConstant: 34).isActive = true
-//        videoButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -5).isActive = true
-        videoButton.centerYAnchor.constraint(equalTo: bottomGrayView.centerYAnchor, constant: 0).isActive = true
+//        videoButton.leadingAnchor.constraint(equalTo: photoButton.trailingAnchor, constant: 30).isActive = true
+//        videoButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
+//        videoButton.widthAnchor.constraint(equalToConstant: 34).isActive = true
+////        videoButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -5).isActive = true
+//        videoButton.centerYAnchor.constraint(equalTo: bottomGrayView.centerYAnchor, constant: 0).isActive = true
 
         galleryButton.leadingAnchor.constraint(equalTo: photoButton.trailingAnchor, constant: 30).isActive = true
         galleryButton.heightAnchor.constraint(equalToConstant: 25).isActive = true
         galleryButton.widthAnchor.constraint(equalToConstant: 25).isActive = true
         galleryButton.centerYAnchor.constraint(equalTo: bottomGrayView.centerYAnchor, constant: 0).isActive = true
 
-        locationButton.leadingAnchor.constraint(equalTo: videoButton.trailingAnchor, constant: 30).isActive = true
+        locationButton.leadingAnchor.constraint(equalTo: galleryButton.trailingAnchor, constant: 30).isActive = true
         locationButton.widthAnchor.constraint(equalToConstant: 25).isActive = true
         locationButton.heightAnchor.constraint(equalToConstant: 25).isActive = true
         locationButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -10).isActive = true
@@ -364,7 +365,7 @@ open class ALKChatBar: UIView {
 
         sendButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10).isActive = true
         sendButton.widthAnchor.constraint(equalToConstant: 30).isActive = true
-        sendButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        sendButton.heightAnchor.constraint(equalToConstant: 24).isActive = true
         sendButton.bottomAnchor.constraint(equalTo: textView.bottomAnchor, constant: -10).isActive = true
         
         textView.topAnchor.constraint(equalTo: topAnchor, constant: 0).isActive = true
@@ -405,7 +406,13 @@ open class ALKChatBar: UIView {
         bottomGrayView.rightAnchor.constraint(equalTo: rightAnchor, constant: 0).isActive = true
     
         bringSubview(toFront: frameView)
-        
+        bringSubview(toFront: sendButton)
+        bringSubview(toFront: lineView)
+        bringSubview(toFront: textView)
+        bringSubview(toFront: placeHolder)
+
+
+
     }
     
     public required init?(coder aDecoder: NSCoder) {
@@ -426,10 +433,10 @@ open class ALKChatBar: UIView {
         bottomGrayView.constraint(withIdentifier: ConstraintIdentifier.mediaBackgroudViewHeight.rawValue)?.constant = 45
         galleryButton.isHidden = false
         locationButton.isHidden = false
-        micButton.isHidden = false
+        micButton.isHidden = true
         photoButton.isHidden = false
         chatButton.isHidden = false
-        videoButton.isHidden = false
+        videoButton.isHidden = true
     }
     
 }

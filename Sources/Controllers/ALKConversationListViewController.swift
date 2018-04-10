@@ -193,9 +193,13 @@ open class ALKConversationListViewController: ALKBaseViewController {
         let rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "fill_214", in: Bundle.applozic, compatibleWith: nil), style: .plain, target: self, action: #selector(compose))
         navigationItem.rightBarButtonItem = rightBarButtonItem
 
-        let back = NSLocalizedString("Back", value: "Back", comment: "")
-        let leftBarButtonItem = UIBarButtonItem(title: back, style: .plain, target: self, action: #selector(customBackAction))
-        navigationItem.leftBarButtonItem = leftBarButtonItem
+//        let back = NSLocalizedString("Back", value: "Back", comment: "")
+//        let leftBarButtonItem = UIBarButtonItem(title: back, style: .plain, target: self, action: #selector(customBackAction))
+//        navigationItem.leftBarButtonItem = leftBarButtonItem
+        
+       
+        
+        
 
         #if DEVELOPMENT
             let indicator = UIActivityIndicatorView(activityIndicatorStyle: .white)

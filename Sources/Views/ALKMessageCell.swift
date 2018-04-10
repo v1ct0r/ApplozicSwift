@@ -150,8 +150,9 @@ final class ALKFriendMessageCell: ALKMessageCell {
         timeLabel.bottomAnchor.constraint(equalTo: bubbleView.bottomAnchor, constant: 2).isActive = true
         let image = UIImage.init(named: "chat_bubble_grey", in: Bundle.applozic, compatibleWith: nil)
         bubbleView.image = image?.imageFlippedForRightToLeftLayoutDirection()
-        bubbleView.tintColor = UIColor(netHex: 0xF1F0F0)
-    }
+        bubbleView.tintColor =   UIColor(red: 230.0 / 255.0, green: 229.0 / 255.0, blue: 236.0 / 255.0, alpha: 1.0)
+
+   }
 
     override func setupStyle() {
         super.setupStyle()
@@ -218,12 +219,19 @@ final class ALKFriendMessageCell: ALKMessageCell {
     // MARK: - ChatMenuCell
     override func menuWillShow(_ sender: Any) {
         super.menuWillShow(sender)
-        self.bubbleView.image = UIImage.init(named: "chat_bubble_grey_hover", in: Bundle.applozic, compatibleWith: nil)
+        self.bubbleView.image = UIImage.init(named: "chat_bubble_grey", in: Bundle.applozic, compatibleWith: nil)
+        let image = UIImage.init(named: "chat_bubble_grey", in: Bundle.applozic, compatibleWith: nil)
+        bubbleView.image = image?.imageFlippedForRightToLeftLayoutDirection()
+        bubbleView.tintColor =   UIColor(red: 230.0 / 255.0, green: 229.0 / 255.0, blue: 236.0 / 255.0, alpha: 1.0)
+
     }
 
     override func menuWillHide(_ sender: Any) {
         super.menuWillHide(sender)
         self.bubbleView.image = UIImage.init(named: "chat_bubble_grey", in: Bundle.applozic, compatibleWith: nil)
+        let image = UIImage.init(named: "chat_bubble_grey", in: Bundle.applozic, compatibleWith: nil)
+        bubbleView.image = image?.imageFlippedForRightToLeftLayoutDirection()
+        bubbleView.tintColor =   UIColor(red: 230.0 / 255.0, green: 229.0 / 255.0, blue: 236.0 / 255.0, alpha: 1.0)
     }
 
     override class func rowHeigh(viewModel: ALKMessageViewModel,width: CGFloat) -> CGFloat {
@@ -354,6 +362,11 @@ final class ALKMyMessageCell: ALKMessageCell {
 
         timeLabel.trailingAnchor.constraint(equalTo: stateView.leadingAnchor, constant: -2.0).isActive = true
         timeLabel.bottomAnchor.constraint(equalTo: bubbleView.bottomAnchor, constant: 2).isActive = true
+        
+        let image = UIImage.init(named: "chat_bubble_red", in: Bundle.applozic, compatibleWith: nil)
+        bubbleView.image = image?.imageFlippedForRightToLeftLayoutDirection()
+        bubbleView.tintColor =   UIColor(red: 92.0 / 255.0, green: 90.0 / 255.0, blue:167.0 / 255.0, alpha: 1.0)
+        
     }
 
     override func update(viewModel: ALKMessageViewModel) {
@@ -376,13 +389,12 @@ final class ALKMyMessageCell: ALKMessageCell {
         }
 
         if viewModel.isAllRead {
-            stateView.image = UIImage(named: "read_state_3", in: Bundle.applozic, compatibleWith: nil)
-            stateView.tintColor = UIColor(netHex: 0x0578FF)
+            stateView.image = UIImage(named: "kmreadIcon", in: Bundle.applozic, compatibleWith: nil)
         } else if viewModel.isAllReceived {
-            stateView.image = UIImage(named: "read_state_2", in: Bundle.applozic, compatibleWith: nil)
+            stateView.image = UIImage(named: "kmdeliveredIcon", in: Bundle.applozic, compatibleWith: nil)
             stateView.tintColor = nil
         } else if viewModel.isSent {
-            stateView.image = UIImage(named: "read_state_1", in: Bundle.applozic, compatibleWith: nil)
+            stateView.image = UIImage(named: "kmsenticon", in: Bundle.applozic, compatibleWith: nil)
             stateView.tintColor = nil
         } else {
             stateView.image = UIImage(named: "seen_state_0", in: Bundle.applozic, compatibleWith: nil)
@@ -431,6 +443,7 @@ class ALKMessageCell: ALKChatBaseCell<ALKMessageViewModel>, ALKCopyMenuItemProto
 
     fileprivate lazy var messageView: ALHyperLabel = {
         let label = ALHyperLabel.init(frame: .zero)
+        label.textColor = UIColor(red: 255.0 / 255.0, green: 255.0 / 255.0, blue:255.0 / 255.0, alpha: 1.0)
         label.isUserInteractionEnabled = true
         label.numberOfLines = 0
         return label
@@ -541,10 +554,7 @@ class ALKMessageCell: ALKChatBaseCell<ALKMessageViewModel>, ALKCopyMenuItemProto
 
     override func setupStyle() {
         super.setupStyle()
-
         timeLabel.setStyle(style: ALKMessageStyle.time)
-        messageView.setStyle(style: ALKMessageStyle.message)
-
     }
 
     class func leftPadding() -> CGFloat {

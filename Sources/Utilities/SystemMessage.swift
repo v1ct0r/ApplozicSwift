@@ -35,7 +35,7 @@ struct SystemMessage {
         static let FriendAdded = "Friend Added"
         static let FriendRemoved = "Friend Removed"
         static let AppName = ""
-        static let ChatHere = "Type something..."
+        static let ChatHere = "Type your message…"
     }
     
     struct Update {

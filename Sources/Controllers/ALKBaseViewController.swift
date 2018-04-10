@@ -18,8 +18,14 @@ open class ALKBaseViewController: UIViewController {
     
     override open func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.navigationController?.navigationBar.barTintColor = UIColor.navigationOceanBlue()
-        self.navigationController?.navigationBar.tintColor = UIColor.navigationTextOceanBlue()
+        self.navigationController?.navigationBar.barTintColor =
+            UIColor(red: 92.0 / 255.0, green: 90.0 / 255.0, blue: 167.0 / 255.0, alpha: 1.0)
+        
+        let textAttributes = [NSAttributedStringKey.foregroundColor:UIColor.white]
+        navigationController?.navigationBar.titleTextAttributes = textAttributes
+
+        self.navigationController?.navigationBar.tintColor =    UIColor(red: 255.0 / 255.0, green:255.0 / 255.0, blue: 255.0 / 255.0, alpha: 1.0)
+
         self.navigationController?.navigationBar.isTranslucent = false
         if self.navigationController?.viewControllers.first != self {
             var backImage = UIImage.init(named: "icon_back", in: Bundle.applozic, compatibleWith: nil)
