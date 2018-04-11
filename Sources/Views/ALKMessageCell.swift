@@ -124,18 +124,19 @@ final class ALKFriendMessageCell: ALKMessageCell {
             equalTo: replyMessageLabel.bottomAnchor,
             constant: 0).isActive = true
 
-        messageView.topAnchor.constraint(equalTo: replyView.bottomAnchor, constant: 0).isActive = true
+        messageView.topAnchor.constraint(equalTo: replyView.bottomAnchor, constant: 5).isActive = true
         messageView.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor, constant: -57).isActive = true
 
         messageView.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: -1 * ALKFriendMessageCell.bottomPadding()).isActive = true
 
-        timeLabel.leadingAnchor.constraint(equalTo: bubbleView.trailingAnchor, constant: 10).isActive = true
+        timeLabel.leadingAnchor.constraint(equalTo: messageView.trailingAnchor, constant: -35).isActive = true
 
         bubbleView.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 0).isActive = true
-        bubbleView.bottomAnchor.constraint(equalTo: messageView.bottomAnchor, constant: 4).isActive = true
+        bubbleView.bottomAnchor.constraint(equalTo: messageView.bottomAnchor, constant: 16).isActive = true
 
         bubbleView.leadingAnchor.constraint(equalTo: messageView.leadingAnchor, constant: -13).isActive = true
         bubbleView.trailingAnchor.constraint(equalTo: messageView.trailingAnchor, constant: 5).isActive = true
+        bubbleView.widthAnchor.constraint(greaterThanOrEqualToConstant: 60).isActive = true
 
 //        bubbleView.trailingAnchor.constraint(equalTo: replyNameLabel.trailingAnchor, constant: 10).isActive = true
 //        bubbleView.trailingAnchor.constraint(equalTo: replyMessageLabel.trailingAnchor, constant: 10).isActive = true
@@ -147,7 +148,8 @@ final class ALKFriendMessageCell: ALKMessageCell {
 
         replyView.trailingAnchor.constraint(equalTo: bubbleView.trailingAnchor, constant: -5).isActive = true
 
-        timeLabel.bottomAnchor.constraint(equalTo: bubbleView.bottomAnchor, constant: 2).isActive = true
+        timeLabel.bottomAnchor.constraint(equalTo: messageView.bottomAnchor, constant: 13).isActive = true
+        
         let image = UIImage.init(named: "chat_bubble_grey", in: Bundle.applozic, compatibleWith: nil)
         bubbleView.image = image?.imageFlippedForRightToLeftLayoutDirection()
         bubbleView.tintColor =   UIColor(red: 230.0 / 255.0, green: 229.0 / 255.0, blue: 236.0 / 255.0, alpha: 1.0)
@@ -158,6 +160,8 @@ final class ALKFriendMessageCell: ALKMessageCell {
         super.setupStyle()
 
         nameLabel.setStyle(style: ALKMessageStyle.displayName)
+        messageView.textColor = UIColor(red: 100.0 / 255.0, green: 98.0 / 255.0, blue:98.0 / 255.0, alpha: 1.0)
+
     }
 
     override func update(viewModel: ALKMessageViewModel) {
@@ -338,14 +342,16 @@ final class ALKMyMessageCell: ALKMessageCell {
         messageView.topAnchor.constraint(equalTo: replyView.bottomAnchor, constant: ALKMessageCell.topPadding()).isActive = true
         messageView.leadingAnchor.constraint(greaterThanOrEqualTo: contentView.leadingAnchor, constant: ALKMessageCell.rightPadding()+30).isActive = true
         messageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -1*ALKMessageCell.leftPadding()).isActive = true
-        messageView.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: -1 * ALKMyMessageCell.bottomPadding()).isActive = true
-
+        messageView.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: 1 * ALKMyMessageCell.bottomPadding()).isActive = true
+     //   messageView.widthAnchor.constraint(greaterThanOrEqualToConstant: 60).isActive = true
+        
         bubbleView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0).isActive = true
-        bubbleView.bottomAnchor.constraint(equalTo: messageView.bottomAnchor, constant: 4).isActive = true
+        bubbleView.bottomAnchor.constraint(equalTo: messageView.bottomAnchor, constant: 15).isActive = true
 
         bubbleView.leadingAnchor.constraint(equalTo: messageView.leadingAnchor, constant: -5).isActive = true
         bubbleView.leadingAnchor.constraint(equalTo: replyNameLabel.leadingAnchor, constant: -10).isActive = true
         bubbleView.leadingAnchor.constraint(equalTo: replyMessageLabel.leadingAnchor, constant: -10).isActive = true
+        bubbleView.widthAnchor.constraint(greaterThanOrEqualToConstant: 60).isActive = true
 
         bubbleView.trailingAnchor.constraint(equalTo: messageView.trailingAnchor, constant: 10).isActive = true
 
@@ -358,11 +364,11 @@ final class ALKMyMessageCell: ALKMessageCell {
         stateView.widthAnchor.constraint(equalToConstant: 17.0).isActive = true
         stateView.heightAnchor.constraint(equalToConstant: 9.0).isActive = true
         stateView.bottomAnchor.constraint(equalTo: bubbleView.bottomAnchor, constant: -1.0).isActive = true
-        stateView.trailingAnchor.constraint(equalTo: bubbleView.leadingAnchor, constant: -2.0).isActive = true
+        stateView.trailingAnchor.constraint(equalTo: bubbleView.trailingAnchor, constant: 13).isActive = true
 
-        timeLabel.trailingAnchor.constraint(equalTo: stateView.leadingAnchor, constant: -2.0).isActive = true
-        timeLabel.bottomAnchor.constraint(equalTo: bubbleView.bottomAnchor, constant: 2).isActive = true
-        
+        timeLabel.trailingAnchor.constraint(equalTo: messageView.trailingAnchor, constant: -2.0).isActive = true
+        timeLabel.bottomAnchor.constraint(equalTo: messageView.bottomAnchor, constant: 13).isActive = true
+        bringSubview(toFront: timeLabel)
         let image = UIImage.init(named: "chat_bubble_red", in: Bundle.applozic, compatibleWith: nil)
         bubbleView.image = image?.imageFlippedForRightToLeftLayoutDirection()
         bubbleView.tintColor =   UIColor(red: 92.0 / 255.0, green: 90.0 / 255.0, blue:167.0 / 255.0, alpha: 1.0)
@@ -444,6 +450,7 @@ class ALKMessageCell: ALKChatBaseCell<ALKMessageViewModel>, ALKCopyMenuItemProto
     fileprivate lazy var messageView: ALHyperLabel = {
         let label = ALHyperLabel.init(frame: .zero)
         label.textColor = UIColor(red: 255.0 / 255.0, green: 255.0 / 255.0, blue:255.0 / 255.0, alpha: 1.0)
+        label.font = UIFont.init(name: "Roboto-Regular", size: 14.0)
         label.isUserInteractionEnabled = true
         label.numberOfLines = 0
         return label
@@ -451,6 +458,8 @@ class ALKMessageCell: ALKChatBaseCell<ALKMessageViewModel>, ALKCopyMenuItemProto
 
     fileprivate var timeLabel: UILabel = {
         let lb = UILabel()
+        lb.textColor = UIColor(red: 237.0 / 255.0, green: 230.0 / 255.0, blue: 230.0 / 255.0, alpha: 1.0)
+        lb.font = UIFont.init(name: "Roboto-Regular", size: 10.0)
         lb.isOpaque = true
         return lb
     }()
@@ -538,7 +547,25 @@ class ALKMessageCell: ALKChatBaseCell<ALKMessageViewModel>, ALKCopyMenuItemProto
             mutableText.addAttributes(attributes, range: NSMakeRange(0,mutableText.length))
             self.messageView.attributedText = mutableText
         }
-        self.timeLabel.text   = viewModel.time
+     var attributedString = NSMutableAttributedString()
+        if(viewModel.isMyMessage){
+            
+         attributedString = NSMutableAttributedString(string: viewModel.time!, attributes: [
+                .font: UIFont(name: "Roboto-Regular", size: 10.0)!,
+                .foregroundColor: UIColor(red: 237.0 / 255.0, green: 230.0 / 255.0, blue: 230.0 / 255.0, alpha: 1.0),
+                .kern: -0.1
+                ])
+        }else{
+         attributedString = NSMutableAttributedString(string: viewModel.time!, attributes: [
+                .font: UIFont(name: "Roboto-Regular", size: 10.0)!,
+                .foregroundColor: UIColor(red: 138.0 / 255.0, green: 134.0 / 255.0, blue: 134.0 / 255.0, alpha: 1.0),
+                .kern: -0.1
+                ])
+        }
+       
+        
+        self.timeLabel.attributedText   = attributedString
+        
     }
 
     override func setupViews() {
@@ -554,15 +581,17 @@ class ALKMessageCell: ALKChatBaseCell<ALKMessageViewModel>, ALKCopyMenuItemProto
 
     override func setupStyle() {
         super.setupStyle()
-        timeLabel.setStyle(style: ALKMessageStyle.time)
+       // timeLabel.setStyle(style: ALKMessageStyle.time)
+
+
     }
 
     class func leftPadding() -> CGFloat {
-        return 16
+        return 40
     }
 
     class func rightPadding() -> CGFloat {
-        return 65
+        return 16
     }
 
     class func topPadding() -> CGFloat {

@@ -39,7 +39,7 @@ final class ALKMyPhotoLandscapeCell: ALKPhotoCell {
         stateView.widthAnchor.constraint(equalToConstant: 17.0).isActive = true
         stateView.heightAnchor.constraint(equalToConstant: 9.0).isActive = true
         stateView.bottomAnchor.constraint(equalTo: bubbleView.bottomAnchor, constant: -1.0).isActive = true
-        stateView.rightAnchor.constraint(equalTo: bubbleView.leftAnchor, constant: -2.0).isActive = true
+        stateView.rightAnchor.constraint(equalTo: bubbleView.rightAnchor, constant: 13.0).isActive = true
         
         timeLabel.rightAnchor.constraint(equalTo: stateView.leftAnchor, constant: -2.0).isActive = true
         timeLabel.bottomAnchor.constraint(equalTo: bubbleView.bottomAnchor, constant: 2).isActive = true
@@ -48,12 +48,15 @@ final class ALKMyPhotoLandscapeCell: ALKPhotoCell {
     override func update(viewModel: ALKMessageViewModel) {
         super.update(viewModel: viewModel)
         
+        
         if viewModel.isAllRead {
-            stateView.image = UIImage(named: "read_state_3", in: Bundle.applozic, compatibleWith: nil)
+            stateView.image = UIImage(named: "kmreadIcon", in: Bundle.applozic, compatibleWith: nil)
         } else if viewModel.isAllReceived {
-            stateView.image = UIImage(named: "read_state_2", in: Bundle.applozic, compatibleWith: nil)
+            stateView.image = UIImage(named: "kmdeliveredIcon", in: Bundle.applozic, compatibleWith: nil)
+            stateView.tintColor = nil
         } else if viewModel.isSent {
-            stateView.image = UIImage(named: "read_state_1", in: Bundle.applozic, compatibleWith: nil)
+            stateView.image = UIImage(named: "kmsenticon", in: Bundle.applozic, compatibleWith: nil)
+            stateView.tintColor = nil
         } else {
             stateView.image = UIImage(named: "seen_state_0", in: Bundle.applozic, compatibleWith: nil)
         }
