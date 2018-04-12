@@ -129,14 +129,15 @@ final class ALKFriendMessageCell: ALKMessageCell {
 
         messageView.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: -1 * ALKFriendMessageCell.bottomPadding()).isActive = true
 
-        timeLabel.leadingAnchor.constraint(equalTo: messageView.trailingAnchor, constant: -35).isActive = true
+
+        timeLabel.leadingAnchor.constraint(equalTo: messageView.trailingAnchor, constant: -45).isActive = true
 
         bubbleView.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 0).isActive = true
         bubbleView.bottomAnchor.constraint(equalTo: messageView.bottomAnchor, constant: 16).isActive = true
 
         bubbleView.leadingAnchor.constraint(equalTo: messageView.leadingAnchor, constant: -13).isActive = true
         bubbleView.trailingAnchor.constraint(equalTo: messageView.trailingAnchor, constant: 5).isActive = true
-        bubbleView.widthAnchor.constraint(greaterThanOrEqualToConstant: 60).isActive = true
+        bubbleView.widthAnchor.constraint(greaterThanOrEqualToConstant: 80).isActive = true
 
 //        bubbleView.trailingAnchor.constraint(equalTo: replyNameLabel.trailingAnchor, constant: 10).isActive = true
 //        bubbleView.trailingAnchor.constraint(equalTo: replyMessageLabel.trailingAnchor, constant: 10).isActive = true
@@ -160,6 +161,7 @@ final class ALKFriendMessageCell: ALKMessageCell {
         super.setupStyle()
 
         nameLabel.setStyle(style: ALKMessageStyle.displayName)
+    
         messageView.textColor = UIColor(red: 100.0 / 255.0, green: 98.0 / 255.0, blue:98.0 / 255.0, alpha: 1.0)
 
     }
@@ -201,7 +203,16 @@ final class ALKFriendMessageCell: ALKMessageCell {
             self.avatarImageView.image = placeHolder
         }
 
-        nameLabel.text = viewModel.displayName
+        if(viewModel.displayName != nil ){
+            let  attributedString  = NSMutableAttributedString(string: viewModel.displayName!, attributes: [
+                .font: UIFont(name: "Roboto-Regular", size: 10.0)!,
+                .foregroundColor: UIColor(red: 100.0 / 255.0, green: 98.0 / 255.0, blue: 98.0 / 255.0, alpha: 1.0),
+                .kern: 0.5
+                ])
+            
+            self.nameLabel.attributedText = attributedString
+        }
+     
     }
 
     override class func leftPadding() -> CGFloat {
@@ -411,7 +422,7 @@ final class ALKMyMessageCell: ALKMessageCell {
     // MARK: - ChatMenuCell
     override func menuWillShow(_ sender: Any) {
         super.menuWillShow(sender)
-        self.bubbleView.image = UIImage.init(named: "chat_bubble_red_hover", in: Bundle.applozic, compatibleWith: nil)
+        self.bubbleView.image = UIImage.init(named: "chat_bubble_red", in: Bundle.applozic, compatibleWith: nil)
     }
 
     override func menuWillHide(_ sender: Any) {

@@ -24,6 +24,7 @@ open class ALKBaseViewController: UIViewController {
         let textAttributes = [NSAttributedStringKey.foregroundColor:UIColor.white]
         navigationController?.navigationBar.titleTextAttributes = textAttributes
 
+        
         self.navigationController?.navigationBar.tintColor =    UIColor(red: 255.0 / 255.0, green:255.0 / 255.0, blue: 255.0 / 255.0, alpha: 1.0)
 
         self.navigationController?.navigationBar.isTranslucent = false

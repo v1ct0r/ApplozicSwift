@@ -36,7 +36,10 @@ final class ALKFriendLocationCell: ALKLocationCell {
     override func setupViews() {
         super.setupViews()
         
-        bubbleView.backgroundColor = UIColor.background(.grayF2)
+        self.bubbleView.image = UIImage.init(named: "chat_bubble_grey", in: Bundle.applozic, compatibleWith: nil)
+        let image = UIImage.init(named: "chat_bubble_grey", in: Bundle.applozic, compatibleWith: nil)
+        bubbleView.image = image?.imageFlippedForRightToLeftLayoutDirection()
+        bubbleView.tintColor =   UIColor(red: 230.0 / 255.0, green: 229.0 / 255.0, blue: 236.0 / 255.0, alpha: 1.0)
         
         // add view to contenview and setup constraint
         contentView.addViewsForAutolayout(views: [avatarImageView,nameLabel])
@@ -81,7 +84,7 @@ final class ALKFriendLocationCell: ALKLocationCell {
     }
     
     override class func rowHeigh(viewModel: ALKMessageViewModel,width: CGFloat) -> CGFloat {
-        return super.rowHeigh(viewModel: viewModel, width: width) + 34.0
+        return super.rowHeigh(viewModel: viewModel, width: width)
     }
     
 }

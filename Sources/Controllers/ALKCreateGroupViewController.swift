@@ -58,7 +58,8 @@ final class ALKCreateGroupViewController: ALKBaseViewController {
     var viewModel: ALKCreateGroupViewModel?
     
     private var createGroupBGColor: UIColor {
-        return btnCreateGroup.isEnabled ? UIColor.mainRed() : UIColor.disabledButton()
+        return btnCreateGroup.isEnabled ? UIColor(red: 92.0 / 255.0, green: 90.0 / 255.0, blue: 167.0 / 255.0, alpha: 1.0)
+ : UIColor.disabledButton()
     }
     
     override func viewDidLoad() {
@@ -142,7 +143,7 @@ final class ALKCreateGroupViewController: ALKBaseViewController {
         view.addSubview(activityIndicator)
         activityIndicator.isHidden = true
         txtfGroupName.layer.cornerRadius = 10
-        txtfGroupName.layer.borderColor = UIColor.mainRed().cgColor
+        txtfGroupName.layer.borderColor = UIColor(red: 92.0 / 255.0, green: 90.0 / 255.0, blue: 167.0 / 255.0, alpha: 1.0).cgColor
         txtfGroupName.layer.borderWidth = 1
         txtfGroupName.clipsToBounds = true
         txtfGroupName.delegate = self

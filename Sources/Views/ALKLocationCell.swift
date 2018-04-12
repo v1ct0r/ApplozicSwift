@@ -25,13 +25,14 @@ class ALKLocationCell: ALKChatBaseCell<ALKMessageViewModel>,
         return label
     }()
 
-    internal var bubbleView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .black
-        view.layer.cornerRadius = 12
-        view.clipsToBounds = true
-        view.isUserInteractionEnabled = true
-        return view
+    internal var bubbleView: UIImageView = {
+        let bv = UIImageView()
+        let image = UIImage.init(named: "chat_bubble_red", in: Bundle.applozic, compatibleWith: nil)
+        bv.image = image?.imageFlippedForRightToLeftLayoutDirection()
+        bv.tintColor =   UIColor(red: 92.0 / 255.0, green: 90.0 / 255.0, blue:167.0 / 255.0, alpha: 1.0)
+        bv.isUserInteractionEnabled = false
+        bv.isOpaque = true
+        return bv
     }()
 
     private var frontView: ALKTappableView = {
@@ -96,10 +97,10 @@ class ALKLocationCell: ALKChatBaseCell<ALKMessageViewModel>,
         frontView.leftAnchor.constraint(equalTo: bubbleView.leftAnchor, constant: 0.0).isActive = true
         frontView.rightAnchor.constraint(equalTo: bubbleView.rightAnchor, constant: 0.0).isActive = true
 
-        locationImageView.topAnchor.constraint(equalTo: bubbleView.topAnchor, constant: 0.0).isActive = true
-        locationImageView.leftAnchor.constraint(equalTo: bubbleView.leftAnchor, constant: 0.0).isActive = true
-        locationImageView.rightAnchor.constraint(equalTo: bubbleView.rightAnchor, constant: 0.0).isActive = true
-        locationImageView.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width * 0.64).isActive = true
+        locationImageView.topAnchor.constraint(equalTo: bubbleView.topAnchor, constant: 8).isActive = true
+        locationImageView.leftAnchor.constraint(equalTo: bubbleView.leftAnchor, constant: 8).isActive = true
+        locationImageView.rightAnchor.constraint(equalTo: bubbleView.rightAnchor, constant: -10).isActive = true
+        locationImageView.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width * 0.60).isActive = true
 
         addressLabel.topAnchor.constraint(equalTo: locationImageView.bottomAnchor, constant: 4.0).isActive = true
         addressLabel.bottomAnchor.constraint(equalTo: bubbleView.bottomAnchor, constant: -4.0).isActive = true
@@ -110,14 +111,31 @@ class ALKLocationCell: ALKChatBaseCell<ALKMessageViewModel>,
 
     override func setupStyle() {
         super.setupStyle()
-        timeLabel.setStyle(style: ALKMessageStyle.time)
     }
 
     override func update(viewModel: ALKMessageViewModel) {
         super.update(viewModel: viewModel)
 
         // timeLable
-        timeLabel.text = viewModel.time
+        var attributedString = NSMutableAttributedString()
+        if(viewModel.isMyMessage){
+            
+            attributedString = NSMutableAttributedString(string: viewModel.time!, attributes: [
+                .font: UIFont(name: "Roboto-Regular", size: 10.0)!,
+                .foregroundColor: UIColor(red: 237.0 / 255.0, green: 230.0 / 255.0, blue: 230.0 / 255.0, alpha: 1.0),
+                .kern: -0.1
+                ])
+        }else{
+            attributedString = NSMutableAttributedString(string: viewModel.time!, attributes: [
+                .font: UIFont(name: "Roboto-Regular", size: 10.0)!,
+                .foregroundColor: UIColor(red: 138.0 / 255.0, green: 134.0 / 255.0, blue: 134.0 / 255.0, alpha: 1.0),
+                .kern: -0.1
+                ])
+        }
+        
+        
+        self.timeLabel.attributedText   = attributedString
+        
 
         // addressLabel
         if let geocode = viewModel.geocode {
@@ -136,9 +154,26 @@ class ALKLocationCell: ALKChatBaseCell<ALKMessageViewModel>,
     }
 
     override class func rowHeigh(viewModel: ALKMessageViewModel,width: CGFloat) -> CGFloat {
-        let heigh: CGFloat = ceil((width * 0.64) / viewModel.ratio)
-        return heigh + 26.0
+        let heigh: CGFloat
+        
+        if viewModel.ratio < 1 {
+            heigh = viewModel.ratio == 0 ? (width*0.48) : ceil((width*0.48)/viewModel.ratio)
+        } else {
+            heigh = ceil((width*0.64)/viewModel.ratio)
+        }
+        
+        return topPadding()+heigh+bottomPadding()
     }
+    
+    class func topPadding() -> CGFloat {
+        return 12
+    }
+    
+    class func bottomPadding() -> CGFloat {
+        return 16
+    }
+    
+    
 
     // MARK: - Method of class
     func setDelegate(locDelegate:ALKLocationCellDelegate) {

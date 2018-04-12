@@ -34,11 +34,13 @@ class ALKPhotoCell: ALKChatBaseCell<ALKMessageViewModel>,
         return lb
     }()
 
-    var bubbleView: UIView = {
-        let bv = UIView()
-        bv.backgroundColor = .gray
-        bv.layer.cornerRadius = 12
+    var bubbleView: UIImageView = {
+        let bv = UIImageView()
+        let image = UIImage.init(named: "chat_bubble_red", in: Bundle.applozic, compatibleWith: nil)
+        bv.image = image?.imageFlippedForRightToLeftLayoutDirection()
+        bv.tintColor =   UIColor(red: 92.0 / 255.0, green: 90.0 / 255.0, blue:167.0 / 255.0, alpha: 1.0)
         bv.isUserInteractionEnabled = false
+        bv.isOpaque = true
         return bv
     }()
 
@@ -85,11 +87,11 @@ class ALKPhotoCell: ALKChatBaseCell<ALKMessageViewModel>,
 
 
     class func topPadding() -> CGFloat {
-        return 12
+        return 55
     }
 
     class func bottomPadding() -> CGFloat {
-        return 16
+        return 55
     }
 
     override class func rowHeigh(viewModel: ALKMessageViewModel,width: CGFloat) -> CGFloat {
@@ -129,7 +131,24 @@ class ALKPhotoCell: ALKChatBaseCell<ALKMessageViewModel>,
                 updateView(for: state.download)
             }
         }
-        timeLabel.text   = viewModel.time
+        
+        var attributedString = NSMutableAttributedString()
+        if(viewModel.isMyMessage){
+            
+            attributedString = NSMutableAttributedString(string: viewModel.time!, attributes: [
+                .font: UIFont(name: "Roboto-Regular", size: 10.0)!,
+                .foregroundColor: UIColor(red: 237.0 / 255.0, green: 230.0 / 255.0, blue: 230.0 / 255.0, alpha: 1.0),
+                .kern: -0.1
+                ])
+        }else{
+            attributedString = NSMutableAttributedString(string: viewModel.time!, attributes: [
+                .font: UIFont(name: "Roboto-Regular", size: 10.0)!,
+                .foregroundColor: UIColor(red: 138.0 / 255.0, green: 134.0 / 255.0, blue: 134.0 / 255.0, alpha: 1.0),
+                .kern: -0.1
+                ])
+        }
+    
+        timeLabel.attributedText   = attributedString
 
     }
 
@@ -156,7 +175,7 @@ class ALKPhotoCell: ALKChatBaseCell<ALKMessageViewModel>,
     override func setupStyle() {
         super.setupStyle()
 
-        timeLabel.setStyle(style: ALKMessageStyle.time)
+       // timeLabel.setStyle(style: ALKMessageStyle.time)
         fileSizeLabel.setStyle(style: ALKMessageStyle.time)
     }
 
@@ -176,16 +195,17 @@ class ALKPhotoCell: ALKChatBaseCell<ALKMessageViewModel>,
         contentView.bringSubview(toFront: downloadButton)
         contentView.bringSubview(toFront: uploadButton)
         contentView.bringSubview(toFront: activityIndicator)
-
+        
         frontView.topAnchor.constraint(equalTo: bubbleView.topAnchor).isActive = true
         frontView.bottomAnchor.constraint(equalTo: bubbleView.bottomAnchor).isActive = true
         frontView.leftAnchor.constraint(equalTo: bubbleView.leftAnchor).isActive = true
         frontView.rightAnchor.constraint(equalTo: bubbleView.rightAnchor).isActive = true
 
-        bubbleView.topAnchor.constraint(equalTo: photoView.topAnchor).isActive = true
-        bubbleView.bottomAnchor.constraint(equalTo: photoView.bottomAnchor).isActive = true
-        bubbleView.leftAnchor.constraint(equalTo: photoView.leftAnchor).isActive = true
-        bubbleView.rightAnchor.constraint(equalTo: photoView.rightAnchor).isActive = true
+        bubbleView.topAnchor.constraint(equalTo: photoView.topAnchor,constant: -5).isActive = true
+        bubbleView.bottomAnchor.constraint(equalTo: photoView.bottomAnchor,constant: 15).isActive = true
+
+        bubbleView.leftAnchor.constraint(equalTo: photoView.leftAnchor,constant: -8).isActive = true
+        bubbleView.rightAnchor.constraint(equalTo: photoView.rightAnchor,constant: 10).isActive = true
         
         fileSizeLabel.topAnchor.constraint(equalTo: bubbleView.bottomAnchor, constant: 2).isActive = true
         activityIndicator.heightAnchor.constraint(equalToConstant: 40).isActive = true

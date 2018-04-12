@@ -23,14 +23,17 @@ final class ALKMyLocationCell: ALKLocationCell {
     override func setupViews() {
         super.setupViews()
 
-        bubbleView.backgroundColor = UIColor.background(.redC0)
-
+     
         // add view to contenview and setup constraint
         contentView.addViewsForAutolayout(views: [stateView])
-
-        bubbleView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 6.0).isActive = true
+        
+        let image = UIImage.init(named: "chat_bubble_red", in: Bundle.applozic, compatibleWith: nil)
+        bubbleView.image = image?.imageFlippedForRightToLeftLayoutDirection()
+        bubbleView.tintColor =   UIColor(red: 92.0 / 255.0, green: 90.0 / 255.0, blue:167.0 / 255.0, alpha: 1.0)
+        
+        bubbleView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0.0).isActive = true
         bubbleView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -6.0).isActive = true
-        bubbleView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -14.0).isActive = true
+        bubbleView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -30).isActive = true
 
         stateView.bottomAnchor.constraint(equalTo: bubbleView.bottomAnchor, constant: -1.0).isActive = true
         stateView.trailingAnchor.constraint(equalTo: bubbleView.trailingAnchor, constant: 13).isActive = true
@@ -38,7 +41,7 @@ final class ALKMyLocationCell: ALKLocationCell {
         stateView.heightAnchor.constraint(equalToConstant: 9.0).isActive = true
         
         timeLabel.trailingAnchor.constraint(equalTo: stateView.leadingAnchor, constant: -2.0).isActive = true
-        timeLabel.bottomAnchor.constraint(equalTo: bubbleView.bottomAnchor, constant: 2).isActive = true
+        timeLabel.bottomAnchor.constraint(equalTo: bubbleView.bottomAnchor, constant: -2).isActive = true
     }
     
     override func update(viewModel: ALKMessageViewModel) {
@@ -61,7 +64,9 @@ final class ALKMyLocationCell: ALKLocationCell {
     }
 
     override class func rowHeigh(viewModel: ALKMessageViewModel,width: CGFloat) -> CGFloat {
-        return super.rowHeigh(viewModel: viewModel, width: width) + 12.0
+        return super.rowHeigh(viewModel: viewModel, width: width)
     }
+    
+
 
 }

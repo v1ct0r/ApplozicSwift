@@ -361,7 +361,8 @@ extension ALKSelectParticipantToAddViewController: ALKInviteButtonProtocol {
     
     func getButtonAppearance(invitedFriendCount count: Int) -> (String, backgroundColor: UIColor, isEnabled: Bool) {
         let isEnabled = (count > 0) ? true: false
-        let background = (isEnabled ? UIColor.mainRed() : UIColor.disabledButton())
+        let background = (isEnabled ? UIColor(red: 92.0 / 255.0, green: 90.0 / 255.0, blue: 167.0 / 255.0, alpha: 1.0)
+            : UIColor.disabledButton())
         let newMember = count > 0 ? " (\(count))" : ""
         let inviteMessage = NSLocalizedString("InviteMessage", value: "Invite", comment: "")
         let title = "\(inviteMessage) \(newMember)"

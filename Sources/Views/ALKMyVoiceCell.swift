@@ -29,21 +29,23 @@ class ALKMyVoiceCell: ALKVoiceCell {
         
         contentView.addViewsForAutolayout(views: [stateView])
         
-        soundPlayerView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 6).isActive = true
+        soundPlayerView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10).isActive = true
         soundPlayerView.leadingAnchor.constraint(greaterThanOrEqualTo: contentView.leadingAnchor, constant: 48).isActive = true
-        soundPlayerView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -14).isActive = true
+        soundPlayerView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -39).isActive = true
         soundPlayerView.widthAnchor.constraint(equalToConstant: width*0.48).isActive = true
-        soundPlayerView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -6).isActive = true
+        soundPlayerView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -15).isActive = true
         
-        bubbleView.backgroundColor = UIColor.hex8(Color.Background.grayF2.rawValue).withAlphaComponent(0.26)
+        let image = UIImage.init(named: "chat_bubble_red", in: Bundle.applozic, compatibleWith: nil)
+        bubbleView.image = image?.imageFlippedForRightToLeftLayoutDirection()
+        bubbleView.tintColor =   UIColor(red: 92.0 / 255.0, green: 90.0 / 255.0, blue:167.0 / 255.0, alpha: 1.0)
         
         stateView.widthAnchor.constraint(equalToConstant: 17.0).isActive = true
         stateView.heightAnchor.constraint(equalToConstant: 9.0).isActive = true
         stateView.bottomAnchor.constraint(equalTo: bubbleView.bottomAnchor, constant: -1.0).isActive = true
         stateView.trailingAnchor.constraint(equalTo: bubbleView.trailingAnchor, constant: 13).isActive = true
 
-        timeLabel.trailingAnchor.constraint(equalTo: stateView.leadingAnchor, constant: -2.0).isActive = true
-        timeLabel.bottomAnchor.constraint(equalTo: bubbleView.bottomAnchor, constant: 0).isActive = true
+        timeLabel.trailingAnchor.constraint(equalTo: stateView.leadingAnchor, constant: -6.0).isActive = true
+        timeLabel.bottomAnchor.constraint(equalTo: bubbleView.bottomAnchor, constant: -3).isActive = true
     }
     
     override func update(viewModel: ALKMessageViewModel) {
@@ -65,7 +67,7 @@ class ALKMyVoiceCell: ALKVoiceCell {
     }
     
     override class func bottomPadding() -> CGFloat {
-        return 6
+        return 25
     }
     
 }

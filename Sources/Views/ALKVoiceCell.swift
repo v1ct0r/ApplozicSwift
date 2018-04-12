@@ -72,22 +72,25 @@ class ALKVoiceCell:ALKChatBaseCell<ALKMessageViewModel>,
         return button
     }()
     
-    var bubbleView: UIView = {
-        let bv = UIView()
-        bv.backgroundColor = .gray
-        bv.layer.cornerRadius = 12
+    var bubbleView: UIImageView = {
+        let bv = UIImageView()
+        let image = UIImage.init(named: "chat_bubble_red", in: Bundle.applozic, compatibleWith: nil)
+        bv.image = image?.imageFlippedForRightToLeftLayoutDirection()
+        bv.tintColor =   UIColor(red: 92.0 / 255.0, green: 90.0 / 255.0, blue:167.0 / 255.0, alpha: 1.0)
         bv.isUserInteractionEnabled = false
+        bv.isOpaque = true
+        bv.layer.cornerRadius = 12
         return bv
     }()
 
     var downloadTapped:((Bool)->())?
     
     class func topPadding() -> CGFloat {
-        return 12
+        return 23
     }
     
     class func bottomPadding() -> CGFloat {
-        return 12
+        return 23
     }
     
     override func awakeFromNib() {
@@ -160,7 +163,25 @@ class ALKVoiceCell:ALKChatBaseCell<ALKMessageViewModel>,
         else {
             progressBar.setProgress(Float(percent), animated: false)
         }
-        timeLabel.text   = viewModel.time
+        
+        var attributedString = NSMutableAttributedString()
+        if(viewModel.isMyMessage){
+            
+            attributedString = NSMutableAttributedString(string: viewModel.time!, attributes: [
+                .font: UIFont(name: "Roboto-Regular", size: 10.0)!,
+                .foregroundColor: UIColor(red: 237.0 / 255.0, green: 230.0 / 255.0, blue: 230.0 / 255.0, alpha: 1.0),
+                .kern: -0.1
+                ])
+        }else{
+            attributedString = NSMutableAttributedString(string: viewModel.time!, attributes: [
+                .font: UIFont(name: "Roboto-Regular", size: 10.0)!,
+                .foregroundColor: UIColor(red: 138.0 / 255.0, green: 134.0 / 255.0, blue: 134.0 / 255.0, alpha: 1.0),
+                .kern: -0.1
+                ])
+        }
+        
+        
+        self.timeLabel.attributedText   = attributedString
     }
     
     weak var voiceDelegate: ALKVoiceCellProtocol?
@@ -198,10 +219,10 @@ class ALKVoiceCell:ALKChatBaseCell<ALKMessageViewModel>,
         contentView.bringSubview(toFront: frameView)
         contentView.bringSubview(toFront: actionButton)
         
-        bubbleView.topAnchor.constraint(equalTo: soundPlayerView.topAnchor).isActive = true
-        bubbleView.bottomAnchor.constraint(equalTo: soundPlayerView.bottomAnchor).isActive = true
-        bubbleView.leftAnchor.constraint(equalTo: soundPlayerView.leftAnchor).isActive = true
-        bubbleView.rightAnchor.constraint(equalTo: soundPlayerView.rightAnchor).isActive = true
+        bubbleView.topAnchor.constraint(equalTo: soundPlayerView.topAnchor,constant:-10).isActive = true
+        bubbleView.bottomAnchor.constraint(equalTo: soundPlayerView.bottomAnchor,constant:15).isActive = true
+        bubbleView.leftAnchor.constraint(equalTo: soundPlayerView.leftAnchor,constant:-10).isActive = true
+        bubbleView.rightAnchor.constraint(equalTo: soundPlayerView.rightAnchor,constant:10).isActive = true
 
         progressBar.topAnchor.constraint(equalTo: soundPlayerView.topAnchor).isActive = true
         progressBar.bottomAnchor.constraint(equalTo: soundPlayerView.bottomAnchor).isActive = true

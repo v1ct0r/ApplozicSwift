@@ -33,7 +33,7 @@ class ALKFriendPhotoCell: ALKPhotoCell {
     }()
     
     override class func topPadding() -> CGFloat {
-        return 28
+        return 6
     }
     
     override func setupStyle() {
@@ -50,8 +50,11 @@ class ALKFriendPhotoCell: ALKPhotoCell {
 
         contentView.addViewsForAutolayout(views: [avatarImageView,nameLabel])
         
-        bubbleView.backgroundColor = UIColor.hex8(Color.Background.grayF2.rawValue).withAlphaComponent(0.26)
-        
+        let image = UIImage.init(named: "chat_bubble_grey", in: Bundle.applozic, compatibleWith: nil)
+        bubbleView.image = image?.imageFlippedForRightToLeftLayoutDirection()
+        bubbleView.tintColor =   UIColor(red: 230.0 / 255.0, green: 229.0 / 255.0, blue: 236.0 / 255.0, alpha: 1.0)
+        bubbleView.leftAnchor.constraint(equalTo: photoView.leftAnchor,constant: -10).isActive = true
+
         nameLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 6).isActive = true
         nameLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 57).isActive = true
         
@@ -68,11 +71,11 @@ class ALKFriendPhotoCell: ALKPhotoCell {
         avatarImageView.heightAnchor.constraint(equalToConstant: 37).isActive = true
         avatarImageView.widthAnchor.constraint(equalTo: avatarImageView.heightAnchor).isActive = true
         
-        photoView.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor, constant: -56).isActive = true
+        photoView.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor, constant: -100).isActive = true
         photoView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16).isActive = true
         
-        timeLabel.leadingAnchor.constraint(equalTo: bubbleView.trailingAnchor, constant: 2).isActive = true
-        timeLabel.bottomAnchor.constraint(equalTo: bubbleView.bottomAnchor, constant: 2).isActive = true
+        timeLabel.leadingAnchor.constraint(equalTo: photoView.trailingAnchor, constant: -40).isActive = true
+        timeLabel.bottomAnchor.constraint(equalTo: bubbleView.bottomAnchor, constant: -2).isActive = true
         
         fileSizeLabel.leftAnchor.constraint(equalTo: bubbleView.leftAnchor, constant: 0).isActive = true
     }
