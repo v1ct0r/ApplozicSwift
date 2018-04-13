@@ -14,9 +14,16 @@ PODS:
 DEPENDENCIES:
   - ApplozicSwift (from `../ApplozicSwift.podspec`)
 
+SPEC REPOS:
+  https://github.com/CocoaPods/Specs.git:
+    - Applozic
+    - Kingfisher
+    - MGSwipeTableCell
+    - SDWebImage
+
 EXTERNAL SOURCES:
   ApplozicSwift:
-    :path: ../ApplozicSwift.podspec
+    :path: "../ApplozicSwift.podspec"
 
 SPEC CHECKSUMS:
   Applozic: 4d269640930b2c3f638ccd642cbfa4b3fdd3ba02
@@ -27,4 +34,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: c518db42782b099d7771a3a88d3753ebe72ee321
 
-COCOAPODS: 1.4.0
+COCOAPODS: 1.5.0

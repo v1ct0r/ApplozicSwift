@@ -190,8 +190,11 @@ open class ALKConversationListViewController: ALKBaseViewController {
 
         title = "My Chats"
 
-        let rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "fill_214", in: Bundle.applozic, compatibleWith: nil), style: .plain, target: self, action: #selector(compose))
-        navigationItem.rightBarButtonItem = rightBarButtonItem
+        let rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "ic_exit_to_app_white", in: Bundle.applozic, compatibleWith: nil), style: .plain, target: self, action: #selector(logout))
+        
+        
+        
+         navigationItem.rightBarButtonItem = rightBarButtonItem
 
 //        let back = NSLocalizedString("Back", value: "Back", comment: "")
 //        let leftBarButtonItem = UIBarButtonItem(title: back, style: .plain, target: self, action: #selector(customBackAction))
@@ -253,9 +256,31 @@ open class ALKConversationListViewController: ALKBaseViewController {
     }
 
     @objc func compose() {
-        let newChatVC = ALKNewChatViewController(viewModel: ALKNewChatViewModel())
-        navigationController?.pushViewController(newChatVC, animated: true)
+        
+        
     }
+    
+    @objc func logout() {
+        
+        let registerUserClientService: ALRegisterUserClientService = ALRegisterUserClientService()
+        registerUserClientService.logout { (response, error) in
+            if(error == nil && response?.status == "success") {
+                
+                let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                let viewController: UIViewController? = storyboard.instantiateViewController(withIdentifier: "LoginViewController")
+                
+                let appDelegateTemp = UIApplication.shared.delegate
+                ((appDelegateTemp?.window)!)?.rootViewController = viewController
+    
+        
+            }
+        }
+    }
+    
+    
+    
+
+
 
     func sync(message: ALMessage) {
 

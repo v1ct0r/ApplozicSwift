@@ -194,7 +194,7 @@ final class ALKCreateGroupViewController: ALKBaseViewController {
             NSAttributedStringKey.foregroundColor: UIColor.placeholderGray()
         ]
         let typeGroupNameMsg = NSLocalizedString("TypeGroupName", value: "Type group name", comment: "")
-            textField.attributedPlaceholder  = NSAttributedString(string: typeGroupNameMsg, attributes: attr)
+        textField.attributedPlaceholder  = NSAttributedString(string: typeGroupNameMsg, attributes: attr as [NSAttributedStringKey : Any])
     }
     
     @IBAction private func selectGroupImgPress(_ sender: Any) {
