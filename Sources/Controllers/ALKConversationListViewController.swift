@@ -96,14 +96,31 @@ open class ALKConversationListViewController: ALKBaseViewController {
                     message.message = alertComponents.first
                 }
                 weakSelf.viewModel.addMessages(messages: [message])
-            } else if updateUI == Int(APP_STATE_BACKGROUND.rawValue) {
-                // Coming from background
-
+                
+            }else if (updateUI == 0) {
                 guard contactId != nil || groupId != nil else { return }
-               weakSelf.launchChat(contactId: contactId, groupId: groupId)
+                
+                let convViewModel = ALKConversationViewModel(contactId: contactId, channelKey: groupId)
+                let viewController = self?.conversationViewControllerType.init()
+                let contactService = ALContactService()
+                let alChannelService = ALChannelService()
+                if let key = groupId, let alChannel = alChannelService.getChannelByKey(key), let name = alChannel.name {
+                    viewController?.title = name
+                }
+                    
+                else if let key = contactId,let alContact = contactService.loadContact(byKey: "userId", value: key), let name = alContact.getDisplayName() {
+                    viewController?.title = name
+                }
+                
+                viewController?.viewModel = convViewModel
+                self?.conversationViewController = viewController
+                self?.navigationController?.pushViewController(viewController!, animated: false)
+                
             }
+            
         })
-
+        
+        
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: "reloadTable"), object: nil, queue: nil, using: {[weak self] notification in
             NSLog("Reloadtable notification received")
 

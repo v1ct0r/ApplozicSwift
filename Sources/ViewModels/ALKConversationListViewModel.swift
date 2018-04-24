@@ -90,7 +90,7 @@ final public class ALKConversationListViewModel: NSObject {
         guard let alMessages = messages as? [ALMessage], var allMessages = allMessages as? [ALMessage] else {
             return
         }
-
+        
         for currentMessage in alMessages {
             var messagePresent = [ALMessage]()
             if let _ = currentMessage.groupId {
@@ -103,6 +103,7 @@ final public class ALKConversationListViewModel: NSObject {
                 allMessages[index] = currentMessage
                 self.allMessages[index] = currentMessage
             } else {
+                allMessages.append(currentMessage)
                 self.allMessages.append(currentMessage)
             }
         }
