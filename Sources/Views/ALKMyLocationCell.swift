@@ -18,12 +18,12 @@ final class ALKMyLocationCell: ALKLocationCell {
         sv.contentMode = .center
         return sv
     }()
-
+    
     // MARK: - Lifecycle
     override func setupViews() {
         super.setupViews()
-
-     
+        
+        
         // add view to contenview and setup constraint
         contentView.addViewsForAutolayout(views: [stateView])
         
@@ -34,7 +34,7 @@ final class ALKMyLocationCell: ALKLocationCell {
         bubbleView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0.0).isActive = true
         bubbleView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -6.0).isActive = true
         bubbleView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -30).isActive = true
-
+        
         stateView.bottomAnchor.constraint(equalTo: bubbleView.bottomAnchor, constant: -1.0).isActive = true
         stateView.trailingAnchor.constraint(equalTo: bubbleView.trailingAnchor, constant: 13).isActive = true
         stateView.widthAnchor.constraint(equalToConstant: 17.0).isActive = true
@@ -46,7 +46,7 @@ final class ALKMyLocationCell: ALKLocationCell {
     
     override func update(viewModel: ALKMessageViewModel) {
         super.update(viewModel: viewModel)
-
+        
         
         
         if viewModel.isAllRead {
@@ -62,11 +62,11 @@ final class ALKMyLocationCell: ALKLocationCell {
             stateView.tintColor = UIColor.red
         }
     }
-
+    
     override class func rowHeigh(viewModel: ALKMessageViewModel,width: CGFloat) -> CGFloat {
         return super.rowHeigh(viewModel: viewModel, width: width)
     }
     
-
-
+    
+    
 }

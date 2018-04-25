@@ -1,6 +1,6 @@
 //
 //  ALKFriendLocationCell.swift
-//  
+//
 //
 //  Created by Mukesh Thawani on 04/05/17.
 //  Copyright © 2017 Applozic. All rights reserved.
@@ -10,7 +10,7 @@ import UIKit
 import Kingfisher
 
 final class ALKFriendLocationCell: ALKLocationCell {
-
+    
     // MARK: - Declare Variables or Types
     // MARK: Environment in chat
     private var avatarImageView: UIImageView = {
@@ -48,7 +48,7 @@ final class ALKFriendLocationCell: ALKLocationCell {
         nameLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 57.0).isActive = true
         nameLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -56.0).isActive = true
         nameLabel.heightAnchor.constraint(equalToConstant: 16.0).isActive = true
-
+        
         avatarImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 18.0).isActive = true
         avatarImageView.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: 0.0).isActive = true
         avatarImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 9.0).isActive = true
@@ -59,13 +59,12 @@ final class ALKFriendLocationCell: ALKLocationCell {
         bubbleView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -6.0).isActive = true
         bubbleView.leadingAnchor.constraint(equalTo: avatarImageView.trailingAnchor, constant: 10.0).isActive = true
         
-        timeLabel.leadingAnchor.constraint(equalTo: bubbleView.trailingAnchor, constant: 2.0).isActive = true
-        timeLabel.bottomAnchor.constraint(equalTo: bubbleView.bottomAnchor, constant: 2.0).isActive = true
+        timeLabel.leadingAnchor.constraint(equalTo: bubbleView.trailingAnchor, constant: -40.0).isActive = true
+        timeLabel.bottomAnchor.constraint(equalTo: bubbleView.bottomAnchor, constant: -5.0).isActive = true
     }
     
     override func setupStyle() {
         super.setupStyle()
-        nameLabel.setStyle(style: ALKMessageStyle.displayName)
     }
     
     override func update(viewModel: ALKMessageViewModel) {
