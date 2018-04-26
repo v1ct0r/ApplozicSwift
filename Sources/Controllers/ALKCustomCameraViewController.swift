@@ -331,8 +331,8 @@ final class ALKCustomCameraViewController: ALKBaseViewController,AVCapturePhotoC
     private func beginSession() {
         
         do {
-              if let captureDevice = captureDevice, var captureDeviceInput = captureDeviceInput {
-                try captureDeviceInput = AVCaptureDeviceInput(device: captureDevice)
+            if let captureDevice = captureDevice {
+                let captureDeviceInput = try AVCaptureDeviceInput(device: captureDevice)
                 self.captureSession.addInput(captureDeviceInput)
                 if #available(iOS 10.0, *) {
                     let cameraOutputUnwrapp = self.cameraOutput as? AVCapturePhotoOutput
