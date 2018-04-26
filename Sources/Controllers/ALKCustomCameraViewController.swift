@@ -1,6 +1,6 @@
 //
 //  ALKCustomCameraViewController.swift
-//  
+//
 //
 //  Created by Mukesh Thawani on 04/05/17.
 //  Copyright © 2017 Applozic. All rights reserved.
@@ -27,8 +27,8 @@ protocol ALKCustomCameraProtocol {
     func customCameraDidTakePicture(cropedImage:UIImage)
 }
 
-final class ALKCustomCameraViewController: ALKBaseViewController {
-
+final class ALKCustomCameraViewController: ALKBaseViewController,AVCapturePhotoCaptureDelegate {
+    
     //delegate
     var customCamDelegate:ALKCustomCameraProtocol!
     var camera = ALKCameraType.Back
@@ -39,6 +39,13 @@ final class ALKCustomCameraViewController: ALKBaseViewController {
     var selectedImage:UIImage!
     var cameraMode:ALKCameraPhotoType = .NoCropOption
     let option = PHImageRequestOptions()
+    
+    var cameraOutput: Any? = {
+        if #available(iOS 10.0, *) {
+            return AVCapturePhotoOutput()
+        }
+        return nil
+    }()
     
     @IBOutlet private var previewView: UIView!
     @IBOutlet private var btnCapture: UIButton!
@@ -55,7 +62,7 @@ final class ALKCustomCameraViewController: ALKBaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-    
+        
         self.title = "Camera"
         btnSwitchCam.isHidden = true
         checkPhotoLibraryPermission()
@@ -64,7 +71,7 @@ final class ALKCustomCameraViewController: ALKBaseViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
+        
         setupNavigation()
         setupView()
     }
@@ -101,7 +108,57 @@ final class ALKCustomCameraViewController: ALKBaseViewController {
             present(alertController, animated: true, completion: nil)
         default:()
         }
-
+        
+    }
+    
+    func capturePhoto() {
+        
+        if #available(iOS 10.0, *) {
+            
+            let cameraOutputUnwrapp = self.cameraOutput as? AVCapturePhotoOutput
+            if let connection =  cameraOutputUnwrapp?.connection(with: AVMediaType.video) {
+                
+                if connection.isVideoOrientationSupported,
+                    let orientation = AVCaptureVideoOrientation(orientation: UIDevice.current.orientation) {
+                    connection.videoOrientation = orientation
+                }
+                
+                let settings = AVCapturePhotoSettings(format: [AVVideoCodecKey : AVVideoCodecJPEG])
+                
+                if (connection.isActive) {
+                    cameraOutputUnwrapp?.capturePhoto(with: settings, delegate: self)
+                    //connection is active
+                } else {
+                    //connection is not active
+                    //try to change self.captureSession.sessionPreset,
+                    //or change videoDevice.activeFormat
+                }
+                
+            }
+            
+        }
+        
+    }
+    
+    
+    @available(iOS 10.0, *)
+    public func photoOutput(_ captureOutput: AVCapturePhotoOutput, didFinishProcessingPhoto photoSampleBuffer: CMSampleBuffer?, previewPhoto previewPhotoSampleBuffer: CMSampleBuffer?,
+                            resolvedSettings: AVCaptureResolvedPhotoSettings, bracketSettings: AVCaptureBracketedStillImageSettings?, error: Swift.Error?) {
+        
+        if let error = error { print(error) }
+            
+        else if let buffer = photoSampleBuffer, let data = AVCapturePhotoOutput.jpegPhotoDataRepresentation(forJPEGSampleBuffer: buffer, previewPhotoSampleBuffer: nil),
+            
+            let image = UIImage(data: data) {
+            self.selectedImage = image
+            switch self.cameraMode {
+            case .CropOption:
+                self.performSegue(withIdentifier: "goToCropImageView", sender: nil)
+            default:
+                self.performSegue(withIdentifier: "pushToALKCustomCameraPreviewViewController", sender: nil)
+            }
+        }
+        
     }
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -140,7 +197,7 @@ final class ALKCustomCameraViewController: ALKBaseViewController {
         backImage = backImage?.imageFlippedForRightToLeftLayoutDirection()
         self.navigationItem.leftBarButtonItem = UIBarButtonItem.init(image: backImage, style: .plain, target: self , action: #selector(dismissCameraPress(_:)))
     }
-
+    
     private func setupView() {
         btnCapture.imageView?.tintColor = UIColor.white
         btnSwitchCam.imageView?.tintColor = UIColor.white
@@ -210,10 +267,10 @@ final class ALKCustomCameraViewController: ALKBaseViewController {
                     break
                 // as above
                 case .denied, .restricted:
-                     break
+                    break
                 default: break
-                //whatever
-            }
+                    //whatever
+                }
             }
         }
     }
@@ -227,10 +284,10 @@ final class ALKCustomCameraViewController: ALKBaseViewController {
             beginSession()
         case .denied:
             // ask for permissions
-
+            
             let camNotAvailable = NSLocalizedString("CamNotAvaiable", value: SystemMessage.Warning.CamNotAvaiable,  comment: "")
             let pleaseAllowCamera = NSLocalizedString("PleaseAllowCamera", value: SystemMessage.Camera.PleaseAllowCamera,  comment: "")
-
+            
             let alertController = UIAlertController (title: camNotAvailable, message: pleaseAllowCamera, preferredStyle: .alert)
             let settingsAction = UIAlertAction(title: "Settings", style: .default) { (_) -> Void in
                 guard let settingsUrl = URL(string: UIApplicationOpenSettingsURLString) else {
@@ -240,7 +297,7 @@ final class ALKCustomCameraViewController: ALKBaseViewController {
                 if UIApplication.shared.canOpenURL(settingsUrl) {
                     if #available(iOS 10.0, *) {
                         UIApplication.shared.open(settingsUrl, completionHandler: {(success) in
-                        //
+                            //
                         })
                     } else {
                         // Fallback on earlier versions
@@ -274,17 +331,28 @@ final class ALKCustomCameraViewController: ALKBaseViewController {
     private func beginSession() {
         
         do {
-            if let captureDevice = captureDevice, var captureDeviceInput = captureDeviceInput {
+              if let captureDevice = captureDevice, var captureDeviceInput = captureDeviceInput {
                 try captureDeviceInput = AVCaptureDeviceInput(device: captureDevice)
-                captureSession.addInput(captureDeviceInput)
-                stillImageOutput.outputSettings = [AVVideoCodecKey:AVVideoCodecJPEG]
-                
-                if captureSession.canAddOutput(stillImageOutput) {
-                    captureSession.addOutput(stillImageOutput)
+                self.captureSession.addInput(captureDeviceInput)
+                if #available(iOS 10.0, *) {
+                    let cameraOutputUnwrapp = self.cameraOutput as? AVCapturePhotoOutput
+                    cameraOutputUnwrapp?.setPreparedPhotoSettingsArray([AVCapturePhotoSettings(format: [AVVideoCodecKey : AVVideoCodecJPEG])], completionHandler: nil)
+                    
+                    if self.captureSession.canAddOutput(cameraOutputUnwrapp!) {
+                        self.captureSession.addOutput(cameraOutputUnwrapp!)
+                    }
+                } else {
+                    stillImageOutput.outputSettings = [AVVideoCodecKey:AVVideoCodecJPEG]
+                    
+                    if captureSession.canAddOutput(stillImageOutput) {
+                        captureSession.addOutput(stillImageOutput)
+                    }
                 }
+                
             }else { return }
         }
-        catch {
+        catch let error{
+            print("Error while adding camera input: \(error)")
         }
         
         let previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
@@ -310,35 +378,42 @@ final class ALKCustomCameraViewController: ALKBaseViewController {
             
             isUserControlEnable = false
             
-            if let videoConnection = stillImageOutput.connection(with: AVMediaType.video) {
+            if #available(iOS 10.0, *) {
                 
-                if videoConnection.isVideoOrientationSupported,
-                    let orientation = AVCaptureVideoOrientation(orientation: UIDevice.current.orientation) {
-                    videoConnection.videoOrientation = orientation
-                }
+                self.capturePhoto()
                 
-                stillImageOutput.captureStillImageAsynchronously(from: videoConnection, completionHandler: { (CMSampleBuffer, Error) in
-                    if let imageData = AVCaptureStillImageOutput.jpegStillImageNSDataRepresentation(CMSampleBuffer!) {
-                        
-                        if let cameraImage = UIImage(data: imageData) {
-                            self.selectedImage = cameraImage
-                            switch self.cameraMode {
-                            case .CropOption:
-                                self.performSegue(withIdentifier: "goToCropImageView", sender: nil)
-                            default:
-                                self.performSegue(withIdentifier: "pushToALKCustomCameraPreviewViewController", sender: nil)
+            }else{
+                if let videoConnection = stillImageOutput.connection(with: AVMediaType.video) {
+                    
+                    if videoConnection.isVideoOrientationSupported,
+                        let orientation = AVCaptureVideoOrientation(orientation: UIDevice.current.orientation) {
+                        videoConnection.videoOrientation = orientation
+                    }
+                    
+                    stillImageOutput.captureStillImageAsynchronously(from: videoConnection, completionHandler: { (CMSampleBuffer, Error) in
+                        if let imageData = AVCaptureStillImageOutput.jpegStillImageNSDataRepresentation(CMSampleBuffer!) {
+                            
+                            if let cameraImage = UIImage(data: imageData) {
+                                self.selectedImage = cameraImage
+                                switch self.cameraMode {
+                                case .CropOption:
+                                    self.performSegue(withIdentifier: "goToCropImageView", sender: nil)
+                                default:
+                                    self.performSegue(withIdentifier: "pushToALKCustomCameraPreviewViewController", sender: nil)
+                                }
                             }
                         }
-                    }
-                })
+                    })
+                }
             }
+            
             enableCameraControl(inSec: 1)
         }
     }
     
     private func convertCIImageToCGImage(inputImage: CIImage) -> CGImage! {
         let context = CIContext(options: nil)
-            return context.createCGImage(inputImage, from: inputImage.extent)
+        return context.createCGImage(inputImage, from: inputImage.extent)
     }
     
     @IBAction private func switchCamPress(_ sender: Any) {
@@ -368,15 +443,29 @@ final class ALKCustomCameraViewController: ALKBaseViewController {
                     
                     guard let newCam = newCamera else {return}
                     
-                    let currentCameraInput: AVCaptureInput = captureSession.inputs[0] 
+                    let currentCameraInput: AVCaptureInput = captureSession.inputs[0]
                     captureSession.removeInput(currentCameraInput)
                     
                     do {
                         try captureSession.addInput(AVCaptureDeviceInput(device: newCam))
-                        stillImageOutput.outputSettings = [AVVideoCodecKey:AVVideoCodecJPEG]
-                        if captureSession.canAddOutput(stillImageOutput) {
-                            captureSession.addOutput(stillImageOutput)
+                        
+                        if #available(iOS 10.0, *) {
+                            let cameraOutputUnwrapp = self.cameraOutput as? AVCapturePhotoOutput
+                            
+                            cameraOutputUnwrapp?.setPreparedPhotoSettingsArray([AVCapturePhotoSettings(format: [AVVideoCodecKey : AVVideoCodecJPEG])], completionHandler: nil)
+                            
+                            if self.captureSession.canAddOutput(cameraOutputUnwrapp!) {
+                                self.captureSession.addOutput(cameraOutputUnwrapp!)
+                            }
+                            
+                        } else {
+                            stillImageOutput.outputSettings = [AVVideoCodecKey:AVVideoCodecJPEG]
+                            
+                            if captureSession.canAddOutput(stillImageOutput) {
+                                captureSession.addOutput(stillImageOutput)
+                            }
                         }
+                        
                     }
                     catch let error{
                         print("Error while adding camera input: \(error)")
@@ -394,7 +483,7 @@ final class ALKCustomCameraViewController: ALKBaseViewController {
         let devices = AVCaptureDevice.devices()
         for device in devices {
             if((device as AnyObject).position == position){
-                return device 
+                return device
             }
         }
         return AVCaptureDevice(uniqueID: "")
@@ -432,7 +521,7 @@ final class ALKCustomCameraViewController: ALKBaseViewController {
         }
         
     }
-
+    
     // MARK: - Navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         var destination = segue.destination
@@ -497,7 +586,7 @@ extension ALKCustomCameraViewController: UICollectionViewDelegate, UICollectionV
         let thumbnailSize:CGSize = CGSize(width: 200, height: 200)
         option.isSynchronous = true
         PHCachingImageManager.default().requestImage(for: asset, targetSize: thumbnailSize, contentMode: .aspectFill, options: option, resultHandler: { image, _ in
-                cell.imgPreview.image = image
+            cell.imgPreview.image = image
         })
         
         cell.imgPreview.backgroundColor = UIColor.white
