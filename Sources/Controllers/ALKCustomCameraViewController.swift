@@ -115,8 +115,8 @@ final class ALKCustomCameraViewController: ALKBaseViewController,AVCapturePhotoC
         
         if #available(iOS 10.0, *) {
             
-            let cameraOutputUnwrapp = self.cameraOutput as? AVCapturePhotoOutput
-            if let connection =  cameraOutputUnwrapp?.connection(with: AVMediaType.video) {
+            let cameraOutputUnwrapper = self.cameraOutput as? AVCapturePhotoOutput
+            if let connection =  cameraOutputUnwrapper?.connection(with: AVMediaType.video) {
                 
                 if connection.isVideoOrientationSupported,
                     let orientation = AVCaptureVideoOrientation(orientation: UIDevice.current.orientation) {
@@ -126,7 +126,7 @@ final class ALKCustomCameraViewController: ALKBaseViewController,AVCapturePhotoC
                 let settings = AVCapturePhotoSettings(format: [AVVideoCodecKey : AVVideoCodecJPEG])
                 
                 if (connection.isActive) {
-                    cameraOutputUnwrapp?.capturePhoto(with: settings, delegate: self)
+                    cameraOutputUnwrapper?.capturePhoto(with: settings, delegate: self)
                     //connection is active
                 } else {
                     //connection is not active
@@ -335,11 +335,11 @@ final class ALKCustomCameraViewController: ALKBaseViewController,AVCapturePhotoC
                 let captureDeviceInput = try AVCaptureDeviceInput(device: captureDevice)
                 self.captureSession.addInput(captureDeviceInput)
                 if #available(iOS 10.0, *) {
-                    let cameraOutputUnwrapp = self.cameraOutput as? AVCapturePhotoOutput
-                    cameraOutputUnwrapp?.setPreparedPhotoSettingsArray([AVCapturePhotoSettings(format: [AVVideoCodecKey : AVVideoCodecJPEG])], completionHandler: nil)
+                    let cameraOutputUnwrapper = self.cameraOutput as? AVCapturePhotoOutput
+                    cameraOutputUnwrapper?.setPreparedPhotoSettingsArray([AVCapturePhotoSettings(format: [AVVideoCodecKey : AVVideoCodecJPEG])], completionHandler: nil)
                     
-                    if self.captureSession.canAddOutput(cameraOutputUnwrapp!) {
-                        self.captureSession.addOutput(cameraOutputUnwrapp!)
+                    if self.captureSession.canAddOutput(cameraOutputUnwrapper!) {
+                        self.captureSession.addOutput(cameraOutputUnwrapper!)
                     }
                 } else {
                     stillImageOutput.outputSettings = [AVVideoCodecKey:AVVideoCodecJPEG]
