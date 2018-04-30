@@ -124,19 +124,17 @@ final class ALKFriendMessageCell: ALKMessageCell {
             equalTo: replyMessageLabel.bottomAnchor,
             constant: 0).isActive = true
 
-        messageView.topAnchor.constraint(equalTo: replyView.bottomAnchor, constant: 5).isActive = true
+        messageView.topAnchor.constraint(equalTo: replyView.bottomAnchor, constant: 3).isActive = true
         messageView.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor, constant: -57).isActive = true
 
         messageView.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: -1 * ALKFriendMessageCell.bottomPadding()).isActive = true
+        timeLabel.leadingAnchor.constraint(equalTo: messageView.trailingAnchor, constant: -35).isActive = true
 
-
-        timeLabel.leadingAnchor.constraint(equalTo: messageView.trailingAnchor, constant: -45).isActive = true
-
-        bubbleView.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 0).isActive = true
-        bubbleView.bottomAnchor.constraint(equalTo: messageView.bottomAnchor, constant: 16).isActive = true
+        bubbleView.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 3).isActive = true
+        bubbleView.bottomAnchor.constraint(equalTo: messageView.bottomAnchor, constant:15).isActive = true
 
         bubbleView.leadingAnchor.constraint(equalTo: messageView.leadingAnchor, constant: -13).isActive = true
-        bubbleView.trailingAnchor.constraint(equalTo: messageView.trailingAnchor, constant: 5).isActive = true
+        bubbleView.trailingAnchor.constraint(equalTo: messageView.trailingAnchor, constant: 10).isActive = true
         bubbleView.widthAnchor.constraint(greaterThanOrEqualToConstant: 80).isActive = true
 
 //        bubbleView.trailingAnchor.constraint(equalTo: replyNameLabel.trailingAnchor, constant: 10).isActive = true
@@ -149,7 +147,7 @@ final class ALKFriendMessageCell: ALKMessageCell {
 
         replyView.trailingAnchor.constraint(equalTo: bubbleView.trailingAnchor, constant: -5).isActive = true
 
-        timeLabel.bottomAnchor.constraint(equalTo: messageView.bottomAnchor, constant: 13).isActive = true
+        timeLabel.bottomAnchor.constraint(equalTo: messageView.bottomAnchor, constant: 10).isActive = true
         
         let image = UIImage.init(named: "chat_bubble_grey", in: Bundle.applozic, compatibleWith: nil)
         bubbleView.image = image?.imageFlippedForRightToLeftLayoutDirection()
@@ -205,7 +203,7 @@ final class ALKFriendMessageCell: ALKMessageCell {
 
         if(viewModel.displayName != nil ){
             let  attributedString  = NSMutableAttributedString(string: viewModel.displayName!, attributes: [
-                .font: UIFont(name: "Roboto-Regular", size: 10.0)!,
+                .font: UIFont(name: "Roboto-Regular", size: 12.0)!,
                 .foregroundColor: UIColor(red: 100.0 / 255.0, green: 98.0 / 255.0, blue: 98.0 / 255.0, alpha: 1.0),
                 .kern: 0.5
                 ])
@@ -350,13 +348,13 @@ final class ALKMyMessageCell: ALKMessageCell {
             equalTo: replyMessageLabel.bottomAnchor,
             constant: 0).isActive = true
 
-        messageView.topAnchor.constraint(equalTo: replyView.bottomAnchor, constant: ALKMessageCell.topPadding()).isActive = true
+        messageView.topAnchor.constraint(equalTo: replyView.bottomAnchor, constant:5).isActive = true
         messageView.leadingAnchor.constraint(greaterThanOrEqualTo: contentView.leadingAnchor, constant: ALKMessageCell.rightPadding()+30).isActive = true
         messageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -1*ALKMessageCell.leftPadding()).isActive = true
         messageView.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: 1 * ALKMyMessageCell.bottomPadding()).isActive = true
      //   messageView.widthAnchor.constraint(greaterThanOrEqualToConstant: 60).isActive = true
         
-        bubbleView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0).isActive = true
+        bubbleView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20).isActive = true
         bubbleView.bottomAnchor.constraint(equalTo: messageView.bottomAnchor, constant: 15).isActive = true
 
         bubbleView.leadingAnchor.constraint(equalTo: messageView.leadingAnchor, constant: -5).isActive = true
@@ -540,8 +538,24 @@ class ALKMessageCell: ALKChatBaseCell<ALKMessageViewModel>, ALKCopyMenuItemProto
         self.messageView.attributedText = nil
         self.messageView.text = nil
         guard let message = viewModel.message else { return }
+        var attributedMsgString = NSMutableAttributedString()
+
+        if(viewModel.isMyMessage){
+            attributedMsgString = NSMutableAttributedString(string: message, attributes: [
+                .font: UIFont(name: "Roboto-Regular", size: 14.0)!,
+                .foregroundColor: UIColor(red: 237.0 / 255.0, green: 230.0 / 255.0, blue:230.0 / 255.0, alpha: 1.0),
+                .kern: 0.5
+                ])
+        }else {
+            attributedMsgString = NSMutableAttributedString(string: message, attributes: [
+                .font: UIFont(name: "Roboto-Regular", size: 14.0)!,
+                .foregroundColor: UIColor(red: 100.0 / 255.0, green: 98.0 / 255.0, blue:98.0 / 255.0, alpha: 1.0),
+                .kern: 0.5
+                ])
+        }
+      
         if viewModel.messageType == .text {
-            self.messageView.text = message
+            self.messageView.attributedText = attributedMsgString
         } else if viewModel.messageType == .html {
 
             let style = NSMutableParagraphStyle.init()
@@ -574,7 +588,6 @@ class ALKMessageCell: ALKChatBaseCell<ALKMessageViewModel>, ALKCopyMenuItemProto
                 ])
         }
        
-        
         self.timeLabel.attributedText   = attributedString
         
     }
@@ -649,7 +662,7 @@ class ALKMessageCell: ALKChatBaseCell<ALKMessageViewModel>, ALKCopyMenuItemProto
             } else {
                 size = message.boundingRect(with: maxSize, options: [NSStringDrawingOptions.usesFontLeading, NSStringDrawingOptions.usesLineFragmentOrigin],attributes: attributes, context: nil)
             }
-            messageHeigh = ceil(size.height) + 15 // due to textview's bottom pading
+            messageHeigh = ceil(size.height) + 30 // due to textview's bottom pading
 
             if viewModel.isReplyMessage {
                 messageHeigh += 90

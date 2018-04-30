@@ -193,10 +193,12 @@ open class ALKChatBar: UIView {
             let storyboard = UIStoryboard.name(storyboard: UIStoryboard.Storyboard.camera, bundle: Bundle.applozic)
             if let vc = storyboard.instantiateViewController(withIdentifier: "CustomCameraNavigationController") as? ALKBaseNavigationViewController {
                 guard let firstVC = vc.viewControllers.first else {return}
+            
                 let cameraView = firstVC as! ALKCustomCameraViewController
                 cameraView.setCustomCamDelegate(camMode: .NoCropOption, camDelegate: self)
                 UIViewController.topViewController()?.present(vc, animated: false, completion: nil)
-            }
+                
+                  }
             break
             
         case micButton:

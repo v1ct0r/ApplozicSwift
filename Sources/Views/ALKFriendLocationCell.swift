@@ -59,7 +59,7 @@ final class ALKFriendLocationCell: ALKLocationCell {
         bubbleView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -6.0).isActive = true
         bubbleView.leadingAnchor.constraint(equalTo: avatarImageView.trailingAnchor, constant: 10.0).isActive = true
         
-        timeLabel.leadingAnchor.constraint(equalTo: bubbleView.trailingAnchor, constant: -40.0).isActive = true
+        timeLabel.leadingAnchor.constraint(equalTo: bubbleView.trailingAnchor, constant: -43.0).isActive = true
         timeLabel.bottomAnchor.constraint(equalTo: bubbleView.bottomAnchor, constant: -5.0).isActive = true
     }
     
@@ -70,7 +70,15 @@ final class ALKFriendLocationCell: ALKLocationCell {
     override func update(viewModel: ALKMessageViewModel) {
         super.update(viewModel: viewModel)
         
-        nameLabel.text = viewModel.displayName
+        if(viewModel.displayName != nil ){
+            let  attributedString  = NSMutableAttributedString(string: viewModel.displayName!, attributes: [
+                .font: UIFont(name: "Roboto-Regular", size: 12.0)!,
+                .foregroundColor: UIColor(red: 100.0 / 255.0, green: 98.0 / 255.0, blue: 98.0 / 255.0, alpha: 1.0),
+                .kern: 0.5
+                ])
+            
+            self.nameLabel.attributedText = attributedString
+        }
         
         let placeHolder = UIImage(named: "placeholder", in: Bundle.applozic, compatibleWith: nil)
         

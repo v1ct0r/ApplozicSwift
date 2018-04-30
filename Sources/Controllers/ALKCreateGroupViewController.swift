@@ -205,6 +205,7 @@ final class ALKCreateGroupViewController: ALKBaseViewController {
             let cameraView = firstVC as! ALKCustomCameraViewController
             cameraView.setCustomCamDelegate(camMode: .NoCropOption, camDelegate: self)
             self.present(vc, animated: false, completion: nil)
+
         }
     }
 

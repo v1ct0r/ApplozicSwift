@@ -40,14 +40,12 @@ final class ALKMyLocationCell: ALKLocationCell {
         stateView.widthAnchor.constraint(equalToConstant: 17.0).isActive = true
         stateView.heightAnchor.constraint(equalToConstant: 9.0).isActive = true
         
-        timeLabel.trailingAnchor.constraint(equalTo: stateView.leadingAnchor, constant: -2.0).isActive = true
+        timeLabel.trailingAnchor.constraint(equalTo: stateView.leadingAnchor, constant: -7.0).isActive = true
         timeLabel.bottomAnchor.constraint(equalTo: bubbleView.bottomAnchor, constant: -2).isActive = true
     }
     
     override func update(viewModel: ALKMessageViewModel) {
         super.update(viewModel: viewModel)
-        
-        
         
         if viewModel.isAllRead {
             stateView.image = UIImage(named: "kmreadIcon", in: Bundle.applozic, compatibleWith: nil)

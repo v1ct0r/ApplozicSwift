@@ -370,6 +370,7 @@ final class ALKCustomVideoViewController: ALKBaseViewController {
 }
 
 extension ALKCustomVideoViewController: AVCaptureFileOutputRecordingDelegate {
+    
 
     func fileOutput(_ captureOutput: AVCaptureFileOutput, didStartRecordingTo fileURL: URL, from connections: [AVCaptureConnection]) {
     }
