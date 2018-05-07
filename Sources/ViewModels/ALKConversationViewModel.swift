@@ -168,14 +168,12 @@ open class ALKConversationViewModel: NSObject {
         case .text, .html:
             if messageModel.isMyMessage {
 
-                let heigh = ALKMyMessageCell.rowHeigh(viewModel: messageModel, width: maxWidth)
-                //                cache?.setDouble(value: Double(heigh), forKey: identifier)
+                let heigh = ALKFriendMessageCell.rowHeighForMyCell(viewModel: messageModel, width: maxWidth)
                 return heigh
 
             } else {
 
-                let heigh = ALKFriendMessageCell.rowHeigh(viewModel: messageModel, width: maxWidth)
-                //                cache?.setDouble(value: Double(heigh), forKey: identifier)
+                let heigh = ALKFriendMessageCell.rowHeighForFrined(viewModel: messageModel, width: maxWidth)
                 return heigh
 
             }

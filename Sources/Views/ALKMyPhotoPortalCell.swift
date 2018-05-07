@@ -31,7 +31,7 @@ final class ALKMyPhotoPortalCell: ALKPhotoCell {
         let width = UIScreen.main.bounds.width
         contentView.addViewsForAutolayout(views: [stateView])
         
-        photoView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 6).isActive = true
+        photoView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 30).isActive = true
         photoView.leadingAnchor.constraint(greaterThanOrEqualTo: contentView.leadingAnchor, constant: 48).isActive = true
         photoView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -40).isActive = true
         

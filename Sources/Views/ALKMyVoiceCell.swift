@@ -29,7 +29,7 @@ class ALKMyVoiceCell: ALKVoiceCell {
         
         contentView.addViewsForAutolayout(views: [stateView])
         
-        soundPlayerView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10).isActive = true
+        soundPlayerView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 30).isActive = true
         soundPlayerView.leadingAnchor.constraint(greaterThanOrEqualTo: contentView.leadingAnchor, constant: 48).isActive = true
         soundPlayerView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -39).isActive = true
         soundPlayerView.widthAnchor.constraint(equalToConstant: width*0.48).isActive = true
