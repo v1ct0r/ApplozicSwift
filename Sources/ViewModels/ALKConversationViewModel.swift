@@ -837,6 +837,12 @@ open class ALKConversationViewModel: NSObject {
                 return
             }
             NSLog("messages loaded: ", messages)
+            
+            if(self.alMessages.count>0){
+                self.alMessages.removeAll();
+                self.delegate?.newMessagesAdded()
+            }
+    
             self.alMessages = messages.reversed() as! [ALMessage]
             self.alMessageWrapper.addObject(toMessageArray: messages)
             let models = self.alMessages.map { $0.messageModel }
