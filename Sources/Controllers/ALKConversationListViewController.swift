@@ -31,7 +31,7 @@ open class ALKConversationListViewController: ALKBaseViewController {
 
     fileprivate var conversationViewController: ALKConversationViewController?
 
-    fileprivate let tableView : UITableView = {
+    let tableView : UITableView = {
         let tv = UITableView(frame: .zero, style: .plain)
         tv.estimatedRowHeight = 75
         tv.rowHeight = 75
