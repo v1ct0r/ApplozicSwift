@@ -11,6 +11,7 @@ import UIKit
 import Applozic
 
 
+
 public protocol ALKCustomAmountProtocol : class{
     func didAcceptCliked(paymentModel:ALKPaymentModel)
 }
@@ -38,11 +39,12 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
     
     fileprivate var bubbleView: UIImageView = {
         let bv = UIImageView()
-        let image = UIImage.init(named: "chat_bubble_red", in: Bundle.applozic, compatibleWith: nil)
+        let image = UIImage.init(named: "chat_bubble_rounded", in: Bundle.applozic, compatibleWith: nil)
         bv.tintColor = UIColor(netHex: 0xF1F0F0)
         bv.isUserInteractionEnabled = true
         bv.image = image?.imageFlippedForRightToLeftLayoutDirection()
         bv.isOpaque = true
+        bv.setImageColor(color: UIColor(netHex: 0xF1F0F0))
         return bv
     }()
     
@@ -52,7 +54,6 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
         lb.textAlignment = .center
         lb.numberOfLines = 2
         lb.font = Font.bold(size: 13.0).font()
-        
         lb.backgroundColor=UIColor.clear
         return lb
     }()
@@ -60,7 +61,6 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
     
     var paymentMoney: UILabel = {
         let lb = UILabel()
-        
         lb.textAlignment = .center
         lb.backgroundColor=UIColor.clear
         lb.font = Font.bold(size: 14.0).font()
@@ -74,7 +74,6 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
         lb.textAlignment = .center
         lb.font = Font.bold(size: 14.0).font()
         lb.backgroundColor = UIColor.clear
-        
         return lb
     }()
     
@@ -90,9 +89,8 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
     
     fileprivate var paymentAceptButton: UIButton = {
         let button = UIButton()
-        button .setTitle("Accept", for: UIControlState.normal)
-        button.setTextColor(color: Color.Text.black00, forState:UIControlState.normal)
-        
+        button.setTitle("Accept", for: UIControlState.normal)
+        button.setTextColor(color: Color.Text.white, forState: .normal)
         return button
     }()
     
@@ -100,10 +98,19 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
     fileprivate var paymentRejectButton: UIButton = {
         let button = UIButton(type: .custom)
         button .setTitle("Reject", for: UIControlState.normal)
-        button.setTextColor(color: Color.Text.black00, forState:UIControlState.normal)
+        button.setTextColor(color: Color.Text.white, forState:UIControlState.normal)
         return button
     }()
     
+    fileprivate lazy var paymentResponseButtons: UIStackView = {
+        let stackView = UIStackView(arrangedSubviews: [self.paymentAceptButton, self.paymentRejectButton])
+        stackView.axis = UILayoutConstraintAxis.horizontal
+        stackView.distribution = UIStackViewDistribution.fillEqually
+        stackView.alignment = UIStackViewAlignment.fill
+        stackView.spacing = 10.0
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        return stackView
+    }()
     
     
     fileprivate let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.gray)
@@ -127,10 +134,8 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
     override class func rowHeigh(viewModel: ALKMessageViewModel,width: CGFloat) -> CGFloat {
         
         let heigh = (width*0.27)
-        
         return topPadding()+heigh+bottomPadding()
     }
-    
     
     var avatarImageView: UIImageView = {
         let imv = UIImageView()
@@ -178,10 +183,10 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
             let amount =     nsmutable!["amount"]
             let hiddenStatus =     nsmutable!["hiddenStatus"]
             let paymentId =     nsmutable!["paymentId"]
-            let  paymentMessage = nsmutable!["paymentMessage"]
-            let  paymentSubject = nsmutable!["paymentSubject"]
-            let  paymentStatus = nsmutable!["paymentStatus"]
-            let   richMessageType = nsmutable!["richMessageType"];
+            let paymentMessage = nsmutable!["paymentMessage"]
+            let paymentSubject = nsmutable!["paymentSubject"]
+            let paymentStatus = nsmutable!["paymentStatus"]
+            let richMessageType = nsmutable!["richMessageType"];
             let doller = "$"
             let amountString = "\(doller) \(amount as! String)"
             
@@ -247,6 +252,7 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
                         handlePaymentActionbuttonVisibality(isHidden: false)
                     }
                     paymentMoney.text = amountString
+                    paymentResponseButtons.isHidden = false
                 }else if("paymentRejected" == paymentStatus as! String!){
                     
                     let attributeString: NSMutableAttributedString =  NSMutableAttributedString(string:  amountString)
@@ -286,8 +292,7 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
                     }else{
                         paymentTitle.text = "You rejected"
                     }
-                    
-                    
+                    paymentResponseButtons.isHidden = true
                 }else if("paymentAccepted" == paymentStatus as! String!){
                     paymentMoney.text = amountString
                     handlePaymentActionbuttonVisibality(isHidden: true)
@@ -320,6 +325,7 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
                     }else{
                         paymentTitle.text = viewModel.displayName! + " paid you"
                     }
+                    paymentResponseButtons.isHidden = true
                 }else{
                     let requestedString = viewModel.displayName! + " paid "
                     if(viewModel.channelKey != nil){
@@ -344,16 +350,43 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
                         handlePaymentActionbuttonVisibality(isHidden: false)
                     }
                     paymentMoney.text = amountString
+                    paymentResponseButtons.isHidden = true
                 }
             }
             
             paymentSubjctTitle.text = "Asunto:"
             paymentSubjctText.text = paymentSubject as? String
+            
+            setUpPaymentMessageColor(paymentStatus: paymentStatus as! String)
         }
         timeLabel.text   = viewModel.time
-        
     }
     
+    private func setUpPaymentMessageColor(paymentStatus: String){
+        var paymentColor = ALKConfiguration.init().customPrimary;//default
+        switch (paymentStatus){
+        case "paymentSent":
+            paymentColor = ALKConfiguration.init().paymentReceived
+        case "paymentRequested":
+            paymentColor = ALKConfiguration.init().paymentRequested
+        case "paymentRejected":
+            paymentColor = ALKConfiguration.init().paymentRequested
+        case "paymentAccepted":
+            paymentColor = ALKConfiguration.init().paymentSent
+        case "paymentReceived":
+            paymentColor = ALKConfiguration.init().paymentReceived
+        default:
+            print("This should never occur");
+        }
+        paymentTitle.textColor = UIColor.white
+        paymentTitle.backgroundColor = paymentColor
+        paymentMoney.textColor = paymentColor
+        paymentSubjctTitle.textColor = paymentColor
+        bubbleView.layer.borderColor = paymentColor.cgColor
+        bubbleView.layer.borderWidth = 2
+        bubbleView.layer.cornerRadius = 12
+        bubbleView.clipsToBounds = true
+    }
     
     func handlePaymentActionbuttonVisibality(isHidden: Bool) {
         paymentRejectButton.isHidden = isHidden;
@@ -533,13 +566,12 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
         paymentRejectButton.isUserInteractionEnabled = true
         
         contentView.addViewsForAutolayout(views: [avatarImageView,nameLabel,bubbleView,timeLabel])
-        bubbleView.addViewsForAutolayout(views: [paymentTitle,paymentMoney,paymentSubjctTitle,paymentSubjctText,paymentAceptButton, paymentRejectButton])
+        bubbleView.addViewsForAutolayout(views: [paymentTitle,paymentMoney,paymentSubjctTitle,paymentSubjctText,paymentResponseButtons])
         bubbleView.bringSubview(toFront:paymentTitle)
         bubbleView.bringSubview(toFront:paymentMoney)
         bubbleView.bringSubview(toFront:paymentSubjctTitle)
         bubbleView.bringSubview(toFront:paymentSubjctText)
-        bubbleView.bringSubview(toFront:paymentAceptButton)
-        bubbleView.bringSubview(toFront:paymentRejectButton)
+        bubbleView.bringSubview(toFront: paymentResponseButtons)
         contentView.bringSubview(toFront:nameLabel)
         
         nameLabel.leadingAnchor.constraint(equalTo: bubbleView.leadingAnchor, constant: 10).isActive = true
@@ -550,58 +582,47 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
         avatarImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 18).isActive = true
         avatarImageView.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: 0).isActive = true
         avatarImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 9).isActive = true
-        avatarImageView.trailingAnchor.constraint(equalTo: paymentTitle.leadingAnchor, constant: -18).isActive = true
+        avatarImageView.trailingAnchor.constraint(equalTo: bubbleView.leadingAnchor, constant: -10).isActive = true
         avatarImageView.heightAnchor.constraint(equalToConstant: 37).isActive = true
         avatarImageView.widthAnchor.constraint(equalTo: avatarImageView.heightAnchor).isActive = true
         
         bubbleView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20).isActive = true
         bubbleView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -15).isActive = true
         //bubbleView.rightAnchor.constraint(equalTo: contentView.rightAnchor).isActive = true
-        let width = UIScreen.main.bounds.width * 0.40
-        bubbleView.widthAnchor.constraint(equalToConstant: width)
+//        let width = UIScreen.main.bounds.width * 0.10
+//        bubbleView.widthAnchor.constraint(equalToConstant: width)//Not working dont know why
         bubbleView.leadingAnchor.constraint(equalTo: avatarImageView.trailingAnchor, constant:10).isActive = true
-        
-        let image = UIImage.init(named: "chat_bubble_grey", in: Bundle.applozic, compatibleWith: nil)
-        bubbleView.image = image?.imageFlippedForRightToLeftLayoutDirection()
-        bubbleView.tintColor = UIColor(netHex: 0xF1F0F0)
+        bubbleView.trailingAnchor.constraint(equalTo: timeLabel.leadingAnchor, constant: -10).isActive = true
         
         timeLabel.heightAnchor.constraint(equalToConstant: 15).isActive = true
-        timeLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: 17).isActive = true
+        timeLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: 20).isActive = true
         timeLabel.widthAnchor.constraint(equalToConstant: 70).isActive = true
         timeLabel.topAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -23).isActive  = true
-        paymentTitle.topAnchor.constraint(equalTo: bubbleView.topAnchor,constant:10).isActive = true
-        paymentTitle.leadingAnchor.constraint(equalTo: bubbleView.leadingAnchor, constant: 50).isActive = true
-        paymentTitle.trailingAnchor.constraint(equalTo: bubbleView.trailingAnchor, constant: -50).isActive = true
-        paymentTitle.heightAnchor.constraint(equalToConstant: 20).isActive = true
-        paymentTitle.widthAnchor.constraint(greaterThanOrEqualToConstant: 50).isActive = true
+        
+        paymentTitle.topAnchor.constraint(equalTo: bubbleView.topAnchor).isActive = true
+        paymentTitle.leadingAnchor.constraint(equalTo: bubbleView.leadingAnchor).isActive = true
+        paymentTitle.trailingAnchor.constraint(equalTo: bubbleView.trailingAnchor).isActive = true
+        paymentTitle.heightAnchor.constraint(equalToConstant: 30).isActive = true
         
         paymentMoney.topAnchor.constraint(equalTo: paymentTitle.bottomAnchor, constant: 1).isActive = true
-        paymentMoney.leadingAnchor.constraint(equalTo: paymentTitle.leadingAnchor, constant: 50).isActive = true
-        paymentMoney.trailingAnchor.constraint(equalTo: paymentTitle.trailingAnchor, constant: -50).isActive = true
+        paymentMoney.leadingAnchor.constraint(equalTo: paymentTitle.leadingAnchor).isActive = true
+        paymentMoney.trailingAnchor.constraint(equalTo: paymentTitle.trailingAnchor).isActive = true
         paymentMoney.bottomAnchor.constraint(equalTo: paymentTitle.bottomAnchor, constant: 30).isActive = true
         paymentMoney.heightAnchor.constraint(equalToConstant: 15).isActive = true
-        paymentMoney.widthAnchor.constraint(equalTo: bubbleView.widthAnchor, multiplier: 0.4).isActive = true
+        
         paymentSubjctTitle.topAnchor.constraint(equalTo: paymentMoney.bottomAnchor, constant: 1).isActive = true
-        paymentSubjctTitle.leadingAnchor.constraint(equalTo: bubbleView.leadingAnchor, constant: 50).isActive = true
+        paymentSubjctTitle.leadingAnchor.constraint(equalTo: bubbleView.leadingAnchor, constant: 5).isActive = true
         paymentSubjctTitle.heightAnchor.constraint(equalToConstant: 20).isActive = true
-        paymentSubjctTitle.widthAnchor.constraint(equalTo: bubbleView.widthAnchor, multiplier: 0.3).isActive = true
         
         paymentSubjctText.topAnchor.constraint(equalTo: paymentMoney.bottomAnchor, constant: 1).isActive = true
-        paymentSubjctText.leadingAnchor.constraint(equalTo: paymentSubjctTitle.trailingAnchor, constant: 0).isActive = true
-        paymentSubjctText.heightAnchor.constraint(equalToConstant: 20).isActive = true
-        paymentSubjctText.widthAnchor.constraint(greaterThanOrEqualToConstant: 80)
+        paymentSubjctText.leadingAnchor.constraint(equalTo: paymentSubjctTitle.trailingAnchor, constant: 10).isActive = true
         
-        paymentAceptButton.topAnchor.constraint(equalTo: paymentSubjctTitle.bottomAnchor, constant: 1).isActive = true
-        paymentAceptButton.leadingAnchor.constraint(equalTo: bubbleView.leadingAnchor, constant: bubbleView.frame.width*0.2).isActive = true
-        paymentAceptButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
-        paymentAceptButton.widthAnchor.constraint(equalTo: bubbleView.widthAnchor, multiplier: 0.4).isActive = true
-        paymentRejectButton.topAnchor.constraint(equalTo: paymentSubjctText.bottomAnchor, constant: 1).isActive = true
-        paymentRejectButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
-        paymentRejectButton.widthAnchor.constraint(equalTo: bubbleView.widthAnchor, multiplier: 0.4).isActive = true
-        paymentRejectButton.trailingAnchor.constraint(equalTo: bubbleView.trailingAnchor, constant: -30).isActive = true
-        
+        paymentResponseButtons.topAnchor.constraint(equalTo: paymentSubjctTitle.bottomAnchor, constant: 1).isActive = true
+        paymentResponseButtons.leadingAnchor.constraint(equalTo: bubbleView.leadingAnchor).isActive = true
+        paymentResponseButtons.trailingAnchor.constraint(equalTo: bubbleView.trailingAnchor).isActive = true
+        paymentResponseButtons.bottomAnchor.constraint(equalTo: bubbleView.bottomAnchor).isActive = true
+        paymentResponseButtons.addBackground(color: ALKConfiguration.init().paymentRequested)
     }
-    
     
     @objc private func uploadButtonAction(_ selector: UIButton) {
         uploadTapped?(true)

@@ -12,12 +12,13 @@ import ContactsUI
 import Applozic
 
 open class ALKConversationListViewController: ALKBaseViewController {
-    
+
     var viewModel: ALKConversationListViewModel!
 
     // To check if coming from push notification
     var contactId: String?
     var channelKey: NSNumber?
+    var searchClicked: Bool = false
 
     public var conversationViewControllerType = ALKConversationViewController.self
 
@@ -181,6 +182,7 @@ open class ALKConversationListViewController: ALKBaseViewController {
         if let text = searchBar.text, !text.isEmpty {
             searchBar.text = ""
         }
+        searchClicked = false
         searchBar.endEditing(true)
         searchActive = false
         tableView.reloadData()
@@ -193,6 +195,8 @@ open class ALKConversationListViewController: ALKBaseViewController {
         let rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "fill_214", in: Bundle.applozic, compatibleWith: nil), style: .plain, target: self, action: #selector(compose))
         navigationItem.rightBarButtonItem = rightBarButtonItem
 
+        
+        
         let back = NSLocalizedString("Back", value: "Back", comment: "")
         let leftBarButtonItem = UIBarButtonItem(title: back, style: .plain, target: self, action: #selector(customBackAction))
         navigationItem.leftBarButtonItem = leftBarButtonItem
@@ -249,8 +253,10 @@ open class ALKConversationListViewController: ALKBaseViewController {
     }
 
     func compose() {
-        let newChatVC = ALKNewChatViewController(viewModel: ALKNewChatViewModel())
-        navigationController?.pushViewController(newChatVC, animated: true)
+//        let newChatVC = ALKNewChatViewController(viewModel: ALKNewChatViewModel())
+//        navigationController?.pushViewController(newChatVC, animated: true)
+        searchClicked = true
+        tableView.reloadData()
     }
 
     func sync(message: ALMessage) {
@@ -326,6 +332,7 @@ extension ALKConversationListViewController: UITableViewDelegate, UITableViewDat
             viewController.title = chat.isGroupChat ? chat.groupName:chat.name
             viewController.viewModel = convViewModel
             conversationViewController = viewController
+            viewController.hidesBottomBarWhenPushed = true
             self.navigationController?.pushViewController(viewController, animated: false)
         } else {
             guard let chat = viewModel.chatForRow(indexPath: indexPath) else { return }
@@ -338,6 +345,7 @@ extension ALKConversationListViewController: UITableViewDelegate, UITableViewDat
             viewController.title = chat.isGroupChat ? chat.groupName:chat.name
             viewController.viewModel = convViewModel
             conversationViewController = viewController
+            viewController.hidesBottomBarWhenPushed = true
             self.navigationController?.pushViewController(viewController, animated: false)
         }
     }
@@ -347,7 +355,11 @@ extension ALKConversationListViewController: UITableViewDelegate, UITableViewDat
     }
 
     open func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 0
+        if searchClicked{
+            return 50
+        }else{
+            return 0
+        }
     }
 
     open func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {

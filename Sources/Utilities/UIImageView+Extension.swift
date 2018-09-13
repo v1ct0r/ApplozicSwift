@@ -28,4 +28,10 @@ extension UIImageView {
         layer.cornerRadius = 0.5 * frame.size.width
         clipsToBounds = true
     }
+    
+    public func setImageColor(color: UIColor) {
+        let templateImage = self.image?.withRenderingMode(UIImageRenderingMode.alwaysTemplate)
+        self.image = templateImage
+        self.tintColor = color
+    }
 }

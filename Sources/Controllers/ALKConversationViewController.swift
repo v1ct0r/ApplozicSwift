@@ -323,6 +323,7 @@ open class ALKConversationViewController: ALKBaseViewController {
 
     override open func viewDidLoad() {
         super.viewDidLoad()
+//        self.tabBarController?.tabBar.isHidden = true
     }
 
     override open func viewDidLayoutSubviews() {
