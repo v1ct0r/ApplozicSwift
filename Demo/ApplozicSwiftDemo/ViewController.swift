@@ -45,7 +45,11 @@ class ViewController: UIViewController {
         conversationVC.title = "Conversation"
         conversationVC.tabBarItem = UITabBarItem.init(tabBarSystemItem: UITabBarSystemItem.contacts, tag: 0)
 
-        let controllers = [conversationVC]
+        let contactsVC = ALKContactListViewController()
+        contactsVC.title = "Contacts"
+        contactsVC.tabBarItem = UITabBarItem.init(tabBarSystemItem: .contacts, tag: 1)
+        
+        let controllers = [conversationVC, contactsVC]
         tabBarController.viewControllers = controllers.map { UINavigationController(rootViewController: $0) }
         tabBarController.tabBar.backgroundColor = ALKConfiguration.init().customPrimary
         self.present(tabBarController, animated: false, completion: nil)
