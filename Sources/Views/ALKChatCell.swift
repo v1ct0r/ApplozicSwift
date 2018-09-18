@@ -126,6 +126,14 @@ final class ALKChatCell: MGSwipeTableCell {
         view.backgroundColor = UIColor.onlineGreen()
         return view
     }()
+    
+    private var checkBox: UIButton = {
+        let button = UIButton(type: .custom)
+        button.layer.borderColor = UIColor.darkGray.cgColor
+        button.layer.cornerRadius = 5
+        button.layer.borderWidth = 2
+        return button
+    }()
 
     private var avatarName: UILabel = {
         let label = UILabel()
@@ -145,6 +153,7 @@ final class ALKChatCell: MGSwipeTableCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         selectionStyle = .none
         voipButton.isHidden = true
+        disableMultiSelect()
         setupConstraints()
     }
 
@@ -290,7 +299,7 @@ final class ALKChatCell: MGSwipeTableCell {
 
     private func setupConstraints() {
 
-        contentView.addViewsForAutolayout(views: [avatarImageView, nameLabel, locationLabel,lineView,voipButton,/*favoriteButton,*/avatarName,badgeNumberView, timeLabel, onlineStatusView])
+        contentView.addViewsForAutolayout(views: [avatarImageView, nameLabel, locationLabel,lineView,voipButton,/*favoriteButton,*/avatarName,badgeNumberView, timeLabel, checkBox, onlineStatusView])
 
         // setup constraint of imageProfile
         avatarImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 17.0).isActive = true
@@ -308,7 +317,7 @@ final class ALKChatCell: MGSwipeTableCell {
         locationLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 2).isActive = true
         locationLabel.heightAnchor.constraint(equalToConstant: 20).isActive = true
         locationLabel.leadingAnchor.constraint(equalTo: avatarImageView.trailingAnchor, constant: 12).isActive = true
-        locationLabel.trailingAnchor.constraint(equalTo: voipButton.leadingAnchor, constant: -19).isActive = true
+        locationLabel.trailingAnchor.constraint(equalTo: checkBox.leadingAnchor, constant: -19).isActive = true
 
         // setup constraint of line
         lineView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor).isActive = true
@@ -360,6 +369,11 @@ final class ALKChatCell: MGSwipeTableCell {
         avatarName.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 15.0).isActive = true
         avatarName.heightAnchor.constraint(equalToConstant: 45.0).isActive = true
         avatarName.widthAnchor.constraint(equalToConstant: 45.0).isActive = true
+        
+        checkBox.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -25).isActive = true
+        checkBox.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
+        checkBox.widthAnchor.constraint(equalToConstant: 25.0).isActive = true
+        checkBox.heightAnchor.constraint(equalToConstant: 25.0).isActive = true
 
         // update frame
         contentView.layoutIfNeeded()
@@ -413,4 +427,23 @@ final class ALKChatCell: MGSwipeTableCell {
         return min + Int(arc4random_uniform(UInt32(max - min + 1)))
     }
     
+    func enableMultiSelect() {
+        checkBox.isHidden = false
+        timeLabel.isHidden = true
+    }
+    
+    func disableMultiSelect() {
+        checkBox.isHidden = true
+        timeLabel.isHidden = false
+    }
+    
+    func selectCheckBox() {
+        checkBox.setBackgroundImage(UIImage(named: "checkMark.png"), for: .normal)
+        checkBox.backgroundColor = ALKConfiguration.init().customPrimary
+        
+    }
+    
+    func deselectCheckBox() {
+        checkBox.backgroundColor = UIColor.clear
+    }
 }
