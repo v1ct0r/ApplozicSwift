@@ -115,6 +115,7 @@ open class ALKConversationViewController: ALKBaseViewController {
 
     required public init() {
         super.init(nibName: nil, bundle: nil)
+        self.hidesBottomBarWhenPushed = true
     }
 
     required public init?(coder aDecoder: NSCoder) {
@@ -256,7 +257,17 @@ open class ALKConversationViewController: ALKBaseViewController {
             guard let key = weakSelf.viewModel.channelKey, let channel = alChannelService.getChannelByKey(key), let name = channel.name else { return }
             weakSelf.titleButton.setTitle(name, for: .normal)
         })
+        
+//        NotificationCenter.default.addObserver(self, selector: #selector(checkPaymentBroadcast(_:)), name: NSNotification.Name(rawValue: "paymentCallback"), object: nil)
     }
+//
+//    func checkPaymentBroadcast(_ paymentData: NSNotification){
+//        if let payment = paymentData.userInfo as? [String: Any] {
+//            print("\(payment)")
+//            print("\(payment["paymentType"])")
+//            print(String(data: json, encoding: .utf8)))
+//        }
+//    }
 
     override func removeObserver() {
 
@@ -623,6 +634,23 @@ open class ALKConversationViewController: ALKBaseViewController {
                 guard let mapViewVC = nav.viewControllers.first as? ALKMapViewController else { return }
                 mapViewVC.delegate = self
                 self?.present(nav, animated: true, completion: {})
+                
+            case .paymentBroadcast(let paymentType):
+                let paymentData = ALKPaymentModel()
+                if self!.viewModel.isGroup {
+                    paymentData.groupId = self!.viewModel.channelKey
+                } else {
+                    paymentData.userId = self!.viewModel.contactId
+                }
+                paymentData.paymentType = paymentType
+                paymentData.launchPaymentPage = true
+                
+                //Convert to json
+//                let json = try? JSONSerialization.data(withJSONObject: paymentData.toDictionary(), options: [])
+                
+                //send broadcast to ionic
+                BroadcastToIonic.sendBroadcast(name: "paymentCallback", data: paymentData.toDictionary())
+                
             default:
                 print("Not available")
             }

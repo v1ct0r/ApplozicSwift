@@ -9,7 +9,7 @@ import Foundation
 
 
 open class ALKPaymentModel: NSObject{
-
+    
     open var usersRequested: NSMutableArray?
 
     open var userId: String?
@@ -29,4 +29,22 @@ open class ALKPaymentModel: NSObject{
     open var paymentSubject: String?
 
     open var cancelFlag: Bool = false
+    
+    func toDictionary() -> [String: Any] {
+        return [
+            "usersRequested": usersRequested ?? [],
+            "userId": userId ?? "",
+            "groupId": groupId ?? "",
+            "messageKey": messageKey ?? "",
+            "launchPaymentPage": launchPaymentPage,
+            "paymentId": paymentId ?? "",
+            "parentMessageKey": parentMessageKey ?? "",
+            "parentPaymentId": parentPaymentId ?? "",
+            "paymentType": paymentType ?? "",
+            "paymentAmount": paymentAmount ?? "",
+            "paymentSubject": paymentSubject ?? "",
+            "cancelFlag": cancelFlag
+        ]
+    }
+    
 }

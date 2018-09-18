@@ -318,7 +318,6 @@ class ALKMyPaymentMessage: ALKChatBaseCell<ALKMessageViewModel> {
     }
     
     private func setUpPaymentMessageColor(paymentStatus: String){
-        print("SHIVAMMMM \(paymentStatus) is payment status")
         var paymentColor = ALKConfiguration.init().customPrimary;//default
         switch (paymentStatus){
             case "paymentSent":

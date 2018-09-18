@@ -15,12 +15,18 @@ DEPENDENCIES:
   - Applozic (from `https://github.com/AppLozic/Applozic-Chat-iOS-Framework.git`, branch `payment`)
   - ApplozicSwift (from `../ApplozicSwift.podspec`)
 
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - Kingfisher
+    - MGSwipeTableCell
+    - SDWebImage
+
 EXTERNAL SOURCES:
   Applozic:
     :branch: payment
     :git: https://github.com/AppLozic/Applozic-Chat-iOS-Framework.git
   ApplozicSwift:
-    :path: ../ApplozicSwift.podspec
+    :path: "../ApplozicSwift.podspec"
 
 CHECKOUT OPTIONS:
   Applozic:
@@ -34,6 +40,6 @@ SPEC CHECKSUMS:
   MGSwipeTableCell: 616700eb0ffd1c611ba909066cb7fd739790a0a7
   SDWebImage: 791bb72962b3492327ddcac4b1880bd1b5458431
 
-PODFILE CHECKSUM: a2a3966c44b9708fbb67a05eb50178012be27442
+PODFILE CHECKSUM: dc6ad517546d3413406bb0a3c057033c75bc08ee
 
-COCOAPODS: 1.4.0
+COCOAPODS: 1.5.3

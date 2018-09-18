@@ -332,7 +332,6 @@ extension ALKConversationListViewController: UITableViewDelegate, UITableViewDat
             viewController.title = chat.isGroupChat ? chat.groupName:chat.name
             viewController.viewModel = convViewModel
             conversationViewController = viewController
-            viewController.hidesBottomBarWhenPushed = true
             self.navigationController?.pushViewController(viewController, animated: false)
         } else {
             guard let chat = viewModel.chatForRow(indexPath: indexPath) else { return }
@@ -345,7 +344,6 @@ extension ALKConversationListViewController: UITableViewDelegate, UITableViewDat
             viewController.title = chat.isGroupChat ? chat.groupName:chat.name
             viewController.viewModel = convViewModel
             conversationViewController = viewController
-            viewController.hidesBottomBarWhenPushed = true
             self.navigationController?.pushViewController(viewController, animated: false)
         }
     }

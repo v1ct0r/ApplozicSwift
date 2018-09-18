@@ -45,6 +45,16 @@ open class ALKContactListViewController: ALKBaseViewController {
     private func setupView() {
         title = NSLocalizedString("ContactList", value: "Contacts", comment: "")
         
+        //edit button
+        let editButtoninBar = UIBarButtonItem(image: UIImage(named: "fill_214", in: Bundle.applozic, compatibleWith: nil), style: .plain, target: self, action: #selector(createGroup))
+        navigationItem.rightBarButtonItem = editButtoninBar
+        
+        
+        //Back button
+        let back = NSLocalizedString("Back", value: "Back", comment: "")
+        let leftBarButtonItem = UIBarButtonItem(title: back, style: .plain, target: self, action: #selector(customBackAction))
+        navigationItem.leftBarButtonItem = leftBarButtonItem
+        
         view.addViewsForAutolayout(views: [searchBar, tableView])
         setupSearchBarConstraint()
         setupTableViewConstraint()
@@ -54,6 +64,9 @@ open class ALKContactListViewController: ALKBaseViewController {
         tableView.dataSource = self
         self.automaticallyAdjustsScrollViewInsets = false
         registerCell()
+        
+        tableView.allowsMultipleSelection = true
+        tableView.allowsMultipleSelectionDuringEditing = true
     }
     
     //SET UP SEARCH BAR CONSTRAINT
@@ -77,7 +90,22 @@ open class ALKContactListViewController: ALKBaseViewController {
     private func registerCell() {
         tableView.register(ALKContactCell.self)
     }
+    
+    func createGroup() {
+        let newChatVC = ALKNewChatViewController(viewModel: ALKNewChatViewModel())
+        newChatVC.hidesBottomBarWhenPushed = true
+        navigationController?.pushViewController(newChatVC, animated: true)
+    }
+    
+//    func enableEditing(){
+//        tableView.setEditing(true, animated: true)
+    
+//            tableView.allowsMultipleSelectionDuringEditing = true //inside setupviews
+//    }
 
+    func customBackAction(){
+        tabBarController?.selectedIndex = 0
+    }
 }
 
 //MARK: - UITableViewDelegate
@@ -107,7 +135,35 @@ extension ALKContactListViewController: UITableViewDelegate, UITableViewDataSour
     }
     
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        tableView.isUserInteractionEnabled = false
         
+        if self.viewModel.sectionHeaderTitle(section: indexPath.section) == "_" {
+            // show popup for invitation
+//            let shareApp = ShareApp()
+            let message = "Hey jude don't make it bad"
+            let vc = UIActivityViewController(activityItems: [message], applicationActivities: nil)
+            /* If you want to exclude certain types from sharing
+             options you could add them to the excludedActivityTypes */
+            //        vc.excludedActivityTypes = [UIActivityTypeMail]
+            let excludeActivities = [UIActivityType.airDrop, UIActivityType.print, UIActivityType.assignToContact, UIActivityType.saveToCameraRoll, UIActivityType.addToReadingList, UIActivityType.postToFlickr, UIActivityType.postToVimeo, UIActivityType.postToFacebook, UIActivityType.message, UIActivityType.postToWeibo]
+            vc.excludedActivityTypes = excludeActivities
+            self.present(vc, animated: true, completion: nil)
+            self.tableView.isUserInteractionEnabled = true
+            return
+        }
+        
+        let contact = self.viewModel.contactForRow(indexPath: indexPath, section: indexPath.section)
+        
+        let viewModel = ALKConversationViewModel(contactId: contact.userId, channelKey: nil)
+        
+        let conversationVC = ALKConversationViewController()
+        conversationVC.viewModel = viewModel
+        conversationVC.title = contact.getDisplayName()
+        
+        self.tableView.deselectRow(at: indexPath, animated: true)
+        self.navigationController?.pushViewController(conversationVC, animated: true)
+        self.tableView.isUserInteractionEnabled = true
     }
     
     public func sectionIndexTitles(for tableView: UITableView) -> [String]? {
@@ -123,3 +179,4 @@ extension ALKContactListViewController: UISearchBarDelegate {
         tableView.reloadData()
     }
 }
+

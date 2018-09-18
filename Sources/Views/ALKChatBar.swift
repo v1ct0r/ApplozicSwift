@@ -30,6 +30,7 @@ open class ALKChatBar: UIView {
         case noVoiceRecordPermission()
         case mic(UIButton)
         case more(UIButton)
+        case paymentBroadcast(String)
     }
     
     public var action: ((ActionType) -> ())?
@@ -143,8 +144,22 @@ open class ALKChatBar: UIView {
         image = image?.imageFlippedForRightToLeftLayoutDirection()
         bt.setImage(image, for: .normal)
         bt.accessibilityIdentifier = "sendButton"
-        
         return bt
+    }()
+    
+    open let sendPaymentButton: UIButton = {
+        let button = UIButton(type: UIButtonType.system)
+        var image = UIImage(named: "scrollDown", in: Bundle.applozic, compatibleWith: nil)
+        image = image?.imageFlippedForRightToLeftLayoutDirection()
+        button.setImage(image, for: .normal)
+        button.accessibilityIdentifier = "sendPaymentButton"
+        button.layer.masksToBounds = true
+        return button
+    }()
+    
+    open lazy var paymentView: PaymentView = {
+        let view = PaymentView(frame: CGRect(), delegate: self)
+        return view
     }()
     
     open var lineView: UIView = {
@@ -213,6 +228,18 @@ open class ALKChatBar: UIView {
                 micButton.isSelected = false
                 soundRec.isHidden = true
             }
+            
+        case sendPaymentButton:
+            if paymentView.isHidden {
+                if placeHolder.isFirstResponder {
+                    placeHolder.resignFirstResponder()
+                } else if textView.isFirstResponder {
+                    textView.resignFirstResponder()
+                }
+                paymentView.isHidden = false
+            }else {
+                paymentView.isHidden = true
+            }
 
         case videoButton:
             action?(.startVideoRecord())
@@ -270,7 +297,8 @@ open class ALKChatBar: UIView {
         galleryButton.addTarget(self, action: #selector(tapped(button:)), for: .touchUpInside)
         locationButton.addTarget(self, action: #selector(tapped(button:)), for: .touchUpInside)
         chatButton.addTarget(self, action: #selector(tapped(button:)), for: .touchUpInside)
-
+        sendPaymentButton.addTarget(self, action: #selector(tapped(button:)), for: .touchUpInside)
+        
         setupConstraints()
     }
     
@@ -284,6 +312,7 @@ open class ALKChatBar: UIView {
         galleryButton.removeTarget(self, action: #selector(tapped(button:)), for: .touchUpInside)
         locationButton.removeTarget(self, action: #selector(tapped(button:)), for: .touchUpInside)
         chatButton.removeTarget(self, action: #selector(tapped(button:)), for: .touchUpInside)
+        sendPaymentButton.removeTarget(self, action: #selector(tapped(button:)), for: .touchUpInside)
 
 
     }
@@ -313,7 +342,7 @@ open class ALKChatBar: UIView {
     
     private func setupConstraints() {
         plusButton.isHidden = true
-        addViewsForAutolayout(views: [bottomGrayView, micButton, plusButton, photoButton, grayView,  textView, sendButton, lineImageView, videoButton, galleryButton,locationButton, chatButton, lineView, frameView, placeHolder,soundRec])
+        addViewsForAutolayout(views: [bottomGrayView, micButton, plusButton, photoButton, grayView,  textView, sendButton, sendPaymentButton, lineImageView, videoButton, galleryButton,locationButton, chatButton, lineView, frameView, placeHolder,soundRec, paymentView])
 
         lineView.topAnchor.constraint(equalTo: topAnchor).isActive = true
         lineView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
@@ -367,6 +396,13 @@ open class ALKChatBar: UIView {
         sendButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
         sendButton.bottomAnchor.constraint(equalTo: textView.bottomAnchor, constant: -10).isActive = true
         
+        sendButton.isHidden = true
+        
+        sendPaymentButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10).isActive = true
+        sendPaymentButton.widthAnchor.constraint(equalToConstant: 30).isActive = true
+        sendPaymentButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        sendPaymentButton.bottomAnchor.constraint(equalTo: textView.bottomAnchor, constant: -10).isActive = true
+        
         textView.topAnchor.constraint(equalTo: topAnchor, constant: 0).isActive = true
         textView.bottomAnchor.constraint(equalTo: bottomGrayView.topAnchor, constant: 0).isActive = true
         textView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 3).isActive = true
@@ -388,6 +424,12 @@ open class ALKChatBar: UIView {
         soundRec.leadingAnchor.constraint(equalTo: textView.leadingAnchor, constant: 0).isActive = true
         soundRec.trailingAnchor.constraint(equalTo: textView.trailingAnchor, constant: 0).isActive = true
         
+        paymentView.isHidden = true
+        paymentView.topAnchor.constraint(equalTo: textView.topAnchor).isActive = true
+        paymentView.bottomAnchor.constraint(equalTo: textView.bottomAnchor).isActive = true
+        paymentView.leadingAnchor.constraint(equalTo: textView.leadingAnchor, constant: 0).isActive = true
+        paymentView.trailingAnchor.constraint(equalTo: textView.trailingAnchor, constant: 0).isActive = true
+        
         frameView.topAnchor.constraint(equalTo: topAnchor, constant: 0).isActive = true
         frameView.bottomAnchor.constraint(equalTo: textView.bottomAnchor, constant: 0).isActive = true
         frameView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: -4).isActive = true
@@ -406,6 +448,11 @@ open class ALKChatBar: UIView {
     
         bringSubview(toFront: frameView)
         
+    }
+    
+    func toggleButtonInChatBar(hide: Bool){
+        sendButton.isHidden = hide
+        sendPaymentButton.isHidden = !hide
     }
     
     public required init?(coder aDecoder: NSCoder) {
@@ -471,6 +518,7 @@ extension ALKChatBar: UITextViewDelegate {
         self.placeHolder.isHidden = !textView.text.isEmpty
         self.placeHolder.alpha = textView.text.isEmpty ? 1.0 : 0.0
         
+        toggleButtonInChatBar(hide: textView.text.isEmpty)
         if let selectedTextRange = textView.selectedTextRange {
             let line = textView.caretRect(for: selectedTextRange.start)
             let overflow = line.origin.y + line.size.height  - ( textView.contentOffset.y + textView.bounds.size.height - textView.contentInset.bottom - textView.contentInset.top )
@@ -492,7 +540,7 @@ extension ALKChatBar: UITextViewDelegate {
     public func textViewDidEndEditing(_ textView: UITextView) {
         
         if textView.text.isEmpty {
-            
+            toggleButtonInChatBar(hide: true)
             if self.placeHolder.isHidden {
                 self.placeHolder.isHidden = false
                 self.placeHolder.alpha = 1.0
@@ -515,7 +563,7 @@ extension ALKChatBar: UITextViewDelegate {
     
     fileprivate func clearTextInTextView() {
         if textView.text.isEmpty {
-            
+            toggleButtonInChatBar(hide: true)
             if self.placeHolder.isHidden {
                 self.placeHolder.isHidden = false
                 self.placeHolder.alpha = 1.0
@@ -560,4 +608,12 @@ extension ALKChatBar: ALKSoundRecorderProtocol {
     public func permissionNotGrant() {
         action?(.noVoiceRecordPermission())
     }
+}
+
+extension ALKChatBar: PaymentViewProtocol {
+    
+    public func paymentButtonClicked(paymentType: String) {
+        action?(.paymentBroadcast(paymentType))
+    }
+    
 }
