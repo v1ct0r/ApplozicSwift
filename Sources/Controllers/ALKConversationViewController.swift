@@ -639,6 +639,15 @@ open class ALKConversationViewController: ALKBaseViewController {
                 let paymentData = ALKPaymentModel()
                 if self!.viewModel.isGroup {
                     paymentData.groupId = self!.viewModel.channelKey
+                    paymentData.paymentType = paymentType
+                    paymentData.launchPaymentPage = true
+                    // show popup
+                    let popUpVC = GroupPaymentPopupViewController(groupId: self!.viewModel.channelKey!,
+                                                                  delegate: self!)
+                    popUpVC.modalPresentationStyle = UIModalPresentationStyle.overCurrentContext
+                    popUpVC.setPaymentModel(paymentData)
+                    self?.present(popUpVC, animated: true, completion: nil)
+                    return
                 } else {
                     paymentData.userId = self!.viewModel.contactId
                 }
@@ -1243,5 +1252,11 @@ extension ALKConversationViewController: ALKCustomPickerDelegate {
             }
 
         }
+    }
+}
+
+extension ALKConversationViewController: GroupPaymentActionProtocol {
+    func accept(paymentModel: ALKPaymentModel) {
+        BroadcastToIonic.sendBroadcast(name: "paymentCallback", data: paymentModel.toDictionary())
     }
 }

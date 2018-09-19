@@ -186,7 +186,6 @@ open class ALKConversationListViewController: ALKBaseViewController {
             if let indexPath = tableView.indexPathForRow(at: touchPoint) {
                 // your code here, get the row for the indexPath or do whatever you want
                 indexPathOfSelectedRows.append(indexPath)
-                print("SHIVAMMM \(indexPathOfSelectedRows.count)")
             }
         }
     }
