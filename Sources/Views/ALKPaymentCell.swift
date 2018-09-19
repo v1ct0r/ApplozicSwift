@@ -142,10 +142,20 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
         imv.contentMode = .scaleAspectFill
         imv.clipsToBounds = true
         let layer = imv.layer
-        layer.cornerRadius = 22.5
+        layer.cornerRadius = 18.5
         layer.backgroundColor = UIColor.clear.cgColor
         layer.masksToBounds = true
         return imv
+    }()
+    
+    var rightImageView: UIImageView = {
+        let imageView                   = UIImageView()
+        imageView.contentMode           = .scaleAspectFill
+        imageView.clipsToBounds         = true
+        imageView.layer.cornerRadius    = 18.5
+        imageView.layer.backgroundColor = UIColor.clear.cgColor
+        imageView.layer.masksToBounds   = true
+        return imageView
     }()
     
     private var nameLabel: UILabel = {
@@ -286,7 +296,6 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
                                 }
                             }
                         }else{
-                            
                             paymentTitle.text =  (nsmutable!["paymentHeader"] as? String)!
                         }
                     }else{
@@ -352,6 +361,14 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
                     paymentMoney.text = amountString
                     paymentResponseButtons.isHidden = true
                 }
+                
+                
+                if nsmutable!["paymentReceiver"] != nil {
+                    let paymentReceiver = nsmutable!["paymentReceiver"] as? String
+                    showRightImageView(paymentReceiver: paymentReceiver!)
+                }else {
+                    rightImageView.isHidden = true
+                }
             }
             
             paymentSubjctTitle.text = "Asunto:"
@@ -360,6 +377,20 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
             setUpPaymentMessageColor(paymentStatus: paymentStatus as! String)
         }
         timeLabel.text   = viewModel.time
+    }
+    
+    func showRightImageView(paymentReceiver: String){
+        rightImageView.isHidden = false
+        
+        let placeHolder = UIImage(named: "placeholder", in: Bundle.applozic, compatibleWith: nil)
+        let contact = ALContactService.init().loadContact(byKey: "userId", value: paymentReceiver)
+        
+        if let url = contact?.friendDisplayImgURL {
+            let resource = ImageResource(downloadURL: url, cacheKey: url.absoluteString)
+            self.rightImageView.kf.setImage(with: resource, placeholder: placeHolder, options: nil, progressBlock: nil, completionHandler: nil)
+        } else {
+            self.rightImageView.image = placeHolder
+        }
     }
     
     private func setUpPaymentMessageColor(paymentStatus: String){
@@ -565,7 +596,7 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
         paymentRejectButton.addTarget(self, action: #selector(actionReject), for: .touchUpInside)
         paymentRejectButton.isUserInteractionEnabled = true
         
-        contentView.addViewsForAutolayout(views: [avatarImageView,nameLabel,bubbleView,timeLabel])
+        contentView.addViewsForAutolayout(views: [avatarImageView,nameLabel,bubbleView,timeLabel, rightImageView])
         bubbleView.addViewsForAutolayout(views: [paymentTitle,paymentMoney,paymentSubjctTitle,paymentSubjctText,paymentResponseButtons])
         bubbleView.bringSubview(toFront:paymentTitle)
         bubbleView.bringSubview(toFront:paymentMoney)
@@ -595,7 +626,7 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
         bubbleView.trailingAnchor.constraint(equalTo: timeLabel.leadingAnchor, constant: -10).isActive = true
         
         timeLabel.heightAnchor.constraint(equalToConstant: 15).isActive = true
-        timeLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: 20).isActive = true
+        timeLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20).isActive = true
         timeLabel.widthAnchor.constraint(equalToConstant: 70).isActive = true
         timeLabel.topAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -23).isActive  = true
         
@@ -622,6 +653,14 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
         paymentResponseButtons.trailingAnchor.constraint(equalTo: bubbleView.trailingAnchor).isActive = true
         paymentResponseButtons.bottomAnchor.constraint(equalTo: bubbleView.bottomAnchor).isActive = true
         paymentResponseButtons.addBackground(color: ALKConfiguration.init().paymentRequested)
+        
+        //right imageView
+        rightImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 18).isActive = true
+        rightImageView.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: 0).isActive = true
+        rightImageView.leadingAnchor.constraint(equalTo: bubbleView.trailingAnchor, constant: 9).isActive = true
+//        rightImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20).isActive = true
+        rightImageView.heightAnchor.constraint(equalToConstant: 37).isActive = true
+        rightImageView.widthAnchor.constraint(equalTo: rightImageView.heightAnchor).isActive = true
     }
     
     @objc private func uploadButtonAction(_ selector: UIButton) {

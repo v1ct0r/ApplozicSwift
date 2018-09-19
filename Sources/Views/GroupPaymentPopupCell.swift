@@ -95,8 +95,19 @@ class GroupPaymentPopupCell: UITableViewCell {
     }
     
     func selectCheckBox() {
-        //checkMark Image
-        checkBox.backgroundColor = ALKConfiguration.init().customPrimary
+        //checkMark Image as UIView background
+        UIGraphicsBeginImageContext(checkBox.frame.size)
+        let img = UIImage(named: "checkboxBackground", in: Bundle.applozic, compatibleWith: nil)
+        img?.drawAsPattern(in: checkBox.bounds)
+        if let image = UIGraphicsGetImageFromCurrentImageContext(){
+            UIGraphicsEndImageContext()
+            checkBox.backgroundColor = UIColor(patternImage: image)
+        }else{
+            UIGraphicsEndImageContext()
+            debugPrint("Image not available")
+            checkBox.backgroundColor = ALKConfiguration.init().customPrimary
+        }
+        
     }
     
     func deselectCheckBox() {
@@ -171,12 +182,12 @@ class GroupPaymentPopupHeader: UITableViewHeaderFooterView {
     
     func selectCheckBox() {
         checkBox.tag = 1
-        checkBox.setImage(UIImage(named: "checkMark.png"), for: .normal)
-        checkBox.backgroundColor = ALKConfiguration.init().customPrimary
+        let image = UIImage(named: "checkboxBackground", in: Bundle.applozic, compatibleWith: nil)
+        checkBox.setImage(image, for: .normal)
     }
     
     func deselectCheckBox() {
         checkBox.tag = 0
-        checkBox.backgroundColor = UIColor.clear
+        checkBox.setImage(nil, for: .normal)
     }
 }

@@ -127,12 +127,12 @@ final class ALKChatCell: MGSwipeTableCell {
         return view
     }()
     
-    private var checkBox: UIButton = {
-        let button = UIButton(type: .custom)
-        button.layer.borderColor = UIColor.darkGray.cgColor
-        button.layer.cornerRadius = 5
-        button.layer.borderWidth = 2
-        return button
+    private var checkBox: UIView = {
+        let view = UIView()
+        view.layer.borderColor = UIColor.darkGray.cgColor
+        view.layer.cornerRadius = 5
+        view.layer.borderWidth = 2
+        return view
     }()
 
     private var avatarName: UILabel = {
@@ -438,9 +438,18 @@ final class ALKChatCell: MGSwipeTableCell {
     }
     
     func selectCheckBox() {
-        checkBox.setBackgroundImage(UIImage(named: "checkMark.png"), for: .normal)
-        checkBox.backgroundColor = ALKConfiguration.init().customPrimary
-        
+        //checkMark Image as UIView background
+        UIGraphicsBeginImageContext(checkBox.frame.size)
+        let img = UIImage(named: "checkboxBackground", in: Bundle.applozic, compatibleWith: nil)
+        img?.drawAsPattern(in: checkBox.bounds)
+        if let image = UIGraphicsGetImageFromCurrentImageContext(){
+            UIGraphicsEndImageContext()
+            checkBox.backgroundColor = UIColor(patternImage: image)
+        }else{
+            UIGraphicsEndImageContext()
+            debugPrint("Image not available")
+            checkBox.backgroundColor = ALKConfiguration.init().customPrimary
+        }
     }
     
     func deselectCheckBox() {
