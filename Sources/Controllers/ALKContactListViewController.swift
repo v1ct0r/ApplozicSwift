@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Applozic
 
 open class ALKContactListViewController: ALKBaseViewController {
     
@@ -51,8 +52,7 @@ open class ALKContactListViewController: ALKBaseViewController {
         
         
         //Back button
-        let back = NSLocalizedString("Back", value: "Back", comment: "")
-        let leftBarButtonItem = UIBarButtonItem(title: back, style: .plain, target: self, action: #selector(customBackAction))
+        let leftBarButtonItem = UIBarButtonItem(image: UIImage(named: "backIcon", in: Bundle.applozic, compatibleWith: nil), style: .plain, target: self, action: #selector(customBackAction))
         navigationItem.leftBarButtonItem = leftBarButtonItem
         
         view.addViewsForAutolayout(views: [searchBar, tableView])
@@ -92,9 +92,18 @@ open class ALKContactListViewController: ALKBaseViewController {
     }
     
     func createGroup() {
-        let newChatVC = ALKNewChatViewController(viewModel: ALKNewChatViewModel())
-        newChatVC.hidesBottomBarWhenPushed = true
-        navigationController?.pushViewController(newChatVC, animated: true)
+//        let newChatVC = ALKNewChatViewController(viewModel: ALKNewChatViewModel())
+//        newChatVC.hidesBottomBarWhenPushed = true
+//        navigationController?.pushViewController(newChatVC, animated: true)
+//        newChatVC.createGroupScreen()
+
+        let storyboard = UIStoryboard.name(storyboard: UIStoryboard.Storyboard.createGroupChat, bundle: Bundle.applozic)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "ALKCreateGroupViewController") as? ALKCreateGroupViewController {
+            vc.setCurrentGroupSelected(groupName: "", groupProfileImg: nil, groupSelected: [ALKFriendViewModel](), delegate: self)
+            vc.addContactMode = .newChat
+            navigationController?.pushViewController(vc, animated: true)
+        }
+        
     }
     
 //    func enableEditing(){
@@ -180,3 +189,40 @@ extension ALKContactListViewController: UISearchBarDelegate {
     }
 }
 
+
+
+//MARK: - CreateGroupChatAddFriendProtocol
+extension ALKContactListViewController: ALKCreateGroupChatAddFriendProtocol {
+    
+    func createGroupGetFriendInGroupList(friendsSelected: [ALKFriendViewModel], groupName: String, groupImgUrl: String, friendsAdded: [ALKFriendViewModel]) {
+        
+        guard ALDataNetworkConnection.checkDataNetworkAvailable() else { return }
+        
+        //Server call
+        
+        let newChannel = ALChannelService()
+        let membersList = NSMutableArray()
+        let _ = friendsSelected.map { membersList.add($0.friendUUID as Any) }
+        
+        newChannel.createChannel(groupName, orClientChannelKey: nil, andMembersList: membersList, andImageLink: groupImgUrl, withCompletion: {
+            channel, error in
+            guard let alChannel = channel else {
+                print("error creating group", error.debugDescription)
+                return
+            }
+            print("group created")
+            let message = ALMessage()
+            message.groupId = alChannel.key
+            let list = NSMutableArray(object: message)
+            NotificationCenter.default.post(name: Notification.Name(rawValue: "reloadTable"), object: list)
+            
+            let viewModel = ALKConversationViewModel(contactId: nil, channelKey: alChannel.key)
+            let conversationVC = ALKConversationViewController()
+            conversationVC.viewModel = viewModel
+            conversationVC.title = groupName
+            self.navigationController?.pushViewController(conversationVC, animated: true)
+            self.tableView.isUserInteractionEnabled = true
+        })
+    }
+    
+}

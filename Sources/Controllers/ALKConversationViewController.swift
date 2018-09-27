@@ -23,7 +23,7 @@ open class ALKConversationViewController: ALKBaseViewController {
             }
         }
     }
-
+    
     /// Enables group detail button on navigation bar
     public var isGroupDetailActionEnabled = true
 
@@ -258,16 +258,7 @@ open class ALKConversationViewController: ALKBaseViewController {
             weakSelf.titleButton.setTitle(name, for: .normal)
         })
         
-//        NotificationCenter.default.addObserver(self, selector: #selector(checkPaymentBroadcast(_:)), name: NSNotification.Name(rawValue: "paymentCallback"), object: nil)
     }
-//
-//    func checkPaymentBroadcast(_ paymentData: NSNotification){
-//        if let payment = paymentData.userInfo as? [String: Any] {
-//            print("\(payment)")
-//            print("\(payment["paymentType"])")
-//            print(String(data: json, encoding: .utf8)))
-//        }
-//    }
 
     override func removeObserver() {
 
@@ -650,15 +641,12 @@ open class ALKConversationViewController: ALKBaseViewController {
                     return
                 } else {
                     paymentData.userId = self!.viewModel.contactId
+                    paymentData.paymentType = paymentType
+                    paymentData.launchPaymentPage = true
+                    paymentData.cancelFlag = false
+                    //send broadcast to ionic
+                    self?.accept(paymentModel: paymentData)
                 }
-                paymentData.paymentType = paymentType
-                paymentData.launchPaymentPage = true
-                
-                //Convert to json
-//                let json = try? JSONSerialization.data(withJSONObject: paymentData.toDictionary(), options: [])
-                
-                //send broadcast to ionic
-                BroadcastToIonic.sendBroadcast(name: "paymentCallback", data: paymentData.toDictionary())
                 
             default:
                 print("Not available")
@@ -1256,7 +1244,30 @@ extension ALKConversationViewController: ALKCustomPickerDelegate {
 }
 
 extension ALKConversationViewController: GroupPaymentActionProtocol {
+    
     func accept(paymentModel: ALKPaymentModel) {
-        BroadcastToIonic.sendBroadcast(name: "paymentCallback", data: paymentModel.toDictionary())
+        let dict = ["paymentMessage": paymentModel.toString()]
+        
+        guard JSONSerialization.isValidJSONObject(dict) else {
+            assertionFailure("Invalid json object received.")
+            return
+        }
+        
+        let jsonObject: NSMutableDictionary = NSMutableDictionary()
+        let jsonData: Data
+        
+        dict.forEach { (arg) in
+            jsonObject.setValue(arg.value, forKey: arg.key)
+        }
+        
+        do {
+            jsonData = try JSONSerialization.data(withJSONObject: jsonObject, options: .prettyPrinted)
+            BroadcastToIonic.sendBroadcast(name: "paymentCallback", data: dict)
+        } catch {
+            assertionFailure("JSON data creation failed with error: \(error).")
+            return
+        }
+//        self.navigationController?.popToRootViewController(animated: true)
+        view.window?.rootViewController?.dismiss(animated: true, completion: nil)
     }
 }

@@ -176,9 +176,7 @@ class GroupPaymentPopupViewController: UIViewController {
         default:
             print("This should never occur.. No button selected in group Popup")
         }
-        
         indexPathOfSelectedRows.removeAll()
-        self.dismiss(animated: true, completion: nil)
     }
     
     func setPaymentModel(_ paymentModel: ALKPaymentModel){

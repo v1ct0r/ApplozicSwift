@@ -22,8 +22,6 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
     public var delegatePr: ALKCustomAmountProtocol?
     weak public var delegate: ALKConversationViewModelDelegate?
     
-    
-    
     var timeLabel: UILabel = {
         let lb = UILabel()
         return lb
@@ -262,7 +260,6 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
                         handlePaymentActionbuttonVisibality(isHidden: false)
                     }
                     paymentMoney.text = amountString
-                    paymentResponseButtons.isHidden = false
                 }else if("paymentRejected" == paymentStatus as! String!){
                     
                     let attributeString: NSMutableAttributedString =  NSMutableAttributedString(string:  amountString)
@@ -301,7 +298,7 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
                     }else{
                         paymentTitle.text = "You rejected"
                     }
-                    paymentResponseButtons.isHidden = true
+//                    paymentResponseButtons.isHidden = true
                 }else if("paymentAccepted" == paymentStatus as! String!){
                     paymentMoney.text = amountString
                     handlePaymentActionbuttonVisibality(isHidden: true)
@@ -334,7 +331,7 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
                     }else{
                         paymentTitle.text = viewModel.displayName! + " paid you"
                     }
-                    paymentResponseButtons.isHidden = true
+//                    paymentResponseButtons.isHidden = true
                 }else{
                     let requestedString = viewModel.displayName! + " paid "
                     if(viewModel.channelKey != nil){
@@ -359,7 +356,7 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
                         handlePaymentActionbuttonVisibality(isHidden: false)
                     }
                     paymentMoney.text = amountString
-                    paymentResponseButtons.isHidden = true
+//                    paymentResponseButtons.isHidden = true
                 }
                 
                 
@@ -396,18 +393,18 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
     private func setUpPaymentMessageColor(paymentStatus: String){
         var paymentColor = ALKConfiguration.init().customPrimary;//default
         switch (paymentStatus){
-        case "paymentSent":
-            paymentColor = ALKConfiguration.init().paymentReceived
-        case "paymentRequested":
-            paymentColor = ALKConfiguration.init().paymentRequested
-        case "paymentRejected":
-            paymentColor = ALKConfiguration.init().paymentRequested
-        case "paymentAccepted":
-            paymentColor = ALKConfiguration.init().paymentSent
-        case "paymentReceived":
-            paymentColor = ALKConfiguration.init().paymentReceived
-        default:
-            print("This should never occur");
+            case "paymentSent":
+                paymentColor = ALKConfiguration.init().paymentReceived
+            case "paymentRequested":
+                paymentColor = ALKConfiguration.init().paymentRequested
+            case "paymentRejected":
+                paymentColor = ALKConfiguration.init().paymentRequested
+            case "paymentAccepted":
+                paymentColor = ALKConfiguration.init().paymentSent
+            case "paymentReceived":
+                paymentColor = ALKConfiguration.init().paymentReceived
+            default:
+                print("This should never occur");
         }
         paymentTitle.textColor = UIColor.white
         paymentTitle.backgroundColor = paymentColor
@@ -420,9 +417,9 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
     }
     
     func handlePaymentActionbuttonVisibality(isHidden: Bool) {
-        paymentRejectButton.isHidden = isHidden;
-        paymentAceptButton.isHidden = isHidden;
-        
+        paymentRejectButton.isHidden = isHidden
+        paymentAceptButton.isHidden = isHidden
+        paymentResponseButtons.isHidden = isHidden
     }
     
     func actionTapped(button: UIButton) {
@@ -446,18 +443,58 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
     }
     
     func actionAccept(button: UIButton) {
-        if(viewModel?.channelKey != nil){
-            let channelService = ALChannelDBService()
-            if(channelService.isChannelLeft(viewModel?.channelKey)){
-                print("User is not in group !")
-            }else{
-                processPaymentAccept()
-            }
-            
-        }else{
-            processPaymentAccept()
-            
+//        if(viewModel?.channelKey != nil){
+//            let channelService = ALChannelDBService()
+//            if(channelService.isChannelLeft(viewModel?.channelKey)){
+//                print("User is not in group !")
+//            }else{
+//                processPaymentAccept()
+//            }
+//        }else{
+//            processPaymentAccept()
+//
+//        }
+        
+        
+//        paymentAction()
+    }
+    
+    func paymentAction(_ button: UIButton) {
+        paymentResponseButtons.isHidden = true
+        if let channelKey = viewModel?.channelKey, ALChannelDBService().isChannelLeft(channelKey) {
+            print("User is not in the group !")
+            return
         }
+        let model  =  ALKPaymentModel();
+        model.parentMessageKey = viewModel?.identifier
+        model.launchPaymentPage = true
+        model.groupId = viewModel?.channelKey
+        model.userId = viewModel?.contactId
+        
+        switch button {
+            case paymentRejectButton:
+                model.paymentType = "paymentRejected"
+            case paymentAceptButton:
+                model.paymentType = "paymentAccepted"
+            default:
+                print("NOT POSIIBBLLE Still do nothing")
+        }
+        
+        if let nsmutable = viewModel?.metadata {
+            if let parentMessageKey = nsmutable["parentMessageKey"] as? String {
+                model.parentMessageKey = parentMessageKey
+            }
+            if let paymentAmount = nsmutable["amount"] as? String {
+                model.paymentAmount = paymentAmount
+            }
+            if let paymentSubject = nsmutable["paymentSubject"] as? String {
+                model.paymentSubject = paymentSubject
+            }
+        }
+        
+        let dict = ["paymentMessage": model.toString()]
+        BroadcastToIonic.sendBroadcast(name: "paymentCallback", data: dict)
+        self.window?.rootViewController?.dismiss(animated: true, completion: nil)
     }
     
     func processPaymentAccept(){
@@ -477,7 +514,6 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
     func actionReject(button: UIButton) {
         paymentRejectButton.isHidden = true
         paymentAceptButton.isHidden = true
-        
         if(viewModel?.channelKey != nil){
             let channelService = ALChannelDBService()
             if(channelService.isChannelLeft(viewModel?.channelKey)){
@@ -588,12 +624,13 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
         paymentAceptButton.isHidden = true;
         actionButton.addTarget(self, action: #selector(actionTapped), for: .touchUpInside)
         paymentAceptButton.isUserInteractionEnabled = true
-        paymentAceptButton.addTarget(self, action: #selector(actionAccept), for: .touchUpInside)
         paymentTitle.isUserInteractionEnabled = true
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(titleClick))
         paymentTitle.addGestureRecognizer(tapGesture)
         
-        paymentRejectButton.addTarget(self, action: #selector(actionReject), for: .touchUpInside)
+        paymentRejectButton.addTarget(self, action: #selector(paymentAction(_:)), for: .touchUpInside)
+        paymentAceptButton.addTarget(self, action: #selector(paymentAction(_:)), for: .touchUpInside)
+        
         paymentRejectButton.isUserInteractionEnabled = true
         
         contentView.addViewsForAutolayout(views: [avatarImageView,nameLabel,bubbleView,timeLabel, rightImageView])

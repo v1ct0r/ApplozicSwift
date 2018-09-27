@@ -13,4 +13,7 @@ class BroadcastToIonic {
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: name), object: nil, userInfo: data)
     }
 
+    class func sendBroadcast(name: String) {
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: name), object: nil)
+    }
 }

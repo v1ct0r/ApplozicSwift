@@ -30,9 +30,72 @@ open class ALKPaymentModel: NSObject{
 
     open var cancelFlag: Bool = false
     
+    func toString() -> String {
+        var model = "{\"paymentType\": \""
+        model += paymentType ?? ""
+        model += "\""
+        model += ", \"launchPaymentPage\": \""
+        model += String(describing: launchPaymentPage)
+        model += "\""
+        model += ", \"cancelFlag\": \""
+        model += String(describing: cancelFlag)
+        model += "\""
+        
+        if let groupID = groupId as? Int{
+            let groupIDString = String(groupID)
+            model += ", \"groupId\": \""
+            model += groupIDString
+            model += "\""
+        }
+        if let userID = userId {
+            model += ", \"userId\": \""
+            model += userID
+            model += "\""
+        }
+        
+        if usersRequested != nil {
+            model += ", \"userRequested\": ["
+            model += "\""
+            model += usersRequested?[0] as! String
+            model += "\""
+            
+            for i in (1..<usersRequested!.count) {
+                model += ",\""
+                model += usersRequested?[i] as! String
+                model += "\""
+            }
+            model += "]"
+        }
+        
+        if messageKey != nil {
+            model += ", \"messageKey\": \""
+            model += messageKey ?? ""
+            model += "\""
+            
+        }
+        if parentMessageKey != nil {
+            model += ", \"parentMessageKey\": \""
+            model += parentMessageKey ?? ""
+            model += "\""
+        }
+        if parentPaymentId != nil {
+            model += ", \"parentPaymentId\": \""
+            model += parentPaymentId ?? ""
+            model += "\""
+        }
+        if paymentId != nil {
+            model += ", \"paymentId\": \""
+            model += paymentId ?? ""
+            model += "\""
+        }
+        
+        model += "}"
+        return model
+    }
+    
     func toDictionary() -> [String: Any] {
         return [
-            "usersRequested": usersRequested ?? [],
+            "userRequested": usersRequested ?? [],
             "userId": userId ?? "",
             "groupId": groupId ?? "",
             "messageKey": messageKey ?? "",

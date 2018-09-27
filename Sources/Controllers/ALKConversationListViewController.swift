@@ -11,6 +11,22 @@ import UIKit
 import ContactsUI
 import Applozic
 
+enum SelectedItem: Equatable {
+    case ContactId(String)
+    case GroupId(NSNumber)
+    
+    static func ==(lhs: SelectedItem, rhs: SelectedItem) -> Bool {
+        switch (lhs, rhs) {
+        case let (.ContactId(a),   .ContactId(b)):
+            return a == b
+        case let (.GroupId(a), .GroupId(b)):
+            return a.intValue == b.intValue
+        default:
+            return false
+        }
+    }
+}
+
 open class ALKConversationListViewController: ALKBaseViewController {
 
     var viewModel: ALKConversationListViewModel!
@@ -19,7 +35,7 @@ open class ALKConversationListViewController: ALKBaseViewController {
     var contactId: String?
     var channelKey: NSNumber?
     var searchClicked: Bool = false
-    var indexPathOfSelectedRows = [IndexPath]()
+    var selectedRows = [SelectedItem]()
     var isMultiSelectEnabled: Bool = false
 
     public var conversationViewControllerType = ALKConversationViewController.self
@@ -131,7 +147,29 @@ open class ALKConversationListViewController: ALKBaseViewController {
             print("update group detail")
             weakSelf.tableView.reloadData()
         })
-
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(self.paymentResponse(_:)), name: NSNotification.Name(rawValue: "paymentResponse"), object: nil)
+        
+    }
+    
+    func paymentResponse(_ notification: NSNotification) {
+        if let info = notification.userInfo, let cancelFlag = info["cancelFlag"]{
+            openChat(info: info)
+        }else {
+            print("Payment Response is not good")
+        }
+    }
+    
+    public func openChat(info: [AnyHashable : Any]) {
+        let processPaymentMessage = ProcessPaymentMessage()
+        processPaymentMessage.sendPaymentMessage(paymentJSON: info)
+        if let groupIdOptional = info["groupId"] as? String, let groupIdInt = Int(groupIdOptional) {
+            let groupId = NSNumber(value:groupIdInt)
+            launchChat(contactId: nil, groupId: groupId)
+        }else {
+            let contactId = info["userId"] as? String
+            launchChat(contactId: contactId, groupId: nil)
+        }
     }
 
     override func removeObserver() {
@@ -143,6 +181,7 @@ open class ALKConversationListViewController: ALKBaseViewController {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: "reloadTable"), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: "USER_DETAILS_UPDATE_CALL"), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: "UPDATE_CHANNEL_NAME"), object: nil)
+         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: "paymentResponse"), object: nil)
     }
     
     override open func viewWillAppear(_ animated: Bool) {
@@ -166,28 +205,6 @@ open class ALKConversationListViewController: ALKBaseViewController {
         alMqttConversationService = ALMQTTConversationService.sharedInstance()
         alMqttConversationService.mqttConversationDelegate = self
         alMqttConversationService.subscribeToConversation()
-        setupLongPressGesture()
-    }
-    
-    func setupLongPressGesture() {
-        let longPress = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress))
-        longPress.minimumPressDuration = 1.0 // 1 second press
-        tableView.addGestureRecognizer(longPress)
-    }
-    
-    func handleLongPress(longPressGestureRecognizer: UILongPressGestureRecognizer){
-        if longPressGestureRecognizer.state == UIGestureRecognizerState.began {
-            isMultiSelectEnabled = true
-            tableView.reloadData() // Necessary to enable all the checkboxes.
-            
-            let rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "deleteIcon", in: Bundle.applozic, compatibleWith: nil), style: .plain, target: self, action: #selector(deleteMultipleChats))
-            navigationItem.rightBarButtonItem = rightBarButtonItem
-            let touchPoint = longPressGestureRecognizer.location(in: tableView)
-            if let indexPath = tableView.indexPathForRow(at: touchPoint) {
-                // your code here, get the row for the indexPath or do whatever you want
-                indexPathOfSelectedRows.append(indexPath)
-            }
-        }
     }
 
     override open func viewDidAppear(_ animated: Bool) {
@@ -209,6 +226,16 @@ open class ALKConversationListViewController: ALKBaseViewController {
         searchActive = false
         tableView.reloadData()
     }
+    
+    lazy var leftBarBackButtonItem: UIBarButtonItem = {
+        let button = UIBarButtonItem(image: UIImage(named: "backIcon", in: Bundle.applozic, compatibleWith: nil), style: .plain, target: self, action: #selector(self.customBackAction))
+        return button
+    }()
+    
+    lazy var leftBarDoneButtonItem: UIBarButtonItem = {
+        let button = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(self.customDoneAction))
+        return button
+    }()
 
     private func setupView() {
 
@@ -216,10 +243,9 @@ open class ALKConversationListViewController: ALKBaseViewController {
 
         let rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "searchIcon", in: Bundle.applozic, compatibleWith: nil), style: .plain, target: self, action: #selector(compose))
         navigationItem.rightBarButtonItem = rightBarButtonItem
-
         
-        let leftBarButtonItem = UIBarButtonItem(image: UIImage(named: "backIcon", in: Bundle.applozic, compatibleWith: nil), style: .plain, target: self, action: #selector(customBackAction))
-        navigationItem.leftBarButtonItem = leftBarButtonItem
+
+        navigationItem.leftBarButtonItem = leftBarBackButtonItem
 
         #if DEVELOPMENT
             let indicator = UIActivityIndicatorView(activityIndicatorStyle: .white)
@@ -273,8 +299,6 @@ open class ALKConversationListViewController: ALKBaseViewController {
     }
 
     func compose() {
-//        let newChatVC = ALKNewChatViewController(viewModel: ALKNewChatViewModel())
-//        navigationController?.pushViewController(newChatVC, animated: true)
         searchClicked = true
         tableView.reloadData()
     }
@@ -304,31 +328,54 @@ open class ALKConversationListViewController: ALKBaseViewController {
         searchBar.endEditing(true)
         view.endEditing(true)
     }
+    
+    func customDoneAction() {
+        isMultiSelectEnabled = false
+        selectedRows.removeAll()
+        tableView.reloadData()
+        let rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "searchIcon", in: Bundle.applozic, compatibleWith: nil), style: .plain, target: self, action: #selector(compose))
+        navigationItem.rightBarButtonItem = rightBarButtonItem
+        navigationItem.leftBarButtonItem = leftBarBackButtonItem
+    }
 
     func customBackAction() {
-        if isMultiSelectEnabled {
-            isMultiSelectEnabled = false
-            indexPathOfSelectedRows.removeAll()
-            tableView.reloadData()
-            let rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "searchIcon", in: Bundle.applozic, compatibleWith: nil), style: .plain, target: self, action: #selector(compose))
-            navigationItem.rightBarButtonItem = rightBarButtonItem
-            return
-        }
         guard let nav = self.navigationController else { return }
         let dd = nav.popViewController(animated: true)
         if dd == nil {
             self.dismiss(animated: true, completion: nil)
         }
+        BroadcastToIonic.sendBroadcast(name: "EXIT_BROADCAST")
     }
 
     func deleteMultipleChats() {
-        indexPathOfSelectedRows.forEach { (indexPath) in
-            guard self != nil, let conversation = self.viewModel.getChatList()[indexPath.row] as? ALMessage else {
-                return
-            }
-            delete(conversation: conversation, indexPath: indexPath, weakSelf: self)
+        self.activityIndicator.startAnimating()
+        var conversation = [ALMessage]()
+        selectedRows.forEach { (currentItem) in
+            self.viewModel.getChatList().forEach({ (chat) in
+                if let message = chat as? ALMessage {
+                    if message.groupId != nil{
+                        
+                        if currentItem == SelectedItem.GroupId(message.groupId){
+                            conversation.append(message)
+                        }
+                    }else if let contId = message.contactIds, currentItem == SelectedItem.ContactId(contId){
+                        conversation.append(message)
+                    } else if let contId = message.contactId, currentItem == SelectedItem.ContactId(contId){
+                        conversation.append(message)
+                    }
+                }
+            })
         }
-        indexPathOfSelectedRows.removeAll()
+        selectedRows.removeAll()
+        delete(conversationList: conversation, weakSelf: self) {
+            self.activityIndicator.stopAnimating()
+            self.selectedRows.removeAll()
+            self.tableView.reloadData()
+            self.isMultiSelectEnabled = false
+            let rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "searchIcon", in: Bundle.applozic, compatibleWith: nil), style: .plain, target: self, action: #selector(self.compose))
+            self.navigationItem.rightBarButtonItem = rightBarButtonItem
+            self.navigationItem.leftBarButtonItem = self.leftBarBackButtonItem
+        }
     }
 }
 
@@ -357,29 +404,82 @@ extension ALKConversationListViewController: UITableViewDelegate, UITableViewDat
         
         if isMultiSelectEnabled {
             cell.enableMultiSelect()
-        }else {
+        } else {
             cell.disableMultiSelect()
         }
         
-        if indexPathOfSelectedRows.contains(indexPath) {
+        let (_, check) = checkSelectedRowsContains(cell: cell)
+        if check{
             cell.selectCheckBox()
         }else {
             cell.deselectCheckBox()
         }
         
+        cell.tag = indexPath.row
+        
+        let gestureRecogniser = UILongPressGestureRecognizer(target: self, action: #selector(longPress))
+        gestureRecogniser.minimumPressDuration = 1
+        gestureRecogniser.cancelsTouchesInView = false
+        cell.addGestureRecognizer(gestureRecogniser)
+            
         return cell
     }
-
+    
+    func checkSelectedRowsContains(cell: ALKChatCell) -> (SelectedItem, Bool){
+        if let channelKey = cell.viewModel?.channelKey{
+            let currentItem = SelectedItem.GroupId(channelKey)
+            if selectedRows.contains(currentItem) {
+                return (currentItem, true)
+            }else {
+                return (currentItem, false)
+            }
+        }else {
+            let contactId = cell.viewModel?.contactId
+            let currentItem = SelectedItem.ContactId(contactId!)
+            if selectedRows.contains(currentItem) {
+                return (currentItem, true)
+            }else {
+                return (currentItem, false)
+            }
+        }
+    }
+    
+    func hideSearchBarAndKeyboard() {
+        searchClicked = false
+        searchActive = false
+        searchBar.isHidden = true
+        searchBar.text = nil
+        searchBar.endEditing(true)
+    }
+    
+    func longPress(longPressGesture: UILongPressGestureRecognizer) {
+        if longPressGesture.state == UIGestureRecognizerState.began {
+            if searchClicked{
+                hideSearchBarAndKeyboard()
+            }
+            isMultiSelectEnabled = true
+            tableView.reloadData() // Necessary to enable all the checkboxes.
+            
+            let rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "deleteIcon", in: Bundle.applozic, compatibleWith: nil), style: .plain, target: self, action: #selector(deleteMultipleChats))
+            navigationItem.rightBarButtonItem = rightBarButtonItem
+            navigationItem.leftBarButtonItem = leftBarDoneButtonItem
+            if let cell = longPressGesture.view as? ALKChatCell {
+                let (currentItem, _) = checkSelectedRowsContains(cell: cell)
+                selectedRows.append(currentItem)
+                cell.selectCheckBox()
+            }
+        }
+    }
+   
     open func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-
         if isMultiSelectEnabled {
-            if indexPathOfSelectedRows.contains(indexPath) {
-                indexPathOfSelectedRows.remove(object: indexPath)
-                let cell: ALKChatCell = tableView.cellForRow(at: indexPath) as! ALKChatCell
+            let cell: ALKChatCell = tableView.cellForRow(at: indexPath) as! ALKChatCell
+            let (currentItem, check) = checkSelectedRowsContains(cell: cell)
+            if check{
+                selectedRows.remove(object: currentItem)
                 cell.deselectCheckBox()
-            }else if indexPathOfSelectedRows.count < 5{
-                indexPathOfSelectedRows.append(indexPath)
-                let cell: ALKChatCell = tableView.cellForRow(at: indexPath) as! ALKChatCell
+            }else if selectedRows.count < 5 {
+                selectedRows.append(currentItem)
                 cell.selectCheckBox()
             }
             return
@@ -418,6 +518,7 @@ extension ALKConversationListViewController: UITableViewDelegate, UITableViewDat
 
     open func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         if searchClicked{
+            searchBar.isHidden = false
             return 50
         }else{
             return 0
@@ -449,12 +550,6 @@ extension ALKConversationListViewController: UITableViewDelegate, UITableViewDat
         return .none
     }
 
-//    func enableEditing(){
-//        tableView.setEditing(true, animated: true)
-////        tableView.allowsMultipleSelectionDuringEditing = true
-////        tableView.allowsSelectionDuringEditing = true
-//    }
-
 }
 
 extension ALKConversationListViewController: UIScrollViewDelegate {
@@ -472,9 +567,6 @@ extension ALKConversationListViewController: UIScrollViewDelegate {
 //MARK: ALMessagesDelegate
 extension ALKConversationListViewController: ALMessagesDelegate {
     public func getMessagesArray(_ messagesArray: NSMutableArray!) {
-        print("message array: ", messagesArray.map { ($0 as! ALMessage).message})
-        print("message read: ", messagesArray.map { ($0 as! ALMessage).totalNumberOfUnreadMessages})
-
         guard let messages = messagesArray as? [Any] else {
             return
         }
@@ -668,6 +760,7 @@ extension ALKConversationListViewController: ALKChatCellDelegate {
 
             //TODO: Add activity indicator
 
+            
             if searchActive {
                 guard let conversation = searchFilteredChat[indexPath.row] as? ALMessage else {return}
 
@@ -772,43 +865,30 @@ extension ALKConversationListViewController: ALKChatCellDelegate {
         }
     }
     
-    func delete(conversation: ALMessage, indexPath: IndexPath, weakSelf: ALKConversationListViewController) {
-        if conversation.isGroupChat {
-            let channelService = ALChannelService()
-            if  channelService.isChannelLeft(conversation.groupId) {
-                weakSelf.dbService.deleteAllMessages(byContact: nil, orChannelKey: conversation.groupId)
-                ALChannelService.setUnreadCountZeroForGroupID(conversation.groupId)
-                weakSelf.searchFilteredChat.remove(at: indexPath.row)
-                weakSelf.viewModel.remove(message: conversation)
-                weakSelf.tableView.reloadData()
-            } else if ALChannelService.isChannelDeleted(conversation.groupId) {
-                let channelDbService = ALChannelDBService()
-                channelDbService.deleteChannel(conversation.groupId)
-                weakSelf.searchFilteredChat.remove(at: indexPath.row)
-                weakSelf.viewModel.remove(message: conversation)
-                weakSelf.tableView.reloadData()
+    func delete(conversationList: [ALMessage], weakSelf: ALKConversationListViewController, completionHandler: @escaping () -> Void ) {
+        let group = DispatchGroup()
+        for conversation in conversationList {
+            group.enter()
+            if conversation.groupId != nil {
+                ALMessageService.deleteMessageThread(nil, orChannelKey: conversation.groupId, withCompletion: {
+                    _,error in
+                    guard error == nil else { return }
+                    weakSelf.viewModel.remove(message: conversation)
+                    self.tableView.reloadData()
+                    group.leave()
+                })
             } else {
-                channelService.leaveChannel(conversation.groupId, andUserId: ALUserDefaultsHandler.getUserId(), orClientChannelKey: nil, withCompletion: {
-                    error in
-                    ALMessageService.deleteMessageThread(nil, orChannelKey: conversation.groupId, withCompletion: {
-                        _,error in
-                        guard error == nil else { return }
-                        weakSelf.searchFilteredChat.remove(at: indexPath.row)
-                        weakSelf.viewModel.remove(message: conversation)
-                        weakSelf.tableView.reloadData()
-                        return
-                    })
+                ALMessageService.deleteMessageThread(conversation.contactIds, orChannelKey:nil, withCompletion: {
+                    _,error in
+                    guard error == nil else { return }
+                    weakSelf.viewModel.remove(message: conversation)
+                    self.tableView.reloadData()
+                    group.leave()
                 })
             }
-        } else {
-            ALMessageService.deleteMessageThread(conversation.contactIds, orChannelKey: nil, withCompletion: {
-                _,error in
-                guard error == nil else { return }
-                weakSelf.viewModel.remove(message: conversation)
-                weakSelf.tableView.reloadData()
-            })
+        }
+        group.notify(queue: .main){
+            completionHandler()
         }
     }
-    
 }
-

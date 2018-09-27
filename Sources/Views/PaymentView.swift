@@ -18,23 +18,23 @@ open class PaymentView: UIView {
     let sendPaymentButton: UIButton = {
         let button = UIButton(type: .system)
         button.layer.masksToBounds = true
-        button.setTitle("Send", for: .normal)
-        button.backgroundColor = ALKConfiguration.init().paymentRequested
-        button.setTitleColor(UIColor.white, for: .normal)
+        button.setTitle("Enviar", for: .normal)
+        button.backgroundColor = ALKConfiguration.init().customPrimary
+        button.setTitleColor(ALKConfiguration.init().customPrimaryDark, for: .normal)
         return button
     }()
     
     let requestPaymentButton: UIButton = {
         let button = UIButton(type: .system)
         button.layer.masksToBounds = true
-        button.setTitle("Request", for: .normal)
-        button.backgroundColor = ALKConfiguration.init().customPrimary
-        button.setTitleColor(ALKConfiguration.init().customPrimaryDark, for: .normal)
+        button.setTitle("Solicitar", for: .normal)
+        button.backgroundColor = ALKConfiguration.init().paymentRequested
+        button.setTitleColor(UIColor.white, for: .normal)
         return button
     }()
     
     lazy var paymentButtons: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [self.sendPaymentButton, self.requestPaymentButton])
+        let stackView = UIStackView(arrangedSubviews: [self.requestPaymentButton, self.sendPaymentButton])
         stackView.axis = .horizontal
         stackView.alignment = .fill
         stackView.distribution = .fillEqually
