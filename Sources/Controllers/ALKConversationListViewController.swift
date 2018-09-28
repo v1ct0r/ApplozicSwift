@@ -239,7 +239,7 @@ open class ALKConversationListViewController: ALKBaseViewController {
 
     private func setupView() {
 
-        title = "My Chats"
+        title = "Conversaciones"
 
         let rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "searchIcon", in: Bundle.applozic, compatibleWith: nil), style: .plain, target: self, action: #selector(compose))
         navigationItem.rightBarButtonItem = rightBarButtonItem
@@ -275,7 +275,7 @@ open class ALKConversationListViewController: ALKBaseViewController {
         tableView.estimatedRowHeight = 0
     }
 
-    func launchChat(contactId: String?, groupId: NSNumber?, conversationId: NSNumber? = nil) {
+    @objc public func launchChat(contactId: String?, groupId: NSNumber?, conversationId: NSNumber? = nil) {
         let alChannelService = ALChannelService()
         let alContactDbService = ALContactDBService()
         var title = ""

@@ -8,9 +8,9 @@
 import Foundation
 import Applozic
 
-class ProcessPaymentMessage {
+open class ProcessPaymentMessage:NSObject {
     
-    init() {
+    public override init() {
         
     }
     
@@ -22,7 +22,9 @@ class ProcessPaymentMessage {
             guard let message = messagedb.getMessage("key", value: key) else {
                 return
             }
-            nsmutable = (message.metadata)!
+            guard let nsmutable = (message.metadata) else {
+                return
+            }
             
             let currentTimeInMiliseconds = Int64(Date().timeIntervalSince1970 * 1000)
             nsmutable["paymentId"] = String(currentTimeInMiliseconds)
@@ -173,9 +175,13 @@ class ProcessPaymentMessage {
         }
     }
     
-    func sendPaymentMessage(paymentJSON: [AnyHashable: Any]) {
+    @objc public func sendPaymentMessage(paymentJSON: [AnyHashable: Any]) {
         
-        if let cancelFlag = paymentJSON["cancelFlag"] {
+        if let cancelFlag = paymentJSON["cancelFlag"] as? Bool, cancelFlag {
+            return
+        }
+        
+        if let cancelFlag = paymentJSON["cancelFlag"] as? String, cancelFlag.caseInsensitiveCompare("true") == ComparisonResult.orderedSame{
             return
         }
         
@@ -186,8 +192,6 @@ class ProcessPaymentMessage {
         
         let nsmutable = NSMutableDictionary()
         nsmutable["richMessageType"] = "paymentMessage"
-        
-        let contactId = paymentJSON["userId"] as? String
         
         let alMessage = ALMessage()
         
@@ -208,7 +212,7 @@ class ProcessPaymentMessage {
                 userReqString += "]"
                 nsmutable["usersRequested"] = userReqString
             }
-        }else {
+        }else if let contactId = paymentJSON["userId"] as? String{
             alMessage.to = contactId
             alMessage.contactIds = contactId
         }
@@ -226,9 +230,18 @@ class ProcessPaymentMessage {
         alMessage.key = UUID().uuidString
         alMessage.source = Int16(SOURCE_IOS)
         
-        nsmutable["paymentSubject"] = paymentJSON["paymentSubject"]
-        nsmutable["amount"] = paymentJSON["paymentAmount"]
-        nsmutable["paymentStatus"] = paymentJSON["paymentType"]
+        if let paymentSubject = paymentJSON["paymentSubject"] as? String {
+            nsmutable["paymentSubject"] = paymentSubject
+        }
+        
+        if let paymentAmount = paymentJSON["paymentAmount"] as? String {
+            nsmutable["amount"] = paymentAmount
+        }
+        
+        if let paymentType = paymentJSON["paymentType"] as? String {
+            nsmutable["paymentStatus"] = paymentType
+        }
+        
         let currentTimeInMiliseconds = Int64(Date().timeIntervalSince1970 * 1000)
         nsmutable["paymentId"] = String(currentTimeInMiliseconds)
         nsmutable["hiddenStatus"] = "false"
@@ -245,7 +258,9 @@ class ProcessPaymentMessage {
                 let paymentResponse = ALKPaymentStatus()
                 paymentResponse.code = "Success"
                 paymentResponse.messageKey = newMsg.key
-                paymentResponse.paymentStatus = paymentJSON["paymentType"] as? String
+                if let paymentStatus = paymentJSON["paymentType"] as? String {
+                    paymentResponse.paymentStatus = paymentStatus
+                }
                 
                 if let parentMsgKey = paymentJSON["parentMessageKey"] as? String {
                     paymentResponse.parentMessageKey = parentMsgKey

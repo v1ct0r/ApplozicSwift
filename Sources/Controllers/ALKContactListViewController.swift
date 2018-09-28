@@ -38,13 +38,13 @@ open class ALKContactListViewController: ALKBaseViewController {
     
     override open func viewDidLoad() {
         super.viewDidLoad()
-
+        tableView.sectionIndexColor = ALKConfiguration.init().customPrimary
         // Do any additional setup after loading the view.
     }
     
     
     private func setupView() {
-        title = NSLocalizedString("ContactList", value: "Contacts", comment: "")
+        title = NSLocalizedString("ContactList", value: "Contactos", comment: "")
         
         //edit button
         let editButtoninBar = UIBarButtonItem(image: UIImage(named: "fill_214", in: Bundle.applozic, compatibleWith: nil), style: .plain, target: self, action: #selector(createGroup))
@@ -140,7 +140,22 @@ extension ALKContactListViewController: UITableViewDelegate, UITableViewDataSour
     }
 
     public func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        if viewModel.sectionHeaderTitle(section: section) == "*" {
+            return "Con Coink"
+        }else if viewModel.sectionHeaderTitle(section: section) == "_" {
+            return "Sin Coink"
+        }
         return String(viewModel.sectionHeaderTitle(section: section))
+    }
+    
+    public func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+        //BACKGROUND COLOR
+//        view.tintColor = UIColor.white
+        
+        //Title color
+        if let titleView = view as? UITableViewHeaderFooterView {
+            titleView.textLabel?.textColor = ALKConfiguration.init().customPrimary
+        }
     }
     
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -173,6 +188,10 @@ extension ALKContactListViewController: UITableViewDelegate, UITableViewDataSour
         self.tableView.deselectRow(at: indexPath, animated: true)
         self.navigationController?.pushViewController(conversationVC, animated: true)
         self.tableView.isUserInteractionEnabled = true
+    }
+    
+    public func tableView(_ tableView: UITableView, sectionForSectionIndexTitle title: String, at index: Int) -> Int {
+        return viewModel.sectionForSectionIndexTitle(title: title)
     }
     
     public func sectionIndexTitles(for tableView: UITableView) -> [String]? {

@@ -160,7 +160,7 @@ class ALKMyPaymentMessage: ALKChatBaseCell<ALKMessageViewModel> {
             let  paymentStatus = nsmutable!["paymentStatus"]
             let   richMessageType = nsmutable!["richMessageType"];
             let doller = "$"
-            let amountString = "\(doller) \(amount as? String)"
+            let amountString = "\(doller) \(amount as! String)"
             
             if(viewModel.isMyMessage){
                 if(paymentStatus != nil && "paymentRequested"  ==  paymentStatus as! String!){

@@ -138,7 +138,7 @@ open class ALKChatBar: UIView {
         return imageView
     }()
 
-    open let sendButton: UIButton = {
+    public let sendButton: UIButton = {
         let bt = UIButton(type: .custom)
         var image = UIImage(named: "send", in: Bundle.applozic, compatibleWith: nil)
         image = image?.imageFlippedForRightToLeftLayoutDirection()
@@ -147,9 +147,9 @@ open class ALKChatBar: UIView {
         return bt
     }()
     
-    open let sendPaymentButton: UIButton = {
+    public let sendPaymentButton: UIButton = {
         let button = UIButton(type: UIButtonType.system)
-        var image = UIImage(named: "scrollDown", in: Bundle.applozic, compatibleWith: nil)
+        var image = UIImage(named: "icon_money", in: Bundle.applozic, compatibleWith: nil)
         image = image?.imageFlippedForRightToLeftLayoutDirection()
         button.setImage(image, for: .normal)
         button.accessibilityIdentifier = "sendPaymentButton"

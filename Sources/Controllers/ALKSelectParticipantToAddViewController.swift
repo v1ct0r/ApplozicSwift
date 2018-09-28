@@ -137,7 +137,7 @@ class ALKSelectParticipantToAddViewController: ALKBaseViewController {
         var predicate = NSPredicate()
         fetchReq.returnsDistinctResults = true
         if !ALUserDefaultsHandler.getLoginUserConatactVisibility() {
-            predicate = NSPredicate(format: "userId!=%@ AND deletedAtTime == nil", ALUserDefaultsHandler.getUserId())
+            predicate = NSPredicate(format: "userId!=%@ AND deletedAtTime == nil AND (contactType == 2 OR isFavourite == 1)", ALUserDefaultsHandler.getUserId())
         }
 
         fetchReq.predicate = predicate

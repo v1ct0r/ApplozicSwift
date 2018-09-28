@@ -67,6 +67,7 @@ final class ALKContactModel {
     func fetchContactList() {
         //GET Favourite contacts
         let favouritePredicate = NSPredicate(format: "userId!=%@ AND isFavourite == 1", ALUserDefaultsHandler.getUserId() ?? "")
+//        let favouritePredicate = NSPredicate(format: "userId!=%@", ALUserDefaultsHandler.getUserId() ?? "")
         favouriteContacts = fetchContacts(predicate: favouritePredicate)
         if favouriteContacts.count > 0 {
             bufferContactList.append((key: "*", value: favouriteContacts))
@@ -74,6 +75,7 @@ final class ALKContactModel {
         
         //Get regitered Contacts
         let registeredPredicate = NSPredicate(format: "userId!=%@ AND contactType == 2 AND isFavourite == 0", ALUserDefaultsHandler.getUserId() ?? "")
+//        let registeredPredicate = NSPredicate(format: "userId!=%@", ALUserDefaultsHandler.getUserId() ?? "")
         registeredContacts = fetchContacts(predicate: registeredPredicate)
         
         //Convert this array to sorted array of tuples
@@ -89,6 +91,7 @@ final class ALKContactModel {
         
         //Get unregistered COntacts
         let unregisteredPredicate = NSPredicate(format: "userId!=%@ AND contactType == 1 AND isFavourite == 0", ALUserDefaultsHandler.getUserId() ?? "")
+//        let unregisteredPredicate = NSPredicate(format: "userId!=%@", ALUserDefaultsHandler.getUserId() ?? "")
         unregisteredContacts = fetchContacts(predicate: unregisteredPredicate)
         if unregisteredContacts.count > 0 {
             bufferContactList.append((key: "_", value: unregisteredContacts))
@@ -112,9 +115,16 @@ final class ALKContactModel {
     }
     
     func sectionIndexTitle() -> [String]{
-        return contactList.map({
+        var sections =  contactList.map({
             String($0.key)
         })
+        sections.remove(object: "*")
+        sections.remove(object: "_")
+        return sections
+    }
+    
+    func sectionForSectionIndexTitle(title: String) -> Int {
+        return contactList.index {$0.key == title.first} ?? 0
     }
     
     func filter(keyword: String){

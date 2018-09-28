@@ -58,6 +58,7 @@ class ALKContactCell: UITableViewCell{
         
         // Label
         lblDisplayName.centerYAnchor.constraint(equalTo: imgDisplay.centerYAnchor, constant: 2).isActive = true
+        lblDisplayName.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15).isActive = true
         
         // Separator
         separatorView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor).isActive = true
