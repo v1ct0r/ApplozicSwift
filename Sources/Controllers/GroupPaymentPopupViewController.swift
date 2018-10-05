@@ -164,7 +164,8 @@ class GroupPaymentPopupViewController: UIViewController {
         // Ask the view controller that presented us to dismiss us...
         switch(button){
         case cancelButton:
-            print("Don't want to send payment right now. No worries. You can always send it later.")
+            print("Don't want to send payment right now. No worries. You can always send it later at your will.")
+            self.dismiss(animated: true, completion: nil)
         case acceptButton:
             var userIds = [String]()
             for indexPath in indexPathOfSelectedRows {

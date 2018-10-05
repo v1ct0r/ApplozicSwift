@@ -151,7 +151,10 @@ open class ALKChatBar: UIView {
         let button = UIButton(type: UIButtonType.system)
         var image = UIImage(named: "icon_money", in: Bundle.applozic, compatibleWith: nil)
         image = image?.imageFlippedForRightToLeftLayoutDirection()
+        image = image?.withRenderingMode(UIImageRenderingMode.alwaysOriginal)
         button.setImage(image, for: .normal)
+        let selectedImage = button.image(for: .selected)?.withRenderingMode(UIImageRenderingMode.alwaysOriginal)
+        button.setImage(selectedImage, for: .selected)
         button.accessibilityIdentifier = "sendPaymentButton"
         button.layer.masksToBounds = true
         return button
