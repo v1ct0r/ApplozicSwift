@@ -233,13 +233,14 @@ open class ALKConversationListViewController: ALKBaseViewController {
     }()
     
     lazy var leftBarDoneButtonItem: UIBarButtonItem = {
+        let back = NSLocalizedString("DoneButton", value: SystemMessage.ButtonName.Done, comment: "")
         let button = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(self.customDoneAction))
         return button
     }()
 
     private func setupView() {
 
-        title = "Conversaciones"
+        title = NSLocalizedString("ConversationListVCTitle", value: SystemMessage.ChatList.title, comment: "")
 
         let rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "searchIcon", in: Bundle.applozic, compatibleWith: nil), style: .plain, target: self, action: #selector(compose))
         navigationItem.rightBarButtonItem = rightBarButtonItem
@@ -285,7 +286,8 @@ open class ALKConversationListViewController: ALKBaseViewController {
         else if let key = contactId,let alContact = alContactDbService.loadContact(byKey: "userId", value: key), let name = alContact.getDisplayName() {
             title = name
         }
-        title = title.isEmpty ? "No name":title
+        let noName = NSLocalizedString("NoNameMessage", value: SystemMessage.NoData.NoName, comment: "")
+        title = title.isEmpty ? noName : title
         let convViewModel = ALKConversationViewModel(contactId: contactId, channelKey: groupId)
         let convService = ALConversationService()
         if let convId = conversationId, let convProxy = convService.getConversationByKey(convId) {
@@ -892,3 +894,4 @@ extension ALKConversationListViewController: ALKChatCellDelegate {
         }
     }
 }
+

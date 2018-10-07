@@ -18,7 +18,7 @@ open class PaymentView: UIView {
     let sendPaymentButton: UIButton = {
         let button = UIButton(type: .system)
         button.layer.masksToBounds = true
-        button.setTitle("Enviar", for: .normal)
+        button.setTitle(NSLocalizedString("SendPaymentButton", value: SystemMessage.PaymentUsers.SendPaymentButton, comment: ""), for: .normal)
         button.backgroundColor = ALKConfiguration.init().customPrimary
         button.setTitleColor(ALKConfiguration.init().customPrimaryDark, for: .normal)
         return button
@@ -27,7 +27,7 @@ open class PaymentView: UIView {
     let requestPaymentButton: UIButton = {
         let button = UIButton(type: .system)
         button.layer.masksToBounds = true
-        button.setTitle("Solicitar", for: .normal)
+        button.setTitle(NSLocalizedString("RequestPaymentButton", value: SystemMessage.PaymentUsers.RequestPaymentButton, comment: ""), for: .normal)
         button.backgroundColor = ALKConfiguration.init().paymentRequested
         button.setTitleColor(UIColor.white, for: .normal)
         return button

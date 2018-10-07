@@ -62,12 +62,12 @@ class ALPaymentUsersController: ALKBaseViewController {
         setupInviteButton()
         setupSearchBar()
         
-        self.navigationItem.title = NSLocalizedString("PaymentUsersTitle", value: "Users", comment: "")
+        self.navigationItem.title = NSLocalizedString("PaymentUsersTitle", value: SystemMessage.PaymentUsers.PaymentUsersTitle, comment: "")
         self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName : UIColor.black]
         
         
         definesPresentationContext = true
-        btnInvite.setTitle(NSLocalizedString("AddUsers", value: "Add", comment: ""), for: .normal)
+        btnInvite.setTitle(NSLocalizedString("AddUsers", value: SystemMessage.PaymentUsers.AddUsers, comment: ""), for: .normal)
         if(isView){
             tblParticipants.allowsSelection = true;
         }else{
@@ -351,7 +351,7 @@ extension ALPaymentUsersController: ALKInviteButtonProtocol {
         let isEnabled = (count > 0) ? true: false
         let background = (isEnabled ? UIColor.mainRed() : UIColor.disabledButton())
         let newMember = count > 0 ? " (\(count))" : ""
-        let inviteMessage = NSLocalizedString("InviteMessage", value: "Invite", comment: "")
+        let inviteMessage = NSLocalizedString("InviteMessage", value: SystemMessage.LabelName.InviteMessage, comment: "")
         let title = "\(inviteMessage) \(newMember)"
         return (title, background, isEnabled)
     }

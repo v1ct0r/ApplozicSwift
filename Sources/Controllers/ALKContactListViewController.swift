@@ -23,7 +23,7 @@ open class ALKContactListViewController: ALKBaseViewController {
     }()
     
     fileprivate lazy var searchBar: UISearchBar = {
-        return UISearchBar.createAXSearchBar(placeholder: NSLocalizedString("SearchPlaceholder", value: "Search", comment: ""))
+        return UISearchBar.createAXSearchBar(placeholder: NSLocalizedString("SearchPlaceholder", value: SystemMessage.LabelName.SearchPlaceholder, comment: ""))
     }()
     
     required public init() {
@@ -44,7 +44,7 @@ open class ALKContactListViewController: ALKBaseViewController {
     
     
     private func setupView() {
-        title = NSLocalizedString("ContactList", value: "Contactos", comment: "")
+        title = NSLocalizedString("ContactList", value: SystemMessage.NavbarTitle.contactTitle, comment: "")
         
         //edit button
         let editButtoninBar = UIBarButtonItem(image: UIImage(named: "fill_214", in: Bundle.applozic, compatibleWith: nil), style: .plain, target: self, action: #selector(createGroup))
@@ -141,9 +141,9 @@ extension ALKContactListViewController: UITableViewDelegate, UITableViewDataSour
 
     public func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         if viewModel.sectionHeaderTitle(section: section) == "*" {
-            return "Con Coink"
+            return NSLocalizedString("RegisteredContacts", value: SystemMessage.NavbarTitle.registeredContacts, comment: "")
         }else if viewModel.sectionHeaderTitle(section: section) == "_" {
-            return "Sin Coink"
+            return NSLocalizedString("UnregisteredContacts", value: SystemMessage.NavbarTitle.unregisteredContacts, comment: "")
         }
         return String(viewModel.sectionHeaderTitle(section: section))
     }
@@ -165,7 +165,7 @@ extension ALKContactListViewController: UITableViewDelegate, UITableViewDataSour
         if self.viewModel.sectionHeaderTitle(section: indexPath.section) == "_" {
             // show popup for invitation
 //            let shareApp = ShareApp()
-            let message = "Hey jude don't make it bad"
+            let message = NSLocalizedString("ShareAppMessage", value: SystemMessage.ShareApp.message, comment: "")
             let vc = UIActivityViewController(activityItems: [message], applicationActivities: nil)
             /* If you want to exclude certain types from sharing
              options you could add them to the excludedActivityTypes */

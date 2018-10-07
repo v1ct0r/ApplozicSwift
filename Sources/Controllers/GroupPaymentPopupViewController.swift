@@ -46,7 +46,7 @@ class GroupPaymentPopupViewController: UIViewController {
         let label           = UILabel()
         label.textColor     = ALKConfiguration.init().customPrimaryDark
         label.font          = UIFont.boldSystemFont(ofSize: 20)
-        label.text          = "Enviar en grupo"
+        label.text          = NSLocalizedString("GroupPaymentPopupTitle", value: SystemMessage.PaymentPopup.title, comment: "")
         label.numberOfLines = 1
         return label
     }()
@@ -55,21 +55,23 @@ class GroupPaymentPopupViewController: UIViewController {
         let label           = UILabel()
         label.font          = UIFont.systemFont(ofSize: 16)
         label.textColor     = UIColor.lightGray
-        label.text          = "This is just dummy text. This should be replaced before going live $."
+        label.text          = NSLocalizedString("GroupPaymentPopupMessage", value: SystemMessage.PaymentPopup.message, comment: "")
         label.numberOfLines = 0
         return label
     }()
     
     fileprivate var acceptButton: UIButton = {
         let button = UIButton(type: .custom)
-        button.setTitle("SIGUIENTE", for: .normal)
+        let title = NSLocalizedString("GroupPaymentPopupAcceptButton", value: SystemMessage.PaymentPopup.acceptButton, comment: "")
+        button.setTitle(title, for: .normal)
         button.setTitleColor(ALKConfiguration.init().customPrimaryDark, for: .normal)
         return button
     }()
     
     fileprivate var cancelButton: UIButton = {
         let button = UIButton(type: .custom)
-        button.setTitle("CANCELAR", for: .normal)
+        let title = NSLocalizedString("GroupPaymentPopupRejectButton", value: SystemMessage.PaymentPopup.rejectButton, comment: "")
+        button.setTitle(title, for: .normal)
         button.setTitleColor(UIColor.lightGray, for: .normal)
         return button
     }()

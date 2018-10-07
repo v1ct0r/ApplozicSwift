@@ -297,7 +297,8 @@ open class ALKConversationViewController: ALKBaseViewController {
         }
 
         if self.viewModel.isGroup == true {
-            self.setTypingNotiDisplayName(displayName: "Somebody")
+            let dispName = NSLocalizedString("Somebody", value: SystemMessage.Chat.somebody, comment: "")
+            self.setTypingNotiDisplayName(displayName: dispName)
         } else {
             self.setTypingNotiDisplayName(displayName: self.title ?? "")
         }
@@ -603,12 +604,15 @@ open class ALKConversationViewController: ALKBaseViewController {
                                 imagePicker.mediaTypes = [kUTTypeMovie as String]
                                 UIViewController.topViewController()?.present(imagePicker, animated: false, completion: nil)
                             } else {
-                                ALUtilityClass.permissionPopUp(withMessage: "Enable Camera Permission", andViewController: self)
+                                let msg = NSLocalizedString("EnableCameraPermissionMessage", value: SystemMessage.Camera.cameraPermission, comment: "")
+                                ALUtilityClass.permissionPopUp(withMessage: msg, andViewController: self)
                             }
                         }
                     })
                 } else {
-                    ALUtilityClass.showAlertMessage(NSLocalizedString("CameraNotAvailableMessage", value: "Camera is not Available !!!", comment: ""), andTitle: NSLocalizedString("CameraNotAvailableTitle", value: "OOPS !!!", comment: ""))
+                    let msg = NSLocalizedString("CameraNotAvailableMessage", value: SystemMessage.Camera.CamNotAvailable, comment: "")
+                    let title = NSLocalizedString("CameraNotAvailableTitle", value: SystemMessage.Camera.camNotAvailableTitle, comment: "")
+                    ALUtilityClass.showAlertMessage(msg, andTitle: title)
                 }
             case .showImagePicker():
                 let storyboard = UIStoryboard.name(storyboard: UIStoryboard.Storyboard.picker, bundle: Bundle.applozic)

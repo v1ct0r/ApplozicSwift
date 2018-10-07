@@ -138,7 +138,7 @@ class GroupPaymentPopupHeader: UITableViewHeaderFooterView {
         label.numberOfLines = 1
         label.font          = UIFont.systemFont(ofSize: 17)
         label.textColor     = ALKConfiguration.init().customPrimaryDark
-        label.text          = "Todos"
+        label.text          = NSLocalizedString("Todos", value: SystemMessage.PaymentPopup.Todos, comment: "")
         return label
     }()
     

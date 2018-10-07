@@ -68,7 +68,7 @@ open class ALKSoundRecorderBtn: UIButton {
         backgroundColor = UIColor.background(.grayEF)
         setTextColor(color:.main, forState: .normal)
         setFont(font:Font.normal(size: 14))
-        let holdToTalkMessage = NSLocalizedString("HoldToTalkMessage", value: "Hold to Talk / Tap to Type", comment: "")
+        let holdToTalkMessage = NSLocalizedString("HoldToTalkMessage", value: SystemMessage.Microphone.HoldToTalkMessage, comment: "")
         setTitle(holdToTalkMessage, for: .normal)
         setTitle(holdToTalkMessage, for: .highlighted)
     }
@@ -78,7 +78,7 @@ open class ALKSoundRecorderBtn: UIButton {
         setFont(font:Font.normal(size: 14))
         setTextColor(color:.white, forState: .normal)
         setTextColor(color:.white, forState: .highlighted)
-        let recordingMessage = NSLocalizedString("RecordingMessage", value: "Recording...00:00:00", comment: "")
+        let recordingMessage = NSLocalizedString("RecordingMessage", value: SystemMessage.Microphone.RecordingMessageStarting, comment: "")
         setTitle(recordingMessage, for: .normal)
         setTitle(recordingMessage, for: .highlighted)
     }
@@ -268,7 +268,7 @@ open class ALKSoundRecorderBtn: UIButton {
         var secStr = String(sec)
         if sec < 10 {secStr = "0\(secStr)"}
         if min < 10 {minStr = "0\(minStr)"}
-        let recordingMessage = NSLocalizedString("RecordingMessage", value: "Recording...00:", comment: "")
+        let recordingMessage = NSLocalizedString("RecordingMessage", value: SystemMessage.Microphone.RecordingMessageProgress, comment: "")
         setTitle("\(recordingMessage)\(minStr):\(secStr)", for: .normal)
         setTitle("\(recordingMessage)\(minStr):\(secStr)", for: .highlighted)
     }
