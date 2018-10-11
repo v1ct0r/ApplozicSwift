@@ -110,11 +110,11 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
     }()
     
     
-    var paymentTitle: UILabel = {
-        let lb = UILabel()
+    var paymentTitle: PaddingLabel = {
+        let lb = PaddingLabel(withInsets: 0, 0, 5, 5)
         lb.textAlignment = .center
-        lb.numberOfLines = 2
-        lb.font = Font.bold(size: 13.0).font()
+        lb.numberOfLines = 0
+        lb.font = Font.bold(size: 15.0).font()
         lb.backgroundColor=UIColor.clear
         return lb
     }()
@@ -124,7 +124,7 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
         let lb = UILabel()
         lb.textAlignment = .center
         lb.backgroundColor=UIColor.clear
-        lb.font = Font.bold(size: 14.0).font()
+        lb.font = Font.bold(size: 15.0).font()
         
         return lb
     }()
@@ -132,7 +132,7 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
     
     var paymentSubjctTitle: UILabel = {
         let lb = UILabel()
-        lb.textAlignment = .center
+        lb.textAlignment = .left
         lb.font = Font.bold(size: 14.0).font()
         lb.backgroundColor = UIColor.clear
         return lb
@@ -140,9 +140,10 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
     
     var paymentSubjctText: UILabel = {
         let lb = UILabel()
-        lb.textAlignment = .left
+//        lb.textAlignment = .left
         lb.font = Font.bold(size: 14.0).font()
         lb.backgroundColor=UIColor.clear
+        lb.numberOfLines = 0
         return lb
     }()
     
@@ -194,7 +195,51 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
     
     override class func rowHeigh(viewModel: ALKMessageViewModel,width: CGFloat) -> CGFloat {
         
-        let heigh = (width*0.27)
+        var heigh = (width*0.27)
+        
+        //calculate height from viewModel:
+        if let dict = viewModel.metadata, let paymentText = dict["paymentSubject"] as? String {
+            var size = CGRect()
+            //calclate exact width
+            let widthNoPadding = (width * 0.4) - 30
+            
+            let maxSize = CGSize.init(width: widthNoPadding, height: CGFloat.greatestFiniteMagnitude)
+            let font = Font.normal(size: 14).font()
+            let color = UIColor.color(ALKMessageStyle.message.color)
+            
+            let style = NSMutableParagraphStyle.init()
+            style.lineBreakMode = .byWordWrapping
+            style.headIndent = 0
+            style.tailIndent = 0
+            style.firstLineHeadIndent = 0
+            style.minimumLineHeight = 17
+            style.maximumLineHeight = 17
+            
+            let attributes: [String : Any] = [NSFontAttributeName: font,
+                                              NSForegroundColorAttributeName: color,
+                                              NSParagraphStyleAttributeName: style]
+            size = paymentText.boundingRect(with: maxSize, options: [NSStringDrawingOptions.usesFontLeading, NSStringDrawingOptions.usesLineFragmentOrigin],attributes: attributes, context: nil)
+            let height = ceil(size.height)
+            
+            if height > 18.0 {
+                heigh += height
+            }
+            if let paymentStatus = dict["paymentStatus"] as? String,
+                paymentStatus.caseInsensitiveCompare("paymentRequested") == ComparisonResult.orderedSame  {
+                if viewModel.channelKey == nil, viewModel.contactId != nil {
+                    heigh += 20
+                }else {
+                    let usersRequested = dict["usersRequested"] as? String;
+                    let replacedString =   usersRequested?.replacingOccurrences(of: "[", with: "").replacingOccurrences(of: "]",with: "").replacingOccurrences(of: "\"",with: "")
+                    
+                    let arary : [String] = replacedString!.components(separatedBy: ",")
+                    if arary.contains(ALUserDefaultsHandler.getUserId()) && dict[ALUserDefaultsHandler.getUserId()] == nil{
+                        heigh += 20
+                    }
+                }
+            }
+        }
+        
         return topPadding()+heigh+bottomPadding()
     }
     
@@ -237,6 +282,16 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
         case downloaded(filePath: String)
     }
     
+    func addPoints(inputNumber: String) -> String{
+        var number = NSMutableString(string: inputNumber)
+        var count: Int = number.length
+        while count >= 4 {
+            count = count - 3
+            number.insert(".", at: count) // you also can use ","
+        }
+        return number as String
+    }
+    
     override func update(viewModel: ALKMessageViewModel) {
         self.viewModel = viewModel
         activityIndicator.color = .black
@@ -261,13 +316,15 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
             let doller = "$"
             var amountString = "\(doller) \(amount as! String)"
             
+            //This!!!! This piece of code should've worked.
             if let amountAsString = amount as? String, let amountAsInt = Int(amountAsString) {
-                let formatter = NumberFormatter()
-                formatter.groupingSeparator = "."
-                formatter.numberStyle = .decimal
-                if let amnt = formatter.string(for: amountAsInt) {
-                    amountString = "\(doller) \(amnt)"
-                }
+//                let formatter = NumberFormatter()
+//                formatter.groupingSeparator = "."
+//                formatter.numberStyle = .decimal
+//                if let amnt = formatter.string(for: amountAsInt) {
+//                    amountString = "\(doller) \(amnt)"
+//                }
+                amountString = "\(doller) \(addPoints(inputNumber: amountAsString))"
             }
             
             if(viewModel.isMyMessage){
@@ -302,13 +359,27 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
                             let channeldb = messageDb.updateMessageMetaData(viewModel.identifier, withMetadata:NSMutableDictionary(dictionary: nsmutable!))
                             
                         }else{
-                            paymentTitle.text = requestedString + (nsmutable!["paymentHeader"] as? String)!
+                            if var header = nsmutable!["paymentHeader"] as? String, header.contains(YouRequestedFrom){
+                                header = header.replacingOccurrences(of: YouRequestedFrom, with: "")
+                                let arr = header.split(separator: ",")
+                                var append: String = ""
+                                if arr.count == 1 {
+                                    append += " "+arr[0]
+                                }else if arr.count == 2 {
+                                    append += " " + arr[0] + ", " + arr[1]
+                                }else {
+                                    append += " " + arr[0] + ", " + arr[1] + " +\(arr.count - 2) more"
+                                }
+                                paymentTitle.text = requestedString + append
+                            }else {
+                                paymentTitle.text = requestedString + (nsmutable!["paymentHeader"] as? String)!
+                            }
                         }
                         
                         let  paymentReceiver = nsmutable!["paymentReceiver"] as? String;
                         
                         if(paymentReceiver == nil){
-                            
+                        
                             if (nsmutable![ALUserDefaultsHandler.getUserId()] != nil ){
                                 handlePaymentActionbuttonVisibality(isHidden: true)
                             }else{
@@ -325,7 +396,7 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
                         }else if (nsmutable![ALUserDefaultsHandler.getUserId()] != nil ){
                             handlePaymentActionbuttonVisibality(isHidden: true)
                         }else{
-                            handlePaymentActionbuttonVisibality(isHidden: true)
+                            handlePaymentActionbuttonVisibality(isHidden: false)
                         }
                     }else if(viewModel.contactId != nil){
                         paymentTitle.text = viewModel.displayName! + RequestedFromYou
@@ -368,7 +439,7 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
                             paymentTitle.text =  (nsmutable!["paymentHeader"] as? String)!
                         }
                     }else{
-                        paymentTitle.text = YouRejected
+                        paymentTitle.text = YouRejected+viewModel.displayName! + S + Payment
                     }
 //                    paymentResponseButtons.isHidden = true
                 }else if("paymentAccepted" == paymentStatus as! String!){
@@ -419,24 +490,54 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
                             let channeldb = messageDb.updateMessageMetaData(viewModel.identifier, withMetadata:NSMutableDictionary(dictionary: nsmutable!)  )
                             
                         }else{
-                            paymentTitle.text =   requestedString + (nsmutable!["paymentHeader"] as? String)!
+                            if var header = nsmutable!["paymentHeader"] as? String, header.contains(YouPaidTo){
+                                header = header.replacingOccurrences(of: YouPaidTo, with: "")
+                                let arr = header.split(separator: ",")
+                                var append: String = ""
+                                if arr.count == 1 {
+                                    append += " "+arr[0]
+                                }else if arr.count == 2 {
+                                    append += " " + arr[0] + ", " + arr[1]
+                                }else {
+                                    append += " " + arr[0] + ", " + arr[1] + " +\(arr.count - 2) more"
+                                }
+                                paymentTitle.text = requestedString + append
+                            }else {
+                                paymentTitle.text = requestedString + (nsmutable!["paymentHeader"] as? String)!
+                            }
                         }
                         handlePaymentActionbuttonVisibality(isHidden: true)
                         
                     }else if(viewModel.contactId != nil){
                         paymentTitle.text = viewModel.displayName! + PaidYou
-                        handlePaymentActionbuttonVisibality(isHidden: false)
+                        handlePaymentActionbuttonVisibality(isHidden: true)
                     }
                     paymentMoney.text = amountString
 //                    paymentResponseButtons.isHidden = true
                 }
                 
-                
-                if nsmutable!["paymentReceiver"] != nil {
-                    let paymentReceiver = nsmutable!["paymentReceiver"] as? String
-                    showRightImageView(paymentReceiver: paymentReceiver!)
+                if nsmutable!["paymentReceiver"] != nil, let paymentReceiver = nsmutable!["paymentReceiver"] as? String {
+                    if paymentReceiver.caseInsensitiveCompare(ALUserDefaultsHandler.getUserId()) != ComparisonResult.orderedSame {
+                        showRightImageView(paymentReceiver: paymentReceiver)
+                    }
                 }else {
-                    rightImageView.isHidden = true
+                    if let usersRequested = nsmutable?["usersRequested"] as? String{
+                        let replacedString =   usersRequested.replacingOccurrences(of: "[", with: "").replacingOccurrences(of: "]",with: "").replacingOccurrences(of: "\"",with: "")
+                        let usersArray : [String] = replacedString.components(separatedBy: ",")
+                        if !usersArray.contains(ALUserDefaultsHandler.getUserId()){
+                            var otherUser: String
+                            for user in usersArray {
+                                if user.caseInsensitiveCompare(ALUserDefaultsHandler.getUserId()) != ComparisonResult.orderedSame  {
+                                    otherUser = user
+                                    showRightImageView(paymentReceiver: otherUser)
+                                }
+                            }
+                        }else {
+                            rightImageView.isHidden = true
+                        }
+                    }else {
+                     rightImageView.isHidden = true
+                    }
                 }
             }
             
@@ -466,14 +567,14 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
         var paymentColor = ALKConfiguration.init().customPrimary;//default
         switch (paymentStatus){
             case "paymentSent":
-                paymentColor = ALKConfiguration.init().paymentReceived
+                paymentColor = ALKConfiguration.init().customPrimary
             case "paymentRequested":
                 paymentColor = ALKConfiguration.init().paymentRequested
             case "paymentRejected":
                 paymentSubjctTitle.text = Re
                 paymentColor = ALKConfiguration.init().paymentRequested
             case "paymentAccepted":
-                paymentColor = ALKConfiguration.init().paymentSent
+                paymentColor = ALKConfiguration.init().customPrimary
             case "paymentReceived":
                 paymentColor = ALKConfiguration.init().paymentReceived
             default:
@@ -487,6 +588,12 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
         bubbleView.layer.borderWidth = 2
         bubbleView.layer.cornerRadius = 12
         bubbleView.clipsToBounds = true
+        if paymentStatus == "paymentRejected" {
+            paymentMoney.textColor = ALKConfiguration.init().strikeThroughTextColor
+        }
+        if paymentStatus == "paymentAccepted" {
+            paymentMoney.textColor = ALKConfiguration.init().customPrimaryDark
+        }
     }
     
     func handlePaymentActionbuttonVisibality(isHidden: Bool) {
@@ -743,22 +850,23 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
         paymentTitle.topAnchor.constraint(equalTo: bubbleView.topAnchor).isActive = true
         paymentTitle.leadingAnchor.constraint(equalTo: bubbleView.leadingAnchor).isActive = true
         paymentTitle.trailingAnchor.constraint(equalTo: bubbleView.trailingAnchor).isActive = true
-        paymentTitle.heightAnchor.constraint(equalToConstant: 30).isActive = true
+//        paymentTitle.heightAnchor.constraint(equalToConstant: 30).isActive = true
         
-        paymentMoney.topAnchor.constraint(equalTo: paymentTitle.bottomAnchor, constant: 1).isActive = true
+        paymentMoney.topAnchor.constraint(equalTo: paymentTitle.bottomAnchor, constant: 10).isActive = true
         paymentMoney.leadingAnchor.constraint(equalTo: paymentTitle.leadingAnchor).isActive = true
         paymentMoney.trailingAnchor.constraint(equalTo: paymentTitle.trailingAnchor).isActive = true
-        paymentMoney.bottomAnchor.constraint(equalTo: paymentTitle.bottomAnchor, constant: 30).isActive = true
+//        paymentMoney.bottomAnchor.constraint(equalTo: paymentTitle.bottomAnchor, constant: 30).isActive = true
         paymentMoney.heightAnchor.constraint(equalToConstant: 15).isActive = true
         
-        paymentSubjctTitle.topAnchor.constraint(equalTo: paymentMoney.bottomAnchor, constant: 1).isActive = true
+        paymentSubjctTitle.topAnchor.constraint(equalTo: paymentMoney.bottomAnchor, constant: 10).isActive = true
         paymentSubjctTitle.leadingAnchor.constraint(equalTo: bubbleView.leadingAnchor, constant: 5).isActive = true
         paymentSubjctTitle.heightAnchor.constraint(equalToConstant: 20).isActive = true
         
-        paymentSubjctText.topAnchor.constraint(equalTo: paymentMoney.bottomAnchor, constant: 1).isActive = true
+        paymentSubjctText.topAnchor.constraint(equalTo: paymentMoney.bottomAnchor, constant: 10).isActive = true
+        paymentSubjctText.trailingAnchor.constraint(equalTo: bubbleView.trailingAnchor, constant: -5).isActive = true
         paymentSubjctText.leadingAnchor.constraint(equalTo: paymentSubjctTitle.trailingAnchor, constant: 10).isActive = true
         
-        paymentResponseButtons.topAnchor.constraint(equalTo: paymentSubjctTitle.bottomAnchor, constant: 1).isActive = true
+//        paymentResponseButtons.topAnchor.constraint(equalTo: paymentSubjctTitle.bottomAnchor, constant: 1).isActive = true
         paymentResponseButtons.leadingAnchor.constraint(equalTo: bubbleView.leadingAnchor).isActive = true
         paymentResponseButtons.trailingAnchor.constraint(equalTo: bubbleView.trailingAnchor).isActive = true
         paymentResponseButtons.bottomAnchor.constraint(equalTo: bubbleView.bottomAnchor).isActive = true

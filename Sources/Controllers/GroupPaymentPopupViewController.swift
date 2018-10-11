@@ -169,6 +169,12 @@ class GroupPaymentPopupViewController: UIViewController {
             print("Don't want to send payment right now. No worries. You can always send it later at your will.")
             self.dismiss(animated: true, completion: nil)
         case acceptButton:
+            if indexPathOfSelectedRows.count == 0 {
+                let alert = UIAlertController(title: "Warning", message: "No user selected", preferredStyle: UIAlertControllerStyle.alert)
+                alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
+                self.present(alert, animated: true, completion: nil)
+                return
+            }
             var userIds = [String]()
             for indexPath in indexPathOfSelectedRows {
                 let contact = viewModel.contactForRow(indexPath: indexPath)

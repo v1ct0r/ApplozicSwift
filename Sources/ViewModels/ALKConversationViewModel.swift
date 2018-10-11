@@ -18,6 +18,7 @@ public protocol ALKConversationViewModelDelegate: class {
     func messageSent(at: IndexPath)
     func updateDisplay(name: String)
     func willSendMessage()
+    func reloadTable()
 }
 
 open class ALKConversationViewModel: NSObject {
@@ -235,7 +236,11 @@ open class ALKConversationViewModel: NSObject {
 
         case .payment:
             var height:CGFloat =  0
-
+            
+//            if let metadata = messageModel.metadata, let isHidden = metadata["hiddenStatus"] as? String, isHidden == "true"{
+//                return height
+//            }
+            
             if messageModel.isMyMessage {
                 height = ALKMyPaymentMessage.rowHeigh(viewModel: messageModel, width: maxWidth)
 
@@ -392,7 +397,14 @@ open class ALKConversationViewModel: NSObject {
         } else {
             guard let mesgFromService = ALMessageService.getMessagefromKeyValuePair("key", andValue: messageKey), let objectId = mesgFromService.msgDBObjectId else { return }
             let newFilteredList = mesgArray.filter { ($0.msgDBObjectId != nil) ? $0.msgDBObjectId == objectId:false }
-            updateMessageStatus(filteredList: newFilteredList, status: status)
+            if newFilteredList.count > 0{
+                updateMessageStatus(filteredList: newFilteredList, status: status)
+            }else {
+                var newMessages = [Any]()
+                newMessages.append(mesgFromService)
+                addMessagesToList(newMessages)
+            }
+            
         }
     }
 
@@ -444,9 +456,17 @@ open class ALKConversationViewModel: NSObject {
         let filteredList = alMessages.filter { $0 == message }
         if let alMessage = filteredList.first, let index = alMessages.index(of: alMessage) {
             alMessage.metadata = message.metadata
-            self.alMessages[index] = alMessage
-            self.messageModels[index] = alMessage.messageModel
-            delegate?.updateMessageAt(indexPath: IndexPath(row: 0, section: index))
+            if message.isHiddenMessage() {
+                alMessages.remove(object: alMessage)
+                messageModels.remove(object: alMessage.messageModel)
+                delegate?.reloadTable()
+                return
+            }else {
+                self.alMessages[index] = alMessage
+                self.messageModels[index] = alMessage.messageModel
+//                delegate?.updateMessageAt(indexPath: IndexPath(row: 0, section: index))
+                delegate?.reloadTable()
+            }
         }
     }
 
@@ -477,6 +497,32 @@ open class ALKConversationViewModel: NSObject {
                 self.messageModels[indexPath.section] = alMessage.messageModel
                 self.delegate?.messageUpdated()
             })
+        }
+    }
+    
+    open func sendPayment(alMessage: ALMessage, completion: @escaping () -> ()) {
+        if !alMessage.isHiddenMessage() {
+            addToWrapper(message: alMessage)
+            let indexPath = IndexPath(row: 0, section: messageModels.count-1)
+            self.delegate?.messageSent(at: indexPath)
+        
+            ALMessageService.sendMessages(alMessage, withCompletion: {
+                message, error in
+                NSLog("Message sent's section: \(indexPath.section), \(alMessage.message)")
+                guard error == nil, indexPath.section < self.messageModels.count else { return }
+                NSLog("No errors while sending the message")
+                alMessage.status = NSNumber(integerLiteral: Int(SENT.rawValue))
+                self.messageModels[indexPath.section] = alMessage.messageModel
+                self.delegate?.messageUpdated()
+                completion()
+            })
+        }else {
+//            ALMessageService.sendMessages(alMessage) { (message, error) in
+//                completion()
+//            }
+            ALMessageClientService().sendMessage(alMessage.dictionary()) { (message, error) in
+                completion()
+            }
         }
     }
 

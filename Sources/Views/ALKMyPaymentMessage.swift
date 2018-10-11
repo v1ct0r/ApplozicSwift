@@ -88,11 +88,11 @@ class ALKMyPaymentMessage: ALKChatBaseCell<ALKMessageViewModel> {
     }()
     
     
-    var paymentTitle: UILabel = {
-        let lb = UILabel()
+    var paymentTitle: PaddingLabel = {
+        let lb = PaddingLabel(withInsets: 0, 0, 5, 5)
         lb.textAlignment = .center
         lb.textColor=UIColor.white
-        lb.font = Font.bold(size: 13.0).font()
+        lb.font = Font.bold(size: 15.0).font()
         lb.numberOfLines = 0
         return lb
     }()
@@ -100,7 +100,7 @@ class ALKMyPaymentMessage: ALKChatBaseCell<ALKMessageViewModel> {
     
     var paymentMoney: UILabel = {
         let lb = UILabel()
-        lb.font = Font.bold(size: 14.0).font()
+        lb.font = Font.bold(size: 15.0).font()
         lb.textAlignment = .center
         lb.backgroundColor=UIColor.clear
         return lb
@@ -120,7 +120,7 @@ class ALKMyPaymentMessage: ALKChatBaseCell<ALKMessageViewModel> {
         lb.font = Font.normal(size: 14.0).font()
         lb.backgroundColor=UIColor.clear
         lb.textColor = UIColor.black
-        lb.numberOfLines = 2
+        lb.numberOfLines = 0
         return lb
     }()
     
@@ -143,8 +143,35 @@ class ALKMyPaymentMessage: ALKChatBaseCell<ALKMessageViewModel> {
     
     override class func rowHeigh(viewModel: ALKMessageViewModel,width: CGFloat) -> CGFloat {
         
-        let heigh = (width*0.27)
+        var heigh = (width*0.27)
         
+        //calculate height from viewModel:
+        if let dict = viewModel.metadata, let paymentText = dict["paymentSubject"] as? String {
+            var size = CGRect()
+            //calclate exact width
+            let widthNoPadding = (width * 0.4)
+            
+            let maxSize = CGSize.init(width: widthNoPadding, height: CGFloat.greatestFiniteMagnitude)
+            let font = Font.normal(size: 14).font()
+            let color = UIColor.color(ALKMessageStyle.message.color)
+            
+            let style = NSMutableParagraphStyle.init()
+            style.lineBreakMode = .byWordWrapping
+            style.headIndent = 0
+            style.tailIndent = 0
+            style.firstLineHeadIndent = 0
+            style.minimumLineHeight = 17
+            style.maximumLineHeight = 17
+            
+            let attributes: [String : Any] = [NSFontAttributeName: font,
+                                              NSForegroundColorAttributeName: color,
+                                              NSParagraphStyleAttributeName: style]
+            size = paymentText.boundingRect(with: maxSize, options: [NSStringDrawingOptions.usesFontLeading, NSStringDrawingOptions.usesLineFragmentOrigin],attributes: attributes, context: nil)
+            let height = ceil(size.height)
+            if height > 20.0 {
+                heigh += height
+            }
+        }
         return topPadding()+heigh+bottomPadding()
     }
     
@@ -178,6 +205,16 @@ class ALKMyPaymentMessage: ALKChatBaseCell<ALKMessageViewModel> {
         case downloaded(filePath: String)
     }
     
+    func addPoints(inputNumber: String) -> String{
+        var number = NSMutableString(string: inputNumber)
+        var count: Int = number.length
+        while count >= 4 {
+            count = count - 3
+            number.insert(".", at: count) // you also can use ","
+        }
+        return number as String
+    }
+    
     override func update(viewModel: ALKMessageViewModel) {
         
         self.viewModel = viewModel
@@ -208,12 +245,13 @@ class ALKMyPaymentMessage: ALKChatBaseCell<ALKMessageViewModel> {
             var amountString = "\(doller) \(amount as! String)"
             
             if let amountAsString = amount as? String, let amountAsInt = Int(amountAsString) {
-                let formatter = NumberFormatter()
-                formatter.groupingSeparator = "."
-                formatter.numberStyle = .decimal
-                if let amnt = formatter.string(for: amountAsInt) {
-                    amountString = "\(doller) \(amnt)"
-                }
+//                let formatter = NumberFormatter()
+//                formatter.groupingSeparator = "."
+//                formatter.numberStyle = .decimal
+//                if let amnt = formatter.string(for: amountAsInt) {
+//                    amountString = "\(doller) \(amnt)"
+//                }
+                amountString = "\(doller) \(addPoints(inputNumber: amountAsString))"
             }
             
             if(viewModel.isMyMessage){
@@ -461,8 +499,8 @@ class ALKMyPaymentMessage: ALKChatBaseCell<ALKMessageViewModel> {
         
         paymentTitle.topAnchor.constraint(equalTo: bubbleView.topAnchor).isActive = true
         paymentTitle.leadingAnchor.constraint(equalTo: bubbleView.leadingAnchor).isActive = true
-        paymentTitle.trailingAnchor.constraint(equalTo: contentView.trailingAnchor).isActive = true
-        paymentTitle.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        paymentTitle.trailingAnchor.constraint(equalTo: bubbleView.trailingAnchor).isActive = true
+//        paymentTitle.heightAnchor.constraint(equalToConstant: 20).isActive = true
         
         paymentMoney.topAnchor.constraint(equalTo: paymentTitle.bottomAnchor, constant: 1).isActive = true
         paymentMoney.leadingAnchor.constraint(equalTo: paymentTitle.leadingAnchor).isActive = true
@@ -474,9 +512,9 @@ class ALKMyPaymentMessage: ALKChatBaseCell<ALKMessageViewModel> {
         paymentSubjctTitle.leadingAnchor.constraint(equalTo: bubbleView.leadingAnchor, constant: 10).isActive = true
         paymentSubjctTitle.heightAnchor.constraint(equalToConstant: 20).isActive = true
         
-        paymentSubjctText.topAnchor.constraint(equalTo: paymentMoney.bottomAnchor, constant: 1).isActive = true
+        paymentSubjctText.topAnchor.constraint(equalTo: paymentMoney.bottomAnchor, constant: 2).isActive = true
         paymentSubjctText.leadingAnchor.constraint(equalTo: paymentSubjctTitle.trailingAnchor, constant: 10).isActive = true
-        paymentSubjctText.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10).isActive = true
+        paymentSubjctText.trailingAnchor.constraint(equalTo: bubbleView.trailingAnchor, constant: -5).isActive = true
         
         stateView.widthAnchor.constraint(equalToConstant: 17.0).isActive = true
         stateView.heightAnchor.constraint(equalToConstant: 9.0).isActive = true

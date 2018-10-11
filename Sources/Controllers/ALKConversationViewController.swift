@@ -258,6 +258,12 @@ open class ALKConversationViewController: ALKBaseViewController {
             weakSelf.titleButton.setTitle(name, for: .normal)
         })
         
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: "RefreshChatTable"), object: nil, queue: nil) { [weak self] notification in
+            guard let weakSelf = self else {
+                return
+            }
+            weakSelf.viewModel.refresh()
+        }
     }
 
     override func removeObserver() {
@@ -273,6 +279,7 @@ open class ALKConversationViewController: ALKBaseViewController {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: "USER_DETAILS_UPDATE_CALL"), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: "UPDATE_CHANNEL_NAME"), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: "messageMetaDataUpdateNotification"), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: "RefreshChatTable"), object: nil)
     }
 
     override open func viewWillAppear(_ animated: Bool) {
@@ -319,6 +326,37 @@ open class ALKConversationViewController: ALKBaseViewController {
         }
         subscribeChannelToMqtt()
         print("id: ", viewModel.messageModels.first?.contactId as Any)
+    }
+    
+    public func processPaymentMessage(info: [AnyHashable : Any]) {
+        let processPaymentMessage = ProcessPaymentMessage()
+        if let cancelFlag = info["cancelFlag"] as? Bool, cancelFlag {
+            return
+        }
+        if let cancelFlag = info["cancelFlag"] as? String, cancelFlag.caseInsensitiveCompare("true") == ComparisonResult.orderedSame{
+            return
+        }
+        if let paymentResponse = info["parentMessageKey"] {
+            processPaymentMessage.getMessageToUpdate(paymentJSON: info) { (message, nsMutable) in
+                if let alMessages = message, let nsmutable = nsMutable{
+                    self.viewModel.updateMessageMetaData(message: alMessages)
+                    let msg = processPaymentMessage.getMessageFrom(dbMessage: alMessages, nsmutable: nsmutable, paymentJSON: info)
+                    if let newMessage = msg {
+                        self.viewModel.sendPayment(alMessage: newMessage, completion: {
+                            processPaymentMessage.updatedMetadataResponseToIonic(message: newMessage, paymentJSON: info)
+                        })
+                    }
+                }
+            }
+            return
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            let message = processPaymentMessage.sendPaymentMessageFrom(paymentJSON: info)
+            self.viewModel.sendPayment(alMessage: message) {
+                processPaymentMessage.sendMessageResultToIonic(alMessage: message, paymentJSON: info)
+            }
+        }
     }
 
     override open func viewDidAppear(_ animated: Bool) {
@@ -861,6 +899,10 @@ open class ALKConversationViewController: ALKBaseViewController {
 }
 
 extension ALKConversationViewController: ALKConversationViewModelDelegate {
+    public func reloadTable() {
+        self.tableView.reloadData()
+    }
+    
 
     public func loadingStarted() {
         activityIndicator.startAnimating()
@@ -892,14 +934,24 @@ extension ALKConversationViewController: ALKConversationViewModelDelegate {
             self.tableView.reloadSections(IndexSet(integer: indexPath.section), with: .none)
         }
     }
+    
+    private func moveTableViewToBottom(indexPath: IndexPath){
+        tableView.scrollToRow(at: indexPath, at: UITableViewScrollPosition.bottom, animated: true)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            self.tableView.scrollToRow(at: indexPath, at: UITableViewScrollPosition.bottom, animated: true)
+        }
+    }
+
 
     public func newMessagesAdded() {
         tableView.reloadData()
-        if tableView.isCellVisible(section: viewModel.messageModels.count-1, row: 0) {
-            tableView.scrollToBottom()
-        } else {
-            unreadScrollButton.isHidden = false
-        }
+//        if tableView.isCellVisible(section: viewModel.messageModels.count-1, row: 0) {
+//            tableView.scrollToBottom()
+//        } else {
+//            unreadScrollButton.isHidden = false
+//        }
+        let indexPath: IndexPath = IndexPath(row: 0, section: viewModel.messageModels.count - 1)
+        moveTableViewToBottom(indexPath: indexPath)
         guard self.isViewLoaded && self.view.window != nil && !viewModel.isOpenGroup else {
             return
         }
@@ -1124,6 +1176,7 @@ extension ALKConversationViewController: ALMQTTConversationDelegate {
     }
 
     public func delivered(_ messageKey: String!, contactId: String!, withStatus status: Int32) {
+        print("SHIVAMM THIS IS CALLED CHECK HERE..")
         updateDeliveryReport(messageKey: messageKey, contactId: contactId, status: status)
     }
 

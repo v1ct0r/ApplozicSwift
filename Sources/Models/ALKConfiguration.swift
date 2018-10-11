@@ -52,6 +52,7 @@ public struct ALKConfiguration {
     public var paymentReceivedText = UIColor(netHex: 0x004B40)
     public var customPrimary = UIColor(netHex: 0x1EEA00)
     public var customPrimaryDark = UIColor(netHex: 0x004B40)
+    public var strikeThroughTextColor = UIColor(netHex: 0xABABAB)
     
     public init() { }
     

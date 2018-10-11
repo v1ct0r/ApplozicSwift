@@ -161,14 +161,16 @@ open class ALKConversationListViewController: ALKBaseViewController {
     }
     
     public func openChat(info: [AnyHashable : Any]) {
-        let processPaymentMessage = ProcessPaymentMessage()
-        processPaymentMessage.sendPaymentMessage(paymentJSON: info)
+//        let processPaymentMessage = ProcessPaymentMessage()
+//        processPaymentMessage.sendPaymentMessage(paymentJSON: info)
         if let groupIdOptional = info["groupId"] as? String, let groupIdInt = Int(groupIdOptional) {
             let groupId = NSNumber(value:groupIdInt)
-            launchChat(contactId: nil, groupId: groupId)
+//            launchChat(contactId: nil, groupId: groupId)
+            launchChat(contactId: nil, groupId: groupId, conversationId: nil, info: info)
         }else {
             let contactId = info["userId"] as? String
-            launchChat(contactId: contactId, groupId: nil)
+//            launchChat(contactId: contactId, groupId: nil)
+            launchChat(contactId: contactId, groupId: nil, conversationId: nil, info: info)
         }
     }
 
@@ -276,7 +278,7 @@ open class ALKConversationListViewController: ALKBaseViewController {
         tableView.estimatedRowHeight = 0
     }
 
-    @objc public func launchChat(contactId: String?, groupId: NSNumber?, conversationId: NSNumber? = nil) {
+    @objc public func launchChat(contactId: String?, groupId: NSNumber?, conversationId: NSNumber? = nil, info: [AnyHashable : Any]? = nil) {
         let alChannelService = ALChannelService()
         let alContactDbService = ALContactDBService()
         var title = ""
@@ -297,7 +299,13 @@ open class ALKConversationListViewController: ALKBaseViewController {
         viewController.title = title
         viewController.viewModel = convViewModel
         conversationViewController = viewController
+        
         self.navigationController?.pushViewController(viewController, animated: false)
+        
+        if let INFO = info {
+            viewController.processPaymentMessage(info: INFO)
+        }
+        
     }
 
     func compose() {
@@ -348,8 +356,17 @@ open class ALKConversationListViewController: ALKBaseViewController {
         }
         BroadcastToIonic.sendBroadcast(name: "EXIT_BROADCAST")
     }
-
+    
     func deleteMultipleChats() {
+        let alert = UIAlertController(title: "Alert", message: "Are you sure you want to delete these conversations", preferredStyle: UIAlertControllerStyle.alert)
+        alert.addAction(UIAlertAction(title: "Continue", style: UIAlertActionStyle.destructive, handler: { (action) in
+            self.deleteMultipleChatsConfirmed()
+        }))
+        alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil))
+        self.present(alert, animated: true, completion: nil)
+    }
+
+    func deleteMultipleChatsConfirmed() {
         self.activityIndicator.startAnimating()
         var conversation = [ALMessage]()
         selectedRows.forEach { (currentItem) in

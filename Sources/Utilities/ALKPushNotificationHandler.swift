@@ -9,7 +9,7 @@
 import Foundation
 import Applozic
 
-public class ALKPushNotificationHandler {
+@objc public class ALKPushNotificationHandler: NSObject {
     public static let shared = ALKPushNotificationHandler()
     var navVC: UINavigationController?
 
@@ -39,7 +39,7 @@ public class ALKPushNotificationHandler {
     }
 
 
-    public func dataConnectionNotificationHandler() {
+    @objc public func dataConnectionNotificationHandler() {
 
         // No need to add removeObserver() as it is present in pushAssist.
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: "showNotificationAndLaunchChat"), object: nil, queue: nil, using: {[weak self] notification in
@@ -83,13 +83,36 @@ public class ALKPushNotificationHandler {
     func launchIndividualChatWith(userId: String?, groupId: NSNumber?) {
         NSLog("Called via notification and user id is: ", userId ?? "Not Present")
 
-        let messagesVC = ALKConversationListViewController()
-        messagesVC.contactId = userId
-        messagesVC.channelKey = groupId
-        let rootVC =  UIApplication.shared.keyWindow?.rootViewController?.presentedViewController
-        let nav = ALKBaseNavigationViewController(rootViewController: messagesVC)
-        navVC?.modalTransitionStyle = .crossDissolve
-        rootVC?.present(nav, animated: true, completion: nil)
+        let conversationVC = ALKConversationListViewController()
+        conversationVC.title = "Conversation"
+        conversationVC.tabBarItem = UITabBarItem.init(tabBarSystemItem: UITabBarSystemItem.more, tag: 0)
+        let convNav = UINavigationController(rootViewController: conversationVC)
+        
+        let contactsVC = ALKContactListViewController()
+        contactsVC.title = "Contacts"
+        contactsVC.tabBarItem = UITabBarItem.init(tabBarSystemItem: .contacts, tag: 1)
+        let contNav = UINavigationController(rootViewController: contactsVC)
+        
+        let controllers = [conversationVC, contactsVC]
+        let tabBarController = UITabBarController()
+        tabBarController.viewControllers = controllers.map { UINavigationController(rootViewController: $0) }
+        tabBarController.tabBar.backgroundColor = UIColor.white
+        
+        let pushAssist = ALPushAssist()
+        UIApplication.shared.keyWindow?.rootViewController = pushAssist.topViewController
+        UIApplication.shared.keyWindow?.makeKeyAndVisible()
+        
+        pushAssist.topViewController.present(tabBarController, animated: true, completion: nil)
+        
+        conversationVC.launchChat(contactId: userId, groupId: groupId)
+        
+//        let messagesVC = ALKConversationListViewController()
+//        messagesVC.contactId = userId
+//        messagesVC.channelKey = groupId
+//        let rootVC =  UIApplication.shared.keyWindow?.rootViewController?.presentedViewController
+//        let nav = ALKBaseNavigationViewController(rootViewController: messagesVC)
+//        navVC?.modalTransitionStyle = .crossDissolve
+//        rootVC?.present(nav, animated: true, completion: nil)
 
     }
 
