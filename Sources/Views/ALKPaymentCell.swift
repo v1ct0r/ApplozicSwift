@@ -20,40 +20,12 @@ public protocol ALKCustomAmountProtocol : class{
 class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
     
     
-    let YouRequestedFrom: String = {
-        let text = NSLocalizedString("YouRequestedFrom", value: SystemMessage.PaymentMessage.YouRequestedFrom, comment: "")
-        return text
-    }()
-    let YouRejected: String = {
-        let text = NSLocalizedString("YouRejected", value: SystemMessage.PaymentMessage.YouRejected, comment: "")
-        return text
-    }()
-    let S: String = {
-        let text = NSLocalizedString("S", value: SystemMessage.PaymentMessage.S, comment: "")
-        return text
-    }()
     let Rejected: String = {
         let text = NSLocalizedString("Rejected", value: SystemMessage.PaymentMessage.Rejected, comment: "")
         return text
     }()
-    let Payment: String = {
-        let text = NSLocalizedString("Payment", value: SystemMessage.PaymentMessage.Payment, comment: "")
-        return text
-    }()
-    let YouPaidTo: String = {
-        let text = NSLocalizedString("YouPaidTo", value: SystemMessage.PaymentMessage.YouPaidTo, comment: "")
-        return text
-    }()
-    let RequestedFromYou: String = {
-        let text = NSLocalizedString("RequestedFromYou", value: SystemMessage.PaymentMessage.RequestedFromYou, comment: "")
-        return text
-    }()
-    let YouAccepted: String = {
-        let text = NSLocalizedString("YouAccepted", value: SystemMessage.PaymentMessage.YouAccepted, comment: "")
-        return text
-    }()
-    let PaidYou: String = {
-        let text = NSLocalizedString("PaidYou", value: SystemMessage.PaymentMessage.PaidYou, comment: "")
+    let RejectedYours: String = {
+        let text = NSLocalizedString("RejectedYours", value: SystemMessage.PaymentMessage.RejectedYours, comment: "")
         return text
     }()
     let Asunto: String = {
@@ -68,19 +40,14 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
         let text = NSLocalizedString("RequestedFrom", value: SystemMessage.PaymentMessage.RequestedFrom, comment: "")
         return text
     }()
-    let YourPayment: String = {
-        let text = NSLocalizedString("YourPayment", value: SystemMessage.PaymentMessage.YourPayment, comment: "")
-        return text
-    }()
-    let PaidTo: String = {
-        let text = NSLocalizedString("PaidTo", value: SystemMessage.PaymentMessage.PaidTo, comment: "")
-        return text
-    }()
     let Paid: String = {
         let text = NSLocalizedString("Paid", value: SystemMessage.PaymentMessage.Paid, comment: "")
         return text
     }()
-    
+    let You: String = {
+        let text = NSLocalizedString("You", value: SystemMessage.LabelName.You, comment: "")
+        return text
+    }()
     
     public var delegatePr: ALKCustomAmountProtocol?
     weak public var delegate: ALKConversationViewModelDelegate?
@@ -331,34 +298,35 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
                 if(paymentStatus != nil && "paymentRequested"  ==  paymentStatus as! String!){
                     handlePaymentActionbuttonVisibality(isHidden: false)
                     paymentMoney.text = amountString
-                    paymentTitle.text = YouRequestedFrom + viewModel.displayName!
+                    paymentTitle.text = String(format: RequestedFrom, You, viewModel.displayName!)
                 }else if("paymentRejected" == paymentStatus as! String!){
                     
                     let attributeString: NSMutableAttributedString =  NSMutableAttributedString(string:                  amountString)
                     attributeString.addAttribute(NSStrikethroughStyleAttributeName, value: 2, range: NSMakeRange(0, attributeString.length))
-                    paymentTitle.text = viewModel.displayName!+Rejected
+                    paymentTitle.text = String(format: RejectedYours, viewModel.displayName!, "").replacingOccurrences(of: "%@", with: "")
                     paymentMoney.attributedText = attributeString
                 }else{
                     handlePaymentActionbuttonVisibality(isHidden: true)
                     paymentMoney.text = amountString
-                    paymentTitle.text = YouPaidTo+viewModel.displayName!
+                    paymentTitle.text = String(format: Paid, You, viewModel.displayName!)
                 }
             }else{
                 if("paymentRequested"  ==  paymentStatus as! String!){
                     if(viewModel.channelKey != nil){
                         let  channelService = ALChannelDBService();
                         let  messageDb = ALMessageDBService();
-                        let requestedString = viewModel.displayName! + RequestedFrom
+                        let requestedString = viewModel.displayName!
                         
                         if(nsmutable!["paymentHeader"] == nil){
                             let groupNames = channelService.string(fromChannelUserMetaData:NSMutableDictionary(dictionary: nsmutable!), paymentMessageTitle: true)
                             
                             nsmutable!["paymentHeader"] = groupNames
-                            paymentTitle.text = requestedString + groupNames!
+                            paymentTitle.text = String(format: RequestedFrom, requestedString, groupNames!)
                             
                             let channeldb = messageDb.updateMessageMetaData(viewModel.identifier, withMetadata:NSMutableDictionary(dictionary: nsmutable!))
                             
                         }else{
+                            let YouRequestedFrom = String(format: RequestedFrom, You, "").replacingOccurrences(of: "%@", with: "")
                             if var header = nsmutable!["paymentHeader"] as? String, header.contains(YouRequestedFrom){
                                 header = header.replacingOccurrences(of: YouRequestedFrom, with: "")
                                 let arr = header.split(separator: ",")
@@ -370,9 +338,9 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
                                 }else {
                                     append += " " + arr[0] + ", " + arr[1] + " +\(arr.count - 2) more"
                                 }
-                                paymentTitle.text = requestedString + append
+                                paymentTitle.text = String(format: RequestedFrom, requestedString, append)
                             }else {
-                                paymentTitle.text = requestedString + (nsmutable!["paymentHeader"] as? String)!
+                                paymentTitle.text = String(format: RequestedFrom, requestedString, (nsmutable!["paymentHeader"] as? String)!)
                             }
                         }
                         
@@ -399,7 +367,7 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
                             handlePaymentActionbuttonVisibality(isHidden: false)
                         }
                     }else if(viewModel.contactId != nil){
-                        paymentTitle.text = viewModel.displayName! + RequestedFromYou
+                        paymentTitle.text = String(format: RequestedFrom, viewModel.displayName!, You)
                         handlePaymentActionbuttonVisibality(isHidden: false)
                     }
                     paymentMoney.text = amountString
@@ -423,10 +391,9 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
                                 if(contact != nil){
                                     var groupNames : String  = " ";
                                     if(ALUserDefaultsHandler.getUserId()  == contact?.userId){
-                                        groupNames  = viewModel.displayName! + Rejected + YourPayment
-                                        
+                                        groupNames  = String(format: RejectedYours, viewModel.displayName!)
                                     }else{
-                                        groupNames  = viewModel.displayName! + Rejected + (contact?.getDisplayName())! + S + Payment
+                                        groupNames = String(format: Rejected, viewModel.displayName!, (contact?.getDisplayName())!)
                                     }
                                     
                                     nsmutable!["paymentHeader"] = groupNames
@@ -439,7 +406,7 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
                             paymentTitle.text =  (nsmutable!["paymentHeader"] as? String)!
                         }
                     }else{
-                        paymentTitle.text = YouRejected+viewModel.displayName! + S + Payment
+                        paymentTitle.text = String(format: Rejected, You, viewModel.displayName!)
                     }
 //                    paymentResponseButtons.isHidden = true
                 }else if("paymentAccepted" == paymentStatus as! String!){
@@ -460,7 +427,7 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
                                     displayName = (contact?.getDisplayName())!
                                 }
                                 if(contact != nil){
-                                    let groupNames = viewModel.contactId! + PaidTo + displayName
+                                    let groupNames = String(format: Paid, viewModel.contactId!, displayName)
                                     nsmutable!["paymentHeader"] = groupNames
                                     paymentTitle.text = groupNames
                                     let channeldb = messageDb.updateMessageMetaData(viewModel.identifier, withMetadata:NSMutableDictionary(dictionary: nsmutable! ))
@@ -469,14 +436,14 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
                                 paymentTitle.text =  (nsmutable!["paymentHeader"] as? String)!
                             }
                         }else{
-                            paymentTitle.text = viewModel.displayName! + PaidYou
+                            paymentTitle.text = String(format: Paid, viewModel.displayName!, You)
                         }
                     }else{
-                        paymentTitle.text = viewModel.displayName! + PaidYou
+                        paymentTitle.text = String(format: Paid, viewModel.displayName!, You)
                     }
 //                    paymentResponseButtons.isHidden = true
                 }else{
-                    let requestedString = viewModel.displayName! + Paid
+                    let requestedString = viewModel.displayName!
                     if(viewModel.channelKey != nil){
                         let  channelService = ALChannelDBService();
                         let  messageDb = ALMessageDBService();
@@ -485,11 +452,12 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
                             let groupNames = channelService.string(fromChannelUserMetaData:NSMutableDictionary(dictionary: nsmutable!), paymentMessageTitle: true)
                             
                             nsmutable!["paymentHeader"] = groupNames
-                            paymentTitle.text = requestedString + groupNames!
+                            paymentTitle.text = String(format: Paid, requestedString, groupNames!)
                             
                             let channeldb = messageDb.updateMessageMetaData(viewModel.identifier, withMetadata:NSMutableDictionary(dictionary: nsmutable!)  )
                             
                         }else{
+                            let YouPaidTo = String(format: Paid, You, "").replacingOccurrences(of: "%@", with: "")
                             if var header = nsmutable!["paymentHeader"] as? String, header.contains(YouPaidTo){
                                 header = header.replacingOccurrences(of: YouPaidTo, with: "")
                                 let arr = header.split(separator: ",")
@@ -501,15 +469,15 @@ class ALKPaymentCell: ALKChatBaseCell<ALKMessageViewModel> {
                                 }else {
                                     append += " " + arr[0] + ", " + arr[1] + " +\(arr.count - 2) more"
                                 }
-                                paymentTitle.text = requestedString + append
+                                paymentTitle.text = String(format: Paid, requestedString, append)
                             }else {
-                                paymentTitle.text = requestedString + (nsmutable!["paymentHeader"] as? String)!
+                                paymentTitle.text = String(format: Paid, requestedString, (nsmutable!["paymentHeader"] as? String)!)
                             }
                         }
                         handlePaymentActionbuttonVisibality(isHidden: true)
                         
                     }else if(viewModel.contactId != nil){
-                        paymentTitle.text = viewModel.displayName! + PaidYou
+                        paymentTitle.text = String(format: Paid, viewModel.displayName!, You)
                         handlePaymentActionbuttonVisibality(isHidden: true)
                     }
                     paymentMoney.text = amountString

@@ -636,18 +636,24 @@ extension ALKConversationListViewController: ALMQTTConversationDelegate {
             self.tableView.reloadData()
         })
     }
-
+    
+    func isNewMsgForOpenedChat(alMessage: ALMessage, vm: ALKConversationViewModel) -> Bool{
+        if ((alMessage.groupId != nil && alMessage.groupId == vm.channelKey) || (alMessage.groupId == nil && vm.channelKey == nil && alMessage.contactId == vm.contactId)){
+            return true
+        }
+        return false
+    }
 
     open func syncCall(_ alMessage: ALMessage!, andMessageList messageArray: NSMutableArray!) {
-        print("sync call: ", alMessage.message)
+        print("sync call: ", alMessage.description)
         guard let message = alMessage else { return }
         let viewController = conversationViewController
-        if let vm = viewController?.viewModel, (vm.contactId != nil || vm.channelKey != nil), let visibleController = self.navigationController?.visibleViewController, visibleController.isKind(of: ALKConversationViewController.self) {
+        if let vm = viewController?.viewModel, (vm.contactId != nil || vm.channelKey != nil), let visibleController = self.navigationController?.visibleViewController, visibleController.isKind(of: ALKConversationViewController.self), isNewMsgForOpenedChat(alMessage: alMessage, vm: vm) {
 
                 viewModel.syncCall(viewController: viewController, message: message, isChatOpen: true)
 
             
-        } else if let visibleController = self.navigationController?.visibleViewController, visibleController.isKind(of: ALKConversationListViewController.self)  {
+        } else {
             let notificationView = ALNotificationView(alMessage: message, withAlertMessage: message.message)
             notificationView?.showNativeNotificationWithcompletionHandler({
                 response in

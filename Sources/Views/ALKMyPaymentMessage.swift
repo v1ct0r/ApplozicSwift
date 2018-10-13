@@ -20,40 +20,25 @@ import Applozic
 // MARK: - ALKPaymentCell
 class ALKMyPaymentMessage: ALKChatBaseCell<ALKMessageViewModel> {
     
-    let YouRequestedFrom: String = {
-        let text = NSLocalizedString("YouRequestedFrom", value: SystemMessage.PaymentMessage.YouRequestedFrom, comment: "")
+    let SomeoneRejected: String = {
+        let text = NSLocalizedString("SomeoneRejected", value: SystemMessage.PaymentMessage.SomeoneRejected, comment: "")
         return text
     }()
-    let YouRejected: String = {
-        let text = NSLocalizedString("YouRejected", value: SystemMessage.PaymentMessage.YouRejected, comment: "")
-        return text
-    }()
-    let S: String = {
-        let text = NSLocalizedString("S", value: SystemMessage.PaymentMessage.S, comment: "")
+    
+    let RejectedYours: String = {
+        let text = NSLocalizedString("RejectedYours", value: SystemMessage.PaymentMessage.RejectedYours, comment: "")
         return text
     }()
     let Rejected: String = {
         let text = NSLocalizedString("Rejected", value: SystemMessage.PaymentMessage.Rejected, comment: "")
         return text
     }()
-    let Payment: String = {
-        let text = NSLocalizedString("Payment", value: SystemMessage.PaymentMessage.Payment, comment: "")
-        return text
-    }()
-    let YouPaidTo: String = {
-        let text = NSLocalizedString("YouPaidTo", value: SystemMessage.PaymentMessage.YouPaidTo, comment: "")
-        return text
-    }()
-    let RequestedFromYou: String = {
-        let text = NSLocalizedString("RequestedFromYou", value: SystemMessage.PaymentMessage.RequestedFromYou, comment: "")
-        return text
-    }()
     let YouAccepted: String = {
         let text = NSLocalizedString("YouAccepted", value: SystemMessage.PaymentMessage.YouAccepted, comment: "")
         return text
     }()
-    let PaidYou: String = {
-        let text = NSLocalizedString("PaidYou", value: SystemMessage.PaymentMessage.PaidYou, comment: "")
+    let Paid: String = {
+        let text = NSLocalizedString("Paid", value: SystemMessage.PaymentMessage.Paid, comment: "")
         return text
     }()
     let Asunto: String = {
@@ -62,6 +47,14 @@ class ALKMyPaymentMessage: ALKChatBaseCell<ALKMessageViewModel> {
     }()
     let Re: String = {
         let text = NSLocalizedString("Re", value: SystemMessage.PaymentMessage.Re, comment: "")
+        return text
+    }()
+    let RequestedFrom: String = {
+        let text = NSLocalizedString("RequestedFrom", value: SystemMessage.PaymentMessage.RequestedFrom, comment: "")
+        return text
+    }()
+    let You: String = {
+        let text = NSLocalizedString("You", value: SystemMessage.LabelName.You, comment: "")
         return text
     }()
     
@@ -261,19 +254,19 @@ class ALKMyPaymentMessage: ALKChatBaseCell<ALKMessageViewModel> {
                         
                         let  channelService = ALChannelDBService();
                         let  messageDb = ALMessageDBService();
-                        let requestedString = YouRequestedFrom
+                        let requestedString = You
                         if(nsmutable!["paymentHeader"] == nil){
                             let groupNames = channelService.string(fromChannelUserMetaData: NSMutableDictionary(dictionary: nsmutable!), paymentMessageTitle: true)
                             
                             nsmutable!["paymentHeader"] = groupNames
-                            paymentTitle.text = requestedString + groupNames!
+                            paymentTitle.text = String(format: RequestedFrom, requestedString, groupNames!)
                             let channeldb = messageDb.updateMessageMetaData(viewModel.identifier, withMetadata:NSMutableDictionary(dictionary: nsmutable!))
                             
                         }else{
-                            paymentTitle.text = requestedString + (nsmutable!["paymentHeader"] as? String)!
+                            paymentTitle.text = String(format: RequestedFrom, requestedString, (nsmutable!["paymentHeader"] as? String)!)
                         }
                     }else if(viewModel.contactId != nil){
-                        paymentTitle.text = YouRequestedFrom + viewModel.displayName!
+                        paymentTitle.text = String(format: RequestedFrom, You, viewModel.displayName!)
                     }
                 }else if("paymentRejected" == paymentStatus as! String!){
                     
@@ -289,8 +282,7 @@ class ALKMyPaymentMessage: ALKChatBaseCell<ALKMessageViewModel> {
                                 let contactDataBase = ALContactDBService()
                                 let contact =  contactDataBase.loadContact(byKey: "userId", value: paymentReceiver);
                                 if(contact != nil){
-                                    let groupNames = YouRejected + (contact?.getDisplayName())! + S + Payment
-                                    
+                                    let groupNames = String(format: Rejected, You, (contact?.getDisplayName())!)
                                     nsmutable!["paymentHeader"] = groupNames
                                     paymentTitle.text = groupNames
                                     
@@ -301,7 +293,7 @@ class ALKMyPaymentMessage: ALKChatBaseCell<ALKMessageViewModel> {
                             paymentTitle.text =  (nsmutable!["paymentHeader"] as? String)!
                         }
                     }else{
-                        paymentTitle.text = viewModel.displayName!+Rejected
+                        paymentTitle.text = String(format: SomeoneRejected, viewModel.displayName!)
                     }
                 }else{
                     paymentMoney.text = amountString
@@ -315,7 +307,7 @@ class ALKMyPaymentMessage: ALKChatBaseCell<ALKMessageViewModel> {
                                 let contactDataBase = ALContactDBService()
                                 let contact =  contactDataBase.loadContact(byKey: "userId", value: paymentReceiver);
                                 if(contact != nil){
-                                    let groupNames = YouPaidTo + (contact?.getDisplayName())!
+                                    let groupNames = String(format: Paid, You, (contact?.getDisplayName())!)
                                     nsmutable!["paymentHeader"] = groupNames
                                     paymentTitle.text = groupNames
                                     let channeldb = messageDb.updateMessageMetaData(viewModel.identifier, withMetadata:NSMutableDictionary(dictionary: nsmutable! ))
@@ -324,25 +316,24 @@ class ALKMyPaymentMessage: ALKChatBaseCell<ALKMessageViewModel> {
                                 paymentTitle.text =  (nsmutable!["paymentHeader"] as? String)!
                             }
                         }else{
-                            paymentTitle.text = YouPaidTo+viewModel.displayName!
+                            paymentTitle.text = String(format: Paid, You, viewModel.displayName!)
                         }
                     }else{
                         if(viewModel.channelKey != nil){
                             let  channelService = ALChannelDBService();
                             let  messageDb = ALMessageDBService();
-                            let payedString = YouPaidTo
+                            let payedString = You
                             if(nsmutable!["paymentHeader"] == nil){
                                 let groupNames = channelService.string(fromChannelUserMetaData:NSMutableDictionary(dictionary: nsmutable!) , paymentMessageTitle: true)
                                 nsmutable!["paymentHeader"] = groupNames
-                                paymentTitle.text = payedString + groupNames!
-                                
+                                paymentTitle.text = String(format: Paid, payedString, groupNames!)
                                 let channeldb = messageDb.updateMessageMetaData(viewModel.identifier, withMetadata:NSMutableDictionary(dictionary: nsmutable!))
                                 
                             }else{
-                                paymentTitle.text = payedString + (nsmutable!["paymentHeader"] as? String)!
+                                paymentTitle.text = String(format: Paid, payedString, (nsmutable!["paymentHeader"] as? String)!)
                             }
                         }else{
-                            paymentTitle.text = YouPaidTo+viewModel.displayName!
+                            paymentTitle.text = String(format: Paid, You, viewModel.displayName!)
                             
                         }
                     }
@@ -373,7 +364,7 @@ class ALKMyPaymentMessage: ALKChatBaseCell<ALKMessageViewModel> {
                         }
                         
                     }else if(viewModel.contactId != nil){
-                        paymentTitle.text = viewModel.displayName! + RequestedFromYou
+                        paymentTitle.text = String(format: RequestedFrom, viewModel.displayName!, You)
                         
                     }
                     
@@ -385,7 +376,7 @@ class ALKMyPaymentMessage: ALKChatBaseCell<ALKMessageViewModel> {
                     let attributeString: NSMutableAttributedString =  NSMutableAttributedString(string:  amountString)
                     attributeString.addAttribute(NSStrikethroughStyleAttributeName, value: 2, range: NSMakeRange(0, attributeString.length))
                     
-                    paymentTitle.text = YouRejected
+                    paymentTitle.text = String(format: SomeoneRejected, You)
                     
                     paymentMoney.attributedText = attributeString
                     
@@ -395,7 +386,7 @@ class ALKMyPaymentMessage: ALKChatBaseCell<ALKMessageViewModel> {
                     paymentTitle.text = YouAccepted
                 }else{
                     paymentMoney.text = amountString
-                    paymentTitle.text = viewModel.displayName! + PaidYou
+                    paymentTitle.text = String(format: Paid, viewModel.displayName!, You)
                 }
             }
             
@@ -431,6 +422,9 @@ class ALKMyPaymentMessage: ALKChatBaseCell<ALKMessageViewModel> {
         bubbleView.layer.borderColor = paymentColor.cgColor
         bubbleView.layer.cornerRadius = 12
         bubbleView.clipsToBounds = true
+        if paymentStatus == "paymentRejected" {
+            paymentMoney.textColor = ALKConfiguration.init().strikeThroughTextColor
+        }
     }
     
     func actionTapped(button: UIButton) {

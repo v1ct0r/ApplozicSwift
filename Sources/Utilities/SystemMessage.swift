@@ -171,22 +171,15 @@ struct SystemMessage {
     }
     
     struct PaymentMessage {
-        static let YouRequestedFrom = Localization.localizedString(forKey: "YouRequestedFrom")
-        static let YouRejected = Localization.localizedString(forKey: "YouRejected")
-        static let S = Localization.localizedString(forKey: "S")
-        static let Rejected = Localization.localizedString(forKey: "Rejected")
-        static let Payment = Localization.localizedString(forKey: "Payment")
-        static let YouPaidTo = Localization.localizedString(forKey: "YouPaidTo")
-        static let RequestedFromYou = Localization.localizedString(forKey: "RequestedFromYou")
-        static let YouAccepted = Localization.localizedString(forKey: "YouAccepted")
-        static let PaidYou = Localization.localizedString(forKey: "PaidYou")
         static let Asunto = Localization.localizedString(forKey: "Asunto")
         static let Re = Localization.localizedString(forKey: "Re")
         static let AcceptPayment = Localization.localizedString(forKey: "AcceptPayment")
         static let RefusePayment = Localization.localizedString(forKey: "RefusePayment")
         static let RequestedFrom = Localization.localizedString(forKey: "RequestedFrom")
-        static let YourPayment = Localization.localizedString(forKey: "YourPayment")
-        static let PaidTo = Localization.localizedString(forKey: "PaidTo")
         static let Paid = Localization.localizedString(forKey: "Paid")
+        static let Rejected = Localization.localizedString(forKey: "Rejected")
+        static let RejectedYours = Localization.localizedString(forKey: "RejectedYours")
+        static let SomeoneRejected = Localization.localizedString(forKey: "SomeoneRejected")
+        static let YouAccepted = Localization.localizedString(forKey: "YouAccepted")
     }
 }
