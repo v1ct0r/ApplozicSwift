@@ -19,7 +19,7 @@ open class ALKConversationListViewController: ALKBaseViewController, Localizable
     var contactId: String?
     var channelKey: NSNumber?
 
-    public var conversationViewControllerType = ALKConversationViewController.self
+    open var conversationViewControllerType = ALKConversationViewController.self
     public var dbServiceType = ALMessageDBService.self
     public var viewModelType = ALKConversationListViewModel.self
     public var conversationViewModelType = ALKConversationViewModel.self
