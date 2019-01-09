@@ -22,6 +22,8 @@ class ALKQuickReplyView: UIView {
         return stackView
     }()
 
+    public var quickReplySelected: ((_ index: Int?, _ name: String, _ dict: Dictionary<String, Any>?) -> ())?
+
     init(frame: CGRect, maxWidth: CGFloat) {
         self.maxWidth = maxWidth
         super.init(frame: frame)
@@ -74,11 +76,13 @@ class ALKQuickReplyView: UIView {
         }
         var width: CGFloat = 0
         var subviews = [UIView]()
+        var index: Int = 0
         for quickReply in quickReplyArray {
             guard let title = quickReply["title"] as? String else {
                 continue
             }
-            let button = ALKCurvedButton(title: title, font: font, maxWidth: maxWidth)
+            index += 1
+            let button = curvedButton(title: title, index: index, metadata: quickReply["replyMetadata"] as? Dictionary<String, Any>)
             width += button.buttonWidth()
 
             if width >= maxWidth {
@@ -124,5 +128,14 @@ class ALKQuickReplyView: UIView {
         view.backgroundColor = .clear
         view.frame.size = size
         return view
+    }
+
+    private func curvedButton(title: String, index: Int, metadata: Dictionary<String, Any>?) -> ALKCurvedButton {
+        let button = ALKCurvedButton(title: title, font: font, maxWidth: maxWidth)
+        button.index = index
+        button.buttonSelected = { [weak self] index, title in
+            self?.quickReplySelected?(index, title, metadata)
+        }
+        return button
     }
 }

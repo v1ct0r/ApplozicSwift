@@ -26,6 +26,8 @@ public class ALKCurvedButton: UIButton {
     }
 
     public let padding = Padding()
+    public var index: Int?
+    public var buttonSelected: ((_ index: Int?, _ name: String)->())?
 
     // MARK: - Initializers
     /// Initializer for curved button.
@@ -81,6 +83,13 @@ public class ALKCurvedButton: UIButton {
     }
 
     // MARK: - Private methods.
+    @objc private func tapped(_ sender: UIButton) {
+        guard let buttonSelected = buttonSelected else {
+            return
+        }
+        buttonSelected(index, title)
+    }
+
     private func setupButton() {
         /// Attributed title for button
         let attributes = [NSAttributedString.Key.font: textFont,
@@ -98,5 +107,8 @@ public class ALKCurvedButton: UIButton {
         self.layer.borderWidth = 2
         self.layer.borderColor = color.cgColor
         self.clipsToBounds = true
+
+        self.addTarget(self, action: #selector(tapped(_:)), for: .touchUpInside)
     }
+
 }
