@@ -45,6 +45,7 @@ extension ALKConversationViewController: UITableViewDelegate, UITableViewDataSou
             } else {
                 let cell: ALKFriendMessageCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
                 cell.setLocalizedStringFileName(configuration.localizedStringFileName)
+                cell.setMessageModels(messageModels: viewModel.messageModels, index: indexPath.section,namelabelFlag: viewModel.checkProfileAndName(messageModels: viewModel.messageModels, index: indexPath.section, isNameHide: true),profilePicFlag:viewModel.checkProfileAndName(messageModels: viewModel.messageModels, index: indexPath.section, isNameHide: false))
                 cell.update(viewModel: message)
                 cell.update(chatBar: self.chatBar)
                 cell.avatarTapped = {[weak self] in
@@ -74,6 +75,7 @@ extension ALKConversationViewController: UITableViewDelegate, UITableViewDataSou
             } else {
                 let cell: ALKFriendMessageCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
                 cell.setLocalizedStringFileName(configuration.localizedStringFileName)
+                cell.setMessageModels(messageModels: viewModel.messageModels, index: indexPath.section,namelabelFlag: viewModel.checkProfileAndName(messageModels: viewModel.messageModels, index: indexPath.section, isNameHide: true),profilePicFlag:viewModel.checkProfileAndName(messageModels: viewModel.messageModels, index: indexPath.section, isNameHide: false))
                 cell.update(viewModel: message)
                 cell.update(chatBar: self.chatBar)
                 cell.avatarTapped = {[weak self] in
@@ -127,6 +129,7 @@ extension ALKConversationViewController: UITableViewDelegate, UITableViewDataSou
 
                     let cell: ALKFriendPhotoPortalCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
                     cell.setLocalizedStringFileName(configuration.localizedStringFileName)
+                    cell.setMessageModels(messageModels: viewModel.messageModels, index: indexPath.section,namelabelFlag: viewModel.checkProfileAndName(messageModels: viewModel.messageModels, index: indexPath.section, isNameHide: true),profilePicFlag:viewModel.checkProfileAndName(messageModels: viewModel.messageModels, index: indexPath.section, isNameHide: false))
                     cell.update(viewModel: message)
                     cell.downloadTapped = {[weak self]
                         value in
@@ -143,6 +146,8 @@ extension ALKConversationViewController: UITableViewDelegate, UITableViewDataSou
                 } else {
                     let cell: ALKFriendPhotoLandscapeCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
                     cell.setLocalizedStringFileName(configuration.localizedStringFileName)
+                    cell.setMessageModels(messageModels: viewModel.messageModels, index: indexPath.section,namelabelFlag: viewModel.checkProfileAndName(messageModels: viewModel.messageModels, index: indexPath.section, isNameHide: true),profilePicFlag:viewModel.checkProfileAndName(messageModels: viewModel.messageModels, index: indexPath.section, isNameHide: false))
+
                     cell.update(viewModel: message)
                     return cell
                 }
@@ -166,6 +171,7 @@ extension ALKConversationViewController: UITableViewDelegate, UITableViewDataSou
             } else {
                 let cell: ALKFriendVoiceCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
                 cell.setLocalizedStringFileName(configuration.localizedStringFileName)
+                cell.setMessageModels(messageModels: viewModel.messageModels, index: indexPath.section,namelabelFlag: viewModel.checkProfileAndName(messageModels: viewModel.messageModels, index: indexPath.section, isNameHide: true),profilePicFlag:viewModel.checkProfileAndName(messageModels: viewModel.messageModels, index: indexPath.section, isNameHide: false))
                 cell.downloadTapped = {[weak self] value in
                     self?.attachmentViewDidTapDownload(view: cell, indexPath: indexPath)
                 }
@@ -192,6 +198,7 @@ extension ALKConversationViewController: UITableViewDelegate, UITableViewDataSou
             } else {
                 let cell: ALKFriendLocationCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
                 cell.setLocalizedStringFileName(configuration.localizedStringFileName)
+                cell.setMessageModels(messageModels: viewModel.messageModels, index: indexPath.section,namelabelFlag: viewModel.checkProfileAndName(messageModels: viewModel.messageModels, index: indexPath.section, isNameHide: true),profilePicFlag:viewModel.checkProfileAndName(messageModels: viewModel.messageModels, index: indexPath.section, isNameHide: false))
                 cell.update(viewModel: message)
                 cell.setDelegate(locDelegate: self)
                 cell.avatarTapped = {[weak self] in
@@ -231,6 +238,7 @@ extension ALKConversationViewController: UITableViewDelegate, UITableViewDataSou
             } else {
                 let cell: ALKFriendVideoCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
                 cell.setLocalizedStringFileName(configuration.localizedStringFileName)
+                cell.setMessageModels(messageModels: viewModel.messageModels, index: indexPath.section,namelabelFlag: viewModel.checkProfileAndName(messageModels: viewModel.messageModels, index: indexPath.section, isNameHide: true),profilePicFlag:viewModel.checkProfileAndName(messageModels: viewModel.messageModels, index: indexPath.section, isNameHide: false))
                 cell.update(viewModel: message)
                 cell.downloadTapped = {[weak self]
                     value in

@@ -17,6 +17,8 @@ protocol ALKLocationCellDelegate: class {
 class ALKLocationCell: ALKChatBaseCell<ALKMessageViewModel>,
                         ALKReplyMenuItemProtocol {
     
+    var isHideProfilePicOrTimeLabel : Bool = false
+    var isHideMemberName : Bool = false
     weak var delegate:ALKLocationCellDelegate?
 
     // MARK: - Declare Variables or Types
@@ -114,6 +116,15 @@ class ALKLocationCell: ALKChatBaseCell<ALKMessageViewModel>,
         timeLabel.setStyle(ALKMessageStyle.time)
     }
 
+    override func setMessageModels(messageModels:[ALKMessageModel],index:Int,namelabelFlag: Bool,profilePicFlag: Bool){
+        self.messageModels = messageModels;
+        self.index = index
+        if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
+            isHideProfilePicOrTimeLabel = profilePicFlag
+            isHideMemberName = namelabelFlag
+        }
+    }
+
     override func update(viewModel: ALKMessageViewModel) {
         super.update(viewModel: viewModel)
 
@@ -136,7 +147,8 @@ class ALKLocationCell: ALKChatBaseCell<ALKMessageViewModel>,
         locationImageView.kf.setImage(with: URL(string: urlString), placeholder: UIImage(named: "map_no_data", in: Bundle.applozic, compatibleWith: nil), options: nil, progressBlock: nil, completionHandler: nil)
     }
 
-    override class func rowHeigh(viewModel: ALKMessageViewModel,width: CGFloat) -> CGFloat {
+    override class func  rowHeight(viewModel: ALKMessageViewModel, width: CGFloat, isNameHide: Bool, isProfileHide: Bool) -> CGFloat {
+
         let heigh: CGFloat = ceil((width * 0.64) / viewModel.ratio)
         return heigh + 26.0
     }

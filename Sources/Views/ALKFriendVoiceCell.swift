@@ -41,7 +41,20 @@ class ALKFriendVoiceCell: ALKVoiceCell {
         heigh = 40
         return topPadding()+heigh+bottomPadding()
     }
-    
+
+
+    override class func  rowHeight(viewModel: ALKMessageViewModel, width: CGFloat, isNameHide: Bool, isProfileHide: Bool) -> CGFloat{
+        let heigh: CGFloat
+        if ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round{
+            heigh = isNameHide ? 30.0: 40.0
+        }else{
+            heigh = 40
+        }
+
+        return topPadding()+heigh+bottomPadding()
+
+    }
+
     override func setupStyle() {
         super.setupStyle()
         
@@ -68,7 +81,7 @@ class ALKFriendVoiceCell: ALKVoiceCell {
         
         nameLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -56).isActive = true
         nameLabel.bottomAnchor.constraint(equalTo: soundPlayerView.topAnchor, constant: -6).isActive = true
-        nameLabel.heightAnchor.constraint(equalToConstant: 16).isActive = true
+        nameLabel.heightAnchor.constraintEqualToAnchor(constant: 0, identifier: ConstraintIdentifier.memberNameHeightIdentifier.rawValue).isActive = true
         
         avatarImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 18).isActive = true
         avatarImageView.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: 0).isActive = true
@@ -85,19 +98,33 @@ class ALKFriendVoiceCell: ALKVoiceCell {
     
     override func update(viewModel: ALKMessageViewModel) {
         super.update(viewModel: viewModel)
-        
-        let placeHolder = UIImage(named: "placeholder", in: Bundle.applozic, compatibleWith: nil)
-        
-        if let url = viewModel.avatarURL {
-            
-            let resource = ImageResource(downloadURL: url, cacheKey: url.absoluteString)
-            self.avatarImageView.kf.setImage(with: resource, placeholder: placeHolder, options: nil, progressBlock: nil, completionHandler: nil)
-        } else {
-            
-            self.avatarImageView.image = placeHolder
+
+
+        avatarImageView.isHidden = isHideProfilePicOrTimeLabel
+        timeLabel.isHidden = isHideProfilePicOrTimeLabel
+        nameLabel.isHidden = isHideMemberName
+
+        if(!isHideProfilePicOrTimeLabel){
+            let placeHolder = UIImage(named: "placeholder", in: Bundle.applozic, compatibleWith: nil)
+
+            if let url = viewModel.avatarURL {
+
+                let resource = ImageResource(downloadURL: url, cacheKey: url.absoluteString)
+                self.avatarImageView.kf.setImage(with: resource, placeholder: placeHolder, options: nil, progressBlock: nil, completionHandler: nil)
+            } else {
+
+                self.avatarImageView.image = placeHolder
+            }
         }
-        nameLabel.text = viewModel.displayName
-    }
+
+        if(!isHideMemberName){
+     nameLabel.constraint(withIdentifier:ConstraintIdentifier.memberNameHeightIdentifier.rawValue)?.constant = 16
+            nameLabel.text = viewModel.displayName
+        }else{
+            nameLabel.constraint(withIdentifier: ConstraintIdentifier.memberNameHeightIdentifier.rawValue)?.constant = 0
+
+        }
+     }
     
     override class func bottomPadding() -> CGFloat {
         return 6

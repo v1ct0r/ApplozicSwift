@@ -11,6 +11,7 @@ import Kingfisher
 
 final class ALKFriendLocationCell: ALKLocationCell {
 
+
     // MARK: - Declare Variables or Types
     // MARK: Environment in chat
     private var avatarImageView: UIImageView = {
@@ -44,7 +45,7 @@ final class ALKFriendLocationCell: ALKLocationCell {
         nameLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 6.0).isActive = true
         nameLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 57.0).isActive = true
         nameLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -56.0).isActive = true
-        nameLabel.heightAnchor.constraint(equalToConstant: 16.0).isActive = true
+        nameLabel.heightAnchor.constraintEqualToAnchor(constant: 0, identifier: ConstraintIdentifier.memberNameHeightIdentifier.rawValue).isActive = true
 
         avatarImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 18.0).isActive = true
         avatarImageView.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: 0.0).isActive = true
@@ -67,21 +68,45 @@ final class ALKFriendLocationCell: ALKLocationCell {
     
     override func update(viewModel: ALKMessageViewModel) {
         super.update(viewModel: viewModel)
-        
-        nameLabel.text = viewModel.displayName
-        
-        let placeHolder = UIImage(named: "placeholder", in: Bundle.applozic, compatibleWith: nil)
-        
-        if let url = viewModel.avatarURL {
-            let resource = ImageResource(downloadURL: url, cacheKey: url.absoluteString)
-            avatarImageView.kf.setImage(with: resource, placeholder: placeHolder, options: nil, progressBlock: nil, completionHandler: nil)
-        } else {
-            avatarImageView.image = placeHolder
+
+        avatarImageView.isHidden = isHideProfilePicOrTimeLabel
+        timeLabel.isHidden = isHideProfilePicOrTimeLabel
+        nameLabel.isHidden = isHideMemberName
+
+        if(!isHideProfilePicOrTimeLabel){
+            let placeHolder = UIImage(named: "placeholder", in: Bundle.applozic, compatibleWith: nil)
+
+            if let url = viewModel.avatarURL {
+                let resource = ImageResource(downloadURL: url, cacheKey: url.absoluteString)
+                avatarImageView.kf.setImage(with: resource, placeholder: placeHolder, options: nil, progressBlock: nil, completionHandler: nil)
+            } else {
+                avatarImageView.image = placeHolder
+            }
         }
+
+        if(!isHideMemberName){
+            nameLabel.constraint(withIdentifier: ConstraintIdentifier.memberNameHeightIdentifier.rawValue)?.constant = 16
+            nameLabel.text = viewModel.displayName
+        }else{
+            nameLabel.constraint(withIdentifier: ConstraintIdentifier.memberNameHeightIdentifier.rawValue)?.constant = 0
+
+        }
+
     }
-    
-    override class func rowHeigh(viewModel: ALKMessageViewModel,width: CGFloat) -> CGFloat {
-        return super.rowHeigh(viewModel: viewModel, width: width) + 34.0
+
+    override class func  rowHeight(viewModel: ALKMessageViewModel, width: CGFloat, isNameHide: Bool, isProfileHide: Bool) -> CGFloat{
+
+        return super.rowHeight(viewModel: viewModel, width: width, isNameHide: isNameHide, isProfileHide: isProfileHide) + 34.0
     }
-    
+
+   override func setMessageModels(messageModels:[ALKMessageModel],index:Int,namelabelFlag: Bool,profilePicFlag: Bool){
+
+        self.messageModels = messageModels;
+        self.index = index
+        if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
+            isHideProfilePicOrTimeLabel = profilePicFlag
+            isHideMemberName = namelabelFlag
+        }
+   }
+
 }

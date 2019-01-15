@@ -11,6 +11,9 @@ import Kingfisher
 
 class ALKFriendVideoCell: ALKVideoCell {
 
+    var isHideProfilePicOrTimeLabel : Bool = false
+    var isHideMemberName : Bool = false
+
     private var avatarImageView: UIImageView = {
         let imv = UIImageView()
         imv.contentMode = .scaleAspectFill
@@ -41,6 +44,19 @@ class ALKFriendVideoCell: ALKVideoCell {
         nameLabel.setStyle(ALKMessageStyle.displayName)
     }
 
+    override func setMessageModels(messageModels:[ALKMessageModel],index:Int,namelabelFlag: Bool,profilePicFlag: Bool){
+
+        self.messageModels = messageModels;
+        self.index = index
+        
+        if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
+
+            isHideProfilePicOrTimeLabel = profilePicFlag
+            isHideMemberName = namelabelFlag
+        }
+
+    }
+
     override func setupViews() {
         super.setupViews()
 
@@ -56,7 +72,8 @@ class ALKFriendVideoCell: ALKVideoCell {
 
         nameLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -56).isActive = true
         nameLabel.bottomAnchor.constraint(equalTo: photoView.topAnchor, constant: -6).isActive = true
-        nameLabel.heightAnchor.constraint(equalToConstant: 16).isActive = true
+
+        nameLabel.heightAnchor.constraintEqualToAnchor(constant: 0, identifier: ConstraintIdentifier.memberNameHeightIdentifier.rawValue).isActive = true
 
         avatarImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 18).isActive = true
         avatarImageView.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: 0).isActive = true
@@ -79,7 +96,32 @@ class ALKFriendVideoCell: ALKVideoCell {
     override func update(viewModel: ALKMessageViewModel) {
         super.update(viewModel: viewModel)
 
-        nameLabel.text = viewModel.displayName
+        avatarImageView.isHidden = isHideProfilePicOrTimeLabel;
+        nameLabel.isHidden = isHideMemberName;
+        timeLabel.isHidden = isHideProfilePicOrTimeLabel
+
+        if(!isHideProfilePicOrTimeLabel){
+            let placeHolder = UIImage(named: "placeholder", in: Bundle.applozic, compatibleWith: nil)
+
+            if let url = viewModel.avatarURL {
+
+                let resource = ImageResource(downloadURL: url, cacheKey: url.absoluteString)
+                self.avatarImageView.kf.setImage(with: resource, placeholder: placeHolder, options: nil, progressBlock: nil, completionHandler: nil)
+            } else {
+
+                self.avatarImageView.image = placeHolder
+            }
+        }
+
+        if(!isHideMemberName){
+            nameLabel.constraint(withIdentifier: ConstraintIdentifier.memberNameHeightIdentifier.rawValue
+                )?.constant = 16
+            nameLabel.text = viewModel.displayName
+        }else{
+            nameLabel.constraint(withIdentifier: ConstraintIdentifier.memberNameHeightIdentifier.rawValue
+                )?.constant = 0
+        }
+
     }
 
     @objc private func avatarTappedAction() {

@@ -26,7 +26,10 @@ public enum ALKVoiceCellState {
 
 class ALKVoiceCell:ALKChatBaseCell<ALKMessageViewModel>,
                     ALKReplyMenuItemProtocol {
-    
+
+    var isHideProfilePicOrTimeLabel : Bool = false
+    var isHideMemberName : Bool = false
+
     var soundPlayerView: UIView = {
         let mv = UIView()
         mv.backgroundColor = UIColor.background(.grayF2)
@@ -293,6 +296,17 @@ class ALKVoiceCell:ALKChatBaseCell<ALKMessageViewModel>,
 
     func menuReply(_ sender: Any) {
         menuAction?(.reply)
+    }
+
+    override func setMessageModels(messageModels:[ALKMessageModel],index:Int,namelabelFlag: Bool,profilePicFlag: Bool){
+        self.messageModels = messageModels
+        self.index = index
+
+        if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
+
+            isHideProfilePicOrTimeLabel = profilePicFlag
+            isHideMemberName = namelabelFlag
+        }
     }
 }
 

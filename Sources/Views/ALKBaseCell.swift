@@ -11,7 +11,18 @@ import UIKit
 
 open class ALKBaseCell<T>: UITableViewCell {
     
+    public enum ConstraintIdentifier: String {
+        case replyViewHeightIdentifier = "ReplyViewHeight"
+        case replyNameHeightIdentifier = "ReplyNameHeight"
+        case replyMessageHeightIdentifier = "ReplyMessageHeight"
+        case replyPreviewImageHeightIdentifier = "ReplyPreviewImageHeight"
+        case replyPreviewImageWidthIdentifier = "ReplyPreviewImageWidth"
+        case memberNameHeightIdentifier = "GroupMemeberNameHeight"
+    }
+
     var viewModel: T?
+    var index:Int = 0
+    var  messageModels:[ALKMessageModel]?
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -36,8 +47,18 @@ open class ALKBaseCell<T>: UITableViewCell {
     func update(viewModel: T) {
         self.viewModel = viewModel
     }
+
+    func setMessageModels(messageModels:[ALKMessageModel],index:Int,namelabelFlag: Bool,profilePicFlag: Bool){
+
+        self.messageModels = messageModels;
+        self.index = index
+    }
     
     class func rowHeigh(viewModel: T,width: CGFloat) -> CGFloat {
+        return 44
+    }
+
+    class  func rowHeight(viewModel: T,width: CGFloat,isNameHide:Bool,isProfileHide:Bool) -> CGFloat{
         return 44
     }
     

@@ -107,8 +107,7 @@ class ALKVideoCell: ALKChatBaseCell<ALKMessageViewModel>,
         return 16
     }
 
-    override class func rowHeigh(viewModel: ALKMessageViewModel,width: CGFloat) -> CGFloat {
-
+    override class func  rowHeight(viewModel: ALKMessageViewModel, width: CGFloat, isNameHide: Bool, isProfileHide: Bool) -> CGFloat{
         let heigh: CGFloat
 
         if viewModel.ratio < 1 {
@@ -116,8 +115,8 @@ class ALKVideoCell: ALKChatBaseCell<ALKMessageViewModel>,
         } else {
             heigh = ceil((width*0.64)/viewModel.ratio)
         }
-
         return topPadding()+heigh+bottomPadding()
+
     }
 
     override func update(viewModel: ALKMessageViewModel) {

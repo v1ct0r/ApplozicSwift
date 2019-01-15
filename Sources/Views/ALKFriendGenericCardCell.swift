@@ -11,7 +11,9 @@ import Applozic
 open class ALKFriendGenericCardCell: ALKChatBaseCell<ALKMessageViewModel> {
     
     open var collectionView: ALKGenericCardCollectionView!
-    
+    var isHideProfilePic : Bool = false
+    var isHideMemberName : Bool = false
+
     var height: CGFloat!
     
     var messageView = ALKFriendMessageView()
@@ -32,7 +34,14 @@ open class ALKFriendGenericCardCell: ALKChatBaseCell<ALKMessageViewModel> {
         collectionView.setMessage(viewModel: viewModel)
         collectionView.reloadData()
     }
-    
+
+    override func setMessageModels(messageModels:[ALKMessageModel],index:Int,namelabelFlag: Bool,profilePicFlag: Bool){
+        self.messageModels = messageModels
+        self.isHideProfilePic = profilePicFlag
+        self.isHideMemberName = namelabelFlag
+        self.index = index
+    }
+
     override func setupViews() {
         setupCollectionView()
         

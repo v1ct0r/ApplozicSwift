@@ -1,6 +1,6 @@
 //
 //  ALKMessageCell.swift
-//  
+//
 //
 //  Created by Mukesh Thawani on 04/05/17.
 //  Copyright © 2017 Applozic. All rights reserved.
@@ -13,7 +13,10 @@ import Applozic
 
 // MARK: - ALKFriendMessageCell
 open class ALKFriendMessageCell: ALKMessageCell {
-    
+
+    var isHideProfilePicOrTimeLabel : Bool = false
+    var isHideMemberName : Bool = false
+
     private var avatarImageView: UIImageView = {
         let imv = UIImageView()
         imv.contentMode = .scaleAspectFill
@@ -58,13 +61,6 @@ open class ALKFriendMessageCell: ALKMessageCell {
 
     private var widthPadding: CGFloat = CGFloat(ALKMessageStyle.receivedBubble.widthPadding)
 
-    enum ConstraintIdentifier: String {
-        case replyViewHeightIdentifier = "ReplyViewHeight"
-        case replyNameHeightIdentifier = "ReplyNameHeight"
-        case replyMessageHeightIdentifier = "ReplyMessageHeight"
-        case replyPreviewImageHeightIdentifier = "ReplyPreviewImageHeight"
-        case replyPreviewImageWidthIdentifier = "ReplyPreviewImageWidth"
-    }
 
     override func setupViews() {
         super.setupViews()
@@ -77,7 +73,8 @@ open class ALKFriendMessageCell: ALKMessageCell {
         nameLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 6).isActive = true
         nameLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 57).isActive = true
         nameLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -57).isActive = true
-        nameLabel.heightAnchor.constraint(equalToConstant: 16).isActive = true
+
+        nameLabel.heightAnchor.constraintEqualToAnchor(constant: 0, identifier: ConstraintIdentifier.memberNameHeightIdentifier.rawValue).isActive = true
 
         avatarImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 18).isActive = true
         avatarImageView.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: 0).isActive = true
@@ -88,7 +85,6 @@ open class ALKFriendMessageCell: ALKMessageCell {
 
         avatarImageView.heightAnchor.constraint(equalToConstant: 37).isActive = true
         avatarImageView.widthAnchor.constraint(equalTo: avatarImageView.heightAnchor).isActive = true
-
         replyNameLabel.leadingAnchor.constraint(equalTo: replyView.leadingAnchor, constant: 5).isActive = true
         replyNameLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant:Padding.ReplyNameLabel.top).isActive = true
 
@@ -159,6 +155,19 @@ open class ALKFriendMessageCell: ALKMessageCell {
         timeLabel.bottomAnchor.constraint(equalTo: bubbleView.bottomAnchor, constant: 2).isActive = true
     }
 
+    override func setMessageModels(messageModels:[ALKMessageModel],index:Int,namelabelFlag: Bool,profilePicFlag: Bool){
+        self.messageModels = messageModels;
+        self.index = index
+
+
+        if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
+
+            isHideProfilePicOrTimeLabel = profilePicFlag
+            isHideMemberName = namelabelFlag
+        }
+
+    }
+
     override func setupStyle() {
         super.setupStyle()
 
@@ -169,7 +178,7 @@ open class ALKFriendMessageCell: ALKMessageCell {
 
     override func update(viewModel: ALKMessageViewModel) {
         super.update(viewModel: viewModel)
-        
+
         if viewModel.isReplyMessage {
             replyView.constraint(withIdentifier: ConstraintIdentifier.replyViewHeightIdentifier.rawValue)?.constant = Padding.ReplyView.height
             replyNameLabel.constraint(withIdentifier: ConstraintIdentifier.replyNameHeightIdentifier.rawValue)?.constant = 30
@@ -193,18 +202,32 @@ open class ALKFriendMessageCell: ALKMessageCell {
             previewImageView.constraint(withIdentifier: ConstraintIdentifier.replyPreviewImageWidthIdentifier.rawValue)?.constant = 0
         }
 
-        let placeHolder = UIImage(named: "placeholder", in: Bundle.applozic, compatibleWith: nil)
+        avatarImageView.isHidden = isHideProfilePicOrTimeLabel
+        timeLabel.isHidden = isHideProfilePicOrTimeLabel
+        nameLabel.isHidden = isHideMemberName
 
-        if let url = viewModel.avatarURL {
+        if(!isHideProfilePicOrTimeLabel){
+            let placeHolder = UIImage(named: "placeholder", in: Bundle.applozic, compatibleWith: nil)
 
-            let resource = ImageResource(downloadURL: url, cacheKey: url.absoluteString)
-            self.avatarImageView.kf.setImage(with: resource, placeholder: placeHolder, options: nil, progressBlock: nil, completionHandler: nil)
-        } else {
+            if let url = viewModel.avatarURL {
 
-            self.avatarImageView.image = placeHolder
+                let resource = ImageResource(downloadURL: url, cacheKey: url.absoluteString)
+                self.avatarImageView.kf.setImage(with: resource, placeholder: placeHolder, options: nil, progressBlock: nil, completionHandler: nil)
+            } else {
+
+                self.avatarImageView.image = placeHolder
+            }
+
         }
 
-        nameLabel.text = viewModel.displayName
+        if(!isHideMemberName){
+            nameLabel.constraint(withIdentifier: ConstraintIdentifier.memberNameHeightIdentifier.rawValue)?.constant = 16
+            nameLabel.text = viewModel.displayName
+        }else{
+            nameLabel.constraint(withIdentifier: ConstraintIdentifier.memberNameHeightIdentifier.rawValue)?.constant = 0
+
+        }
+
     }
 
     override class func leftPadding() -> CGFloat {
@@ -234,7 +257,7 @@ open class ALKFriendMessageCell: ALKMessageCell {
         self.bubbleView.image =  bubbleViewImage(for: ALKMessageStyle.receivedBubble.style,isReceiverSide: true,showHangOverImage: false)
     }
 
-    override class func rowHeigh(viewModel: ALKMessageViewModel,width: CGFloat) -> CGFloat {
+    override class func rowHeight(viewModel: ALKMessageViewModel, width: CGFloat, isNameHide: Bool, isProfileHide: Bool) -> CGFloat {
 
         // TODO: need to find a better way to calculate the
         // minimum height based on font set and other params.
@@ -244,11 +267,12 @@ open class ALKFriendMessageCell: ALKMessageCell {
         if ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.edge{
             minimumHeigh = 20.0
         }else if ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round{
-            minimumHeigh = 85.0
+            minimumHeigh = isNameHide ? 65.0: 80.0
         }
         // 2x because padding is for both the sides.
-        let totalRowHeigh = super.rowHeigh(viewModel: viewModel, width: width-CGFloat(2*ALKMessageStyle.receivedBubble.widthPadding))
+        let totalRowHeigh = super.rowHeight(viewModel: viewModel, width: width-CGFloat(2*ALKMessageStyle.receivedBubble.widthPadding), isNameHide: isNameHide, isProfileHide: isProfileHide)
         return totalRowHeigh < minimumHeigh ? minimumHeigh : totalRowHeigh
+
     }
 
     @objc private func avatarTappedAction() {
@@ -388,6 +412,7 @@ open class ALKMyMessageCell: ALKMessageCell {
         bubbleView.tintColor = ALKMessageStyle.sentBubble.color
     }
 
+
    open override func update(viewModel: ALKMessageViewModel) {
         super.update(viewModel: viewModel)
 
@@ -433,8 +458,7 @@ open class ALKMyMessageCell: ALKMessageCell {
         self.bubbleView.image =  bubbleViewImage(for: ALKMessageStyle.sentBubble.style,isReceiverSide: false,showHangOverImage: false)
     }
 
-    override class func rowHeigh(viewModel: ALKMessageViewModel, width: CGFloat) -> CGFloat {
-
+    override class func rowHeight(viewModel: ALKMessageViewModel, width: CGFloat, isNameHide: Bool, isProfileHide: Bool) -> CGFloat {
         // TODO: need to find a better way to calculate the
         // minimum height based on font set and other params.
         // Maybe create a sample viewModel and pass a couple of words
@@ -449,6 +473,7 @@ open class ALKMyMessageCell: ALKMessageCell {
         // 2x because padding is for both the sides.
         let totalRowHeight = super.rowHeigh(viewModel: viewModel, width: width-CGFloat(2*ALKMessageStyle.sentBubble.widthPadding))
         return totalRowHeight < minimumHeight ? minimumHeight  : totalRowHeight
+
     }
 
     fileprivate func setPreviewImageWidthToZero() {
@@ -622,53 +647,54 @@ open class ALKMessageCell: ALKChatBaseCell<ALKMessageViewModel>, ALKCopyMenuItem
     }
 
 
-    override class func rowHeigh(viewModel: ALKMessageViewModel,width: CGFloat) -> CGFloat {
+  override class func  rowHeight(viewModel: ALKMessageViewModel, width: CGFloat, isNameHide: Bool, isProfileHide: Bool) -> CGFloat{
 
-        var messageHeigh: CGFloat = 0
+    var messageHeigh: CGFloat = 0
 
-        if let message = viewModel.message {
+    if let message = viewModel.message {
 
-            var widthNoPadding = width - leftPadding() - rightPadding()
-            if !viewModel.isMyMessage{
-                widthNoPadding -= 20
-            }else{
-                widthNoPadding += 20
-            }
-            let maxSize = CGSize.init(width: widthNoPadding, height: CGFloat.greatestFiniteMagnitude)
-
-            let font = ALKMessageStyle.message.font
-            let color = ALKMessageStyle.message.text
-
-            let style = NSMutableParagraphStyle.init()
-            style.lineBreakMode = .byWordWrapping
-            style.headIndent = 0
-            style.tailIndent = 0
-            style.firstLineHeadIndent = 0
-            style.minimumLineHeight = 17
-            style.maximumLineHeight = 17
-
-            let attributes: [NSAttributedString.Key: Any] = [
-                NSAttributedString.Key.font: font,
-                NSAttributedString.Key.foregroundColor: color]
-
-            var size = CGSize()
-            if viewModel.messageType == .html {
-                guard let htmlText = message.data.attributedString else { return 30}
-                let mutableText = NSMutableAttributedString(attributedString: htmlText)
-                let attributes: [NSAttributedString.Key : Any] = [NSAttributedString.Key.paragraphStyle: style]
-                mutableText.addAttributes(attributes, range: NSMakeRange(0,mutableText.length))
-                size = mutableText.boundingRect(with: maxSize, options: [NSStringDrawingOptions.usesFontLeading, NSStringDrawingOptions.usesLineFragmentOrigin], context: nil).size
-            } else {
-                let attrbString = NSAttributedString(string: message,attributes: attributes)
-                let framesetter = CTFramesetterCreateWithAttributedString(attrbString)
-                size =  CTFramesetterSuggestFrameSizeWithConstraints(framesetter, CFRange(location: 0,length: 0), nil, maxSize, nil)
-            }
-            messageHeigh = ceil(size.height) + 10 // due to textview's bottom pading
-            if viewModel.isReplyMessage {
-                messageHeigh += 90
-            }
+        var widthNoPadding = width - leftPadding() - rightPadding()
+        if !viewModel.isMyMessage{
+            widthNoPadding -= 20
+        }else{
+            widthNoPadding += 20
         }
-        return topPadding()+messageHeigh+bottomPadding()
+        let maxSize = CGSize.init(width: widthNoPadding, height: CGFloat.greatestFiniteMagnitude)
+
+        let font = ALKMessageStyle.message.font
+        let color = ALKMessageStyle.message.text
+
+        let style = NSMutableParagraphStyle.init()
+        style.lineBreakMode = .byWordWrapping
+        style.headIndent = 0
+        style.tailIndent = 0
+        style.firstLineHeadIndent = 0
+        style.minimumLineHeight = 17
+        style.maximumLineHeight = 17
+
+        let attributes: [NSAttributedStringKey: Any] = [
+            NSAttributedStringKey.font: font,
+            NSAttributedStringKey.foregroundColor: color]
+
+        var size = CGSize()
+        if viewModel.messageType == .html {
+            guard let htmlText = message.data.attributedString else { return 30}
+            let mutableText = NSMutableAttributedString(attributedString: htmlText)
+            let attributes: [NSAttributedStringKey : Any] = [NSAttributedStringKey.paragraphStyle: style]
+            mutableText.addAttributes(attributes, range: NSMakeRange(0,mutableText.length))
+            size = mutableText.boundingRect(with: maxSize, options: [NSStringDrawingOptions.usesFontLeading, NSStringDrawingOptions.usesLineFragmentOrigin], context: nil).size
+        } else {
+            let attrbString = NSAttributedString(string: message,attributes: attributes)
+            let framesetter = CTFramesetterCreateWithAttributedString(attrbString)
+            size =  CTFramesetterSuggestFrameSizeWithConstraints(framesetter, CFRange(location: 0,length: 0), nil, maxSize, nil)
+        }
+        messageHeigh = ceil(size.height) + 10 // due to textview's bottom pading
+        if viewModel.isReplyMessage {
+            messageHeigh += 90
+        }
+    }
+
+     return topPadding()+messageHeigh+bottomPadding()
     }
 
     func menuCopy(_ sender: Any) {
@@ -806,6 +832,8 @@ open class ALKMessageCell: ALKChatBaseCell<ALKMessageViewModel>, ALKCopyMenuItem
             return nil
         }
     }
+
+
 }
 
 extension ALKHyperLabel {
