@@ -47,7 +47,9 @@ final class ALKMyPhotoLandscapeCell: ALKPhotoCell {
     
     override func update(viewModel: ALKMessageViewModel) {
         super.update(viewModel: viewModel)
-        
+
+        timeLabel.isHidden = isHideProfilePicOrTimeLabel
+
         if viewModel.isAllRead {
             stateView.image = UIImage(named: "read_state_3", in: Bundle.applozic, compatibleWith: nil)
         } else if viewModel.isAllReceived {

@@ -18,6 +18,8 @@ open class ALKBaseCell<T>: UITableViewCell {
         case replyPreviewImageHeightIdentifier = "ReplyPreviewImageHeight"
         case replyPreviewImageWidthIdentifier = "ReplyPreviewImageWidth"
         case memberNameHeightIdentifier = "GroupMemeberNameHeight"
+        case messageViewBottomIdentifier = "MessageViewBottomPadding"
+
     }
 
     var viewModel: T?

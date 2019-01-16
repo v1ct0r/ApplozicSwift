@@ -44,6 +44,8 @@ final class ALKMyLocationCell: ALKLocationCell {
     override func update(viewModel: ALKMessageViewModel) {
         super.update(viewModel: viewModel)
 
+        timeLabel.isHidden = isHideProfilePicOrTimeLabel
+
         if viewModel.isAllRead {
             stateView.image = UIImage(named: "read_state_3", in: Bundle.applozic, compatibleWith: nil)
             stateView.tintColor = UIColor(netHex: 0x0578FF)

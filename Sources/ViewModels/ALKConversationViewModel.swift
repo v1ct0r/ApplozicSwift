@@ -213,7 +213,7 @@ open class ALKConversationViewModel: NSObject, Localizable {
         case .text, .html:
             if messageModel.isMyMessage {
 
-                let heigh = ALKMyMessageCell.rowHeight(viewModel: messageModel, width: maxWidth, isNameHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: true), isProfileHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: false))
+                let heigh = ALKMyMessageCell.rowHeight(viewModel: messageModel, width: maxWidth, isNameHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: true,isMyMessage: true), isProfileHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: false,isMyMessage: true))
 
                 //                cache?.setDouble(value: Double(heigh), forKey: identifier)
                 return heigh
@@ -221,7 +221,7 @@ open class ALKConversationViewModel: NSObject, Localizable {
             } else {
 
 
-                let heigh = ALKFriendMessageCell.rowHeight(viewModel: messageModel, width: maxWidth, isNameHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: true), isProfileHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: false))
+                let heigh = ALKFriendMessageCell.rowHeight(viewModel: messageModel, width: maxWidth, isNameHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: true,isMyMessage: true), isProfileHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: false,isMyMessage: false))
                 //                cache?.setDouble(value: Double(heigh), forKey: identifier)
                 return heigh
 
@@ -231,12 +231,12 @@ open class ALKConversationViewModel: NSObject, Localizable {
 
                 if messageModel.ratio < 1 {
 
-                    let heigh = ALKMyPhotoPortalCell.rowHeight(viewModel: messageModel, width: maxWidth, isNameHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: true), isProfileHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: false))
+                    let heigh = ALKMyPhotoPortalCell.rowHeight(viewModel: messageModel, width: maxWidth, isNameHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: true,isMyMessage: true), isProfileHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: false,isMyMessage: true))
                     //                    cache?.setDouble(value: Double(heigh), forKey: identifier)
                     return heigh
 
                 } else {
-                    let heigh = ALKMyPhotoLandscapeCell.rowHeight(viewModel: messageModel, width: maxWidth, isNameHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: true), isProfileHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: false))
+                    let heigh = ALKMyPhotoLandscapeCell.rowHeight(viewModel: messageModel, width: maxWidth, isNameHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: true,isMyMessage: false), isProfileHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: false,isMyMessage: false))
                     //                    cache?.setDouble(value: Double(heigh), forKey: identifier)
                     return heigh
                 }
@@ -246,12 +246,12 @@ open class ALKConversationViewModel: NSObject, Localizable {
 
                 if messageModel.ratio < 1 {
 
-                    let heigh = ALKFriendPhotoPortalCell.rowHeight(viewModel: messageModel, width: maxWidth, isNameHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: true), isProfileHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: false))
+                    let heigh = ALKFriendPhotoPortalCell.rowHeight(viewModel: messageModel, width: maxWidth, isNameHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: true, isMyMessage: false), isProfileHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: false,isMyMessage:false))
                     //                    cache?.setDouble(value: Double(heigh), forKey: identifier)
                     return heigh
 
                 } else {
-                    let heigh = ALKFriendPhotoLandscapeCell.rowHeight(viewModel: messageModel, width: maxWidth, isNameHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: true), isProfileHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: false))
+                    let heigh = ALKFriendPhotoLandscapeCell.rowHeight(viewModel: messageModel, width: maxWidth, isNameHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: true,isMyMessage: false), isProfileHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: false,isMyMessage: false))
                     //                    cache?.setDouble(value: Double(heigh), forKey: identifier)
                     return heigh
                 }
@@ -260,23 +260,23 @@ open class ALKConversationViewModel: NSObject, Localizable {
         case .voice:
             var height: CGFloat =  0
             if messageModel.isMyMessage {
-                height = ALKVoiceCell.rowHeight(viewModel: messageModel, width: maxWidth, isNameHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: true), isProfileHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: false))
+                height = ALKVoiceCell.rowHeight(viewModel: messageModel, width: maxWidth, isNameHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: true,isMyMessage: true), isProfileHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: false,isMyMessage:true))
             } else {
-                height = ALKFriendVoiceCell.rowHeight(viewModel: messageModel, width: maxWidth, isNameHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: true), isProfileHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: false))
+                height = ALKFriendVoiceCell.rowHeight(viewModel: messageModel, width: maxWidth, isNameHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: true,isMyMessage: true), isProfileHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: false,isMyMessage: true))
             }
             return height
         case .information:
             let height = ALKInformationCell.rowHeigh(viewModel: messageModel, width: maxWidth)
             return height
         case .location:
-            return (messageModel.isMyMessage ? ALKMyLocationCell.rowHeight(viewModel: messageModel, width: maxWidth, isNameHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: true), isProfileHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: false)) :
-                ALKFriendLocationCell.rowHeight(viewModel: messageModel, width: maxWidth, isNameHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: true), isProfileHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: false)))
+            return (messageModel.isMyMessage ? ALKMyLocationCell.rowHeight(viewModel: messageModel, width: maxWidth, isNameHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: true,isMyMessage: true), isProfileHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: false,isMyMessage: true)) :
+                ALKFriendLocationCell.rowHeight(viewModel: messageModel, width: maxWidth, isNameHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: true,isMyMessage: false), isProfileHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: false,isMyMessage: false)))
         case .video:
             var height: CGFloat =  0
             if messageModel.isMyMessage {
-                height = ALKMyVideoCell.rowHeight(viewModel: messageModel, width: maxWidth, isNameHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: true), isProfileHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: false))
+                height = ALKMyVideoCell.rowHeight(viewModel: messageModel, width: maxWidth, isNameHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: true,isMyMessage: true), isProfileHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: false,isMyMessage: true))
             } else {
-                height = ALKFriendVideoCell.rowHeight(viewModel: messageModel, width: maxWidth, isNameHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: true), isProfileHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: false))
+                height = ALKFriendVideoCell.rowHeight(viewModel: messageModel, width: maxWidth, isNameHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: true,isMyMessage:false), isProfileHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: false,isMyMessage: false))
             }
             return height
         case .genericCard:
@@ -307,7 +307,7 @@ open class ALKConversationViewModel: NSObject, Localizable {
         }
     }
 
-    func checkProfileAndName(messageModels: [ALKMessageModel], index:Int,isNameHide : Bool) -> Bool {
+    func checkProfileAndName(messageModels: [ALKMessageModel], index:Int,isNameHide : Bool,isMyMessage: Bool) -> Bool {
 
         if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
 
@@ -337,28 +337,32 @@ open class ALKConversationViewModel: NSObject, Localizable {
 
             }else{
 
-                guard  index+1 < messageModels.count && !messageModels[index+1].isMyMessage else {
+                guard index+1 < messageModels.count  else {
                     return false
                 }
 
-                switch  Calendar.current.compare(messageModels[index].date, to: messageModels[index+1].date, toGranularity: .day) {
-                case .orderedAscending:
-                    return false
-                default:
+                if(isMyMessage ? messageModels[index+1].isMyMessage : !messageModels[index+1].isMyMessage ){
 
-                    let diff = Int(messageModels[index+1].date.timeIntervalSince1970-messageModels[index].date.timeIntervalSince1970)
 
-                    let hours = diff / 3600
-                    let minutes = (diff - hours * 3600) / 60
+                    switch  Calendar.current.compare(messageModels[index].date, to: messageModels[index+1].date, toGranularity: .day) {
+                    case .orderedAscending:
+                        return false
+                    default:
 
-                    return (minutes <= 5 &&
-                        (messageModels[index+1].messageType != .information )
-                        && (messageModels[index+1].contactId != nil)
-                        && messageModels[index].contactId != nil
-                        && messageModels[index+1].contactId == messageModels[index].contactId)
+                        let diff = Int(messageModels[index+1].date.timeIntervalSince1970-messageModels[index].date.timeIntervalSince1970)
+
+                        let hours = diff / 3600
+                        let minutes = (diff - hours * 3600) / 60
+
+                        return (minutes <= 5 &&
+                            (messageModels[index+1].messageType != .information )
+                            && (messageModels[index+1].contactId != nil)
+                            && messageModels[index].contactId != nil
+                            && messageModels[index+1].contactId == messageModels[index].contactId)
+
+                    }
 
                 }
-
 
             }
 

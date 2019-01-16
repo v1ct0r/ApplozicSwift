@@ -15,6 +15,9 @@ import Applozic
 class ALKPhotoCell: ALKChatBaseCell<ALKMessageViewModel>,
                     ALKReplyMenuItemProtocol {
 
+    var isHideProfilePicOrTimeLabel : Bool = false
+    var isHideMemberName : Bool = false
+
     var photoView: UIImageView = {
         let mv = UIImageView()
         mv.backgroundColor = .clear
@@ -133,6 +136,20 @@ class ALKPhotoCell: ALKChatBaseCell<ALKMessageViewModel>,
         timeLabel.text   = viewModel.time
 
     }
+
+
+    override func setMessageModels(messageModels:[ALKMessageModel],index:Int,namelabelFlag: Bool,profilePicFlag: Bool){
+
+        self.messageModels = messageModels;
+        self.index = index
+
+        if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
+
+            isHideProfilePicOrTimeLabel = profilePicFlag
+            isHideMemberName = namelabelFlag
+        }
+    }
+
 
     @objc func actionTapped(button: UIButton) {
         let storyboard = UIStoryboard.name(storyboard: UIStoryboard.Storyboard.mediaViewer, bundle: Bundle.applozic)

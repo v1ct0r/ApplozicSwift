@@ -12,9 +12,6 @@ import Kingfisher
 // MARK: - FriendPhotoCell
 class ALKFriendPhotoCell: ALKPhotoCell {
 
-    var isHideProfilePicOrTimeLabel : Bool = false
-    var isHideMemberName : Bool = false
-
 
     private var avatarImageView: UIImageView = {
         let imv = UIImageView()
@@ -108,18 +105,6 @@ class ALKFriendPhotoCell: ALKPhotoCell {
         }else{
             nameLabel.constraint(withIdentifier: ConstraintIdentifier.memberNameHeightIdentifier.rawValue)?.constant = 0
 
-        }
-    }
-
-    override func setMessageModels(messageModels:[ALKMessageModel],index:Int,namelabelFlag: Bool,profilePicFlag: Bool){
-
-        self.messageModels = messageModels;
-        self.index = index
-        
-        if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
-
-            isHideProfilePicOrTimeLabel = profilePicFlag
-            isHideMemberName = namelabelFlag
         }
     }
 

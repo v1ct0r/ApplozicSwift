@@ -1190,6 +1190,9 @@ extension ALKConversationViewController: ALKConversationViewModelDelegate {
             self.tableView.beginUpdates()
             self.tableView.insertSections(IndexSet(integer: indexPath.section), with: .automatic)
             self.tableView.endUpdates()
+            if(indexPath.section != 0){
+                self.tableView.reloadSections(IndexSet(integer: indexPath.section-1), with: .none)
+            }
             self.tableView.scrollToBottom(animated: false)
         }
     }

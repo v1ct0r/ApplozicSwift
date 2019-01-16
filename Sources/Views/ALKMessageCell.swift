@@ -70,7 +70,9 @@ open class ALKFriendMessageCell: ALKMessageCell {
 
         contentView.addViewsForAutolayout(views: [avatarImageView,nameLabel])
 
-        nameLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 6).isActive = true
+
+        nameLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 3).isActive = true
+
         nameLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 57).isActive = true
         nameLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -57).isActive = true
 
@@ -129,12 +131,11 @@ open class ALKFriendMessageCell: ALKMessageCell {
         messageView.topAnchor.constraint(equalTo: replyView.bottomAnchor, constant: Padding.MessageView.top).isActive = true
         messageView.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor, constant: -1 * ALKMessageCell.rightPadding()).isActive = true
 
-        messageView.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: -1 * ALKFriendMessageCell.bottomPadding()).isActive = true
+        messageView.bottomAnchor.constraint(equalTo: bubbleView.bottomAnchor, constant: -1 * ALKFriendMessageCell.bottomPadding()).isActive = true
 
         timeLabel.leadingAnchor.constraint(equalTo: bubbleView.trailingAnchor, constant: 10).isActive = true
 
         bubbleView.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 0).isActive = true
-        bubbleView.bottomAnchor.constraint(equalTo: messageView.bottomAnchor, constant: 8).isActive = true
 
         var bubbleViewLeftPadding = widthPadding
 
@@ -146,6 +147,14 @@ open class ALKFriendMessageCell: ALKMessageCell {
 
         bubbleView.trailingAnchor.constraint(equalTo: previewImageView.trailingAnchor, constant: widthPadding).isActive = true
 
+        if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
+            bubbleViewBottom.constant = 0
+            bubbleViewBottom.isActive = true
+        }else{
+            bubbleViewBottom.constant = -12
+            bubbleViewBottom.isActive = true
+        }
+
         replyView.topAnchor.constraint(equalTo: bubbleView.topAnchor, constant: 5).isActive = true
         replyView.heightAnchor.constraintEqualToAnchor(constant: 80, identifier: ConstraintIdentifier.replyViewHeightIdentifier.rawValue).isActive = true
         replyView.leadingAnchor.constraint(equalTo: bubbleView.leadingAnchor, constant: 10).isActive = true
@@ -155,18 +164,6 @@ open class ALKFriendMessageCell: ALKMessageCell {
         timeLabel.bottomAnchor.constraint(equalTo: bubbleView.bottomAnchor, constant: 2).isActive = true
     }
 
-    override func setMessageModels(messageModels:[ALKMessageModel],index:Int,namelabelFlag: Bool,profilePicFlag: Bool){
-        self.messageModels = messageModels;
-        self.index = index
-
-
-        if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
-
-            isHideProfilePicOrTimeLabel = profilePicFlag
-            isHideMemberName = namelabelFlag
-        }
-
-    }
 
     override func setupStyle() {
         super.setupStyle()
@@ -200,6 +197,15 @@ open class ALKFriendMessageCell: ALKMessageCell {
             replyMessageLabel.constraint(withIdentifier: ConstraintIdentifier.replyMessageHeightIdentifier.rawValue)?.constant = 0
             previewImageView.constraint(withIdentifier: ConstraintIdentifier.replyMessageHeightIdentifier.rawValue)?.constant = 0
             previewImageView.constraint(withIdentifier: ConstraintIdentifier.replyPreviewImageWidthIdentifier.rawValue)?.constant = 0
+        }
+
+        if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
+
+            if(!isHideProfilePicOrTimeLabel){
+                bubbleViewBottom.constant = -8
+            }else{
+                bubbleViewBottom.constant = -1.5
+            }
         }
 
         avatarImageView.isHidden = isHideProfilePicOrTimeLabel
@@ -377,10 +383,19 @@ open class ALKMyMessageCell: ALKMessageCell {
         messageView.topAnchor.constraint(equalTo: replyView.bottomAnchor, constant: Padding.MessageView.top).isActive = true
         messageView.leadingAnchor.constraint(greaterThanOrEqualTo: contentView.leadingAnchor, constant: ALKMessageCell.rightPadding()).isActive = true
         messageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -1*ALKMessageCell.leftPadding()).isActive = true
-        messageView.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: -1 * ALKMyMessageCell.bottomPadding()).isActive = true
+        messageView.bottomAnchor.constraint(equalTo: bubbleView.bottomAnchor, constant: -1 * ALKMyMessageCell.bottomPadding()).isActive = true
 
-        bubbleView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0).isActive = true
-        bubbleView.bottomAnchor.constraint(equalTo: messageView.bottomAnchor, constant: 8).isActive = true
+
+        if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
+       bubbleView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 1.5).isActive = true
+            bubbleViewBottom.constant = -1.5
+            bubbleViewBottom.isActive = true
+        }else{
+        bubbleView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 6).isActive = true
+            bubbleViewBottom.constant = -12
+            bubbleViewBottom.isActive = true
+        }
+
         bubbleView.leadingAnchor.constraint(equalTo: messageView.leadingAnchor, constant: -widthPadding).isActive = true
         bubbleView.leadingAnchor.constraint(equalTo: replyNameLabel.leadingAnchor, constant: -widthPadding).isActive = true
         bubbleView.leadingAnchor.constraint(equalTo: replyMessageLabel.leadingAnchor, constant: -widthPadding).isActive = true
@@ -432,6 +447,15 @@ open class ALKMyMessageCell: ALKMessageCell {
             hideReplyView()
         }
 
+
+    timeLabel.isHidden = isHideProfilePicOrTimeLabel
+    if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
+        if(!isHideProfilePicOrTimeLabel){
+            bubbleViewBottom.constant = -14.5
+        }else{
+            bubbleViewBottom.constant = -1.5
+        }
+    }
         if viewModel.isAllRead {
             stateView.image = UIImage(named: "read_state_3", in: Bundle.applozic, compatibleWith: nil)
             stateView.tintColor = UIColor(netHex: 0x0578FF)
@@ -467,11 +491,11 @@ open class ALKMyMessageCell: ALKMessageCell {
         if ALKMessageStyle.sentBubble.style == ALKMessageStyle.BubbleStyle.edge{
             minimumHeight = 45.0
         }else if ALKMessageStyle.sentBubble.style == ALKMessageStyle.BubbleStyle.round{
-            minimumHeight = 75.0
+            minimumHeight = 60.0
         }
 
         // 2x because padding is for both the sides.
-        let totalRowHeight = super.rowHeigh(viewModel: viewModel, width: width-CGFloat(2*ALKMessageStyle.sentBubble.widthPadding))
+        let totalRowHeight = super.rowHeight(viewModel: viewModel, width: width-CGFloat(2*ALKMessageStyle.receivedBubble.widthPadding), isNameHide: isNameHide, isProfileHide: isProfileHide)
         return totalRowHeight < minimumHeight ? minimumHeight  : totalRowHeight
 
     }
@@ -503,6 +527,12 @@ open class ALKMyMessageCell: ALKMessageCell {
 }
 
 open class ALKMessageCell: ALKChatBaseCell<ALKMessageViewModel>, ALKCopyMenuItemProtocol, ALKReplyMenuItemProtocol {
+
+     var isHideProfilePicOrTimeLabel : Bool = false
+     var isHideMemberName : Bool = false
+
+     lazy var  bubbleViewBottom =  bubbleView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 0)
+
     fileprivate lazy var messageView: ALKHyperLabel = {
         let label = ALKHyperLabel.init(frame: .zero)
         label.isUserInteractionEnabled = true
@@ -581,6 +611,7 @@ open class ALKMessageCell: ALKChatBaseCell<ALKMessageViewModel>, ALKCopyMenuItem
             previewImageView.image = nil
         }
 
+
         self.messageView.attributedText = nil
         self.messageView.text = nil
         guard let message = viewModel.message else { return }
@@ -626,6 +657,18 @@ open class ALKMessageCell: ALKChatBaseCell<ALKMessageViewModel>, ALKCopyMenuItem
 
     }
 
+    override func setMessageModels(messageModels:[ALKMessageModel],index:Int,namelabelFlag: Bool,profilePicFlag: Bool){
+        self.messageModels = messageModels;
+        self.index = index
+
+        if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
+            isHideProfilePicOrTimeLabel = profilePicFlag
+            isHideMemberName = namelabelFlag
+        }
+
+    }
+
+
     class func leftPadding() -> CGFloat {
         if ALKMessageStyle.sentBubble.style == ALKMessageStyle.BubbleStyle.edge{
             return 25
@@ -647,7 +690,7 @@ open class ALKMessageCell: ALKChatBaseCell<ALKMessageViewModel>, ALKCopyMenuItem
     }
 
 
-  override class func  rowHeight(viewModel: ALKMessageViewModel, width: CGFloat, isNameHide: Bool, isProfileHide: Bool) -> CGFloat{
+    override class func  rowHeight(viewModel: ALKMessageViewModel, width: CGFloat, isNameHide: Bool, isProfileHide: Bool) -> CGFloat{
 
     var messageHeigh: CGFloat = 0
 
