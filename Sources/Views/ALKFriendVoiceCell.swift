@@ -75,8 +75,12 @@ class ALKFriendVoiceCell: ALKVoiceCell {
         
         soundPlayerView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 0).isActive = true
         soundPlayerView.widthAnchor.constraint(equalToConstant: width*0.48).isActive = true
-        
-        nameLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 6).isActive = true
+
+        if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.edge){
+            nameLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 6).isActive = true
+        }else{
+            nameLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 3).isActive = true
+        }
         nameLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 57).isActive = true
         
         nameLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -56).isActive = true
@@ -99,7 +103,6 @@ class ALKFriendVoiceCell: ALKVoiceCell {
     override func update(viewModel: ALKMessageViewModel) {
         super.update(viewModel: viewModel)
 
-
         avatarImageView.isHidden = isHideProfilePicOrTimeLabel
         timeLabel.isHidden = isHideProfilePicOrTimeLabel
         nameLabel.isHidden = isHideMemberName
@@ -118,7 +121,7 @@ class ALKFriendVoiceCell: ALKVoiceCell {
         }
 
         if(!isHideMemberName){
-     nameLabel.constraint(withIdentifier:ConstraintIdentifier.memberNameHeightIdentifier.rawValue)?.constant = 16
+            nameLabel.constraint(withIdentifier:ConstraintIdentifier.memberNameHeightIdentifier.rawValue)?.constant = 16
             nameLabel.text = viewModel.displayName
         }else{
             nameLabel.constraint(withIdentifier: ConstraintIdentifier.memberNameHeightIdentifier.rawValue)?.constant = 0

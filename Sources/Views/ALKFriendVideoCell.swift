@@ -11,9 +11,7 @@ import Kingfisher
 
 class ALKFriendVideoCell: ALKVideoCell {
 
-    var isHideProfilePicOrTimeLabel : Bool = false
-    var isHideMemberName : Bool = false
-
+   
     private var avatarImageView: UIImageView = {
         let imv = UIImageView()
         imv.contentMode = .scaleAspectFill
@@ -50,7 +48,6 @@ class ALKFriendVideoCell: ALKVideoCell {
         self.index = index
         
         if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
-
             isHideProfilePicOrTimeLabel = profilePicFlag
             isHideMemberName = namelabelFlag
         }
@@ -67,7 +64,12 @@ class ALKFriendVideoCell: ALKVideoCell {
 
         bubbleView.backgroundColor = UIColor.hex8(Color.Background.grayF2.rawValue).withAlphaComponent(0.26)
 
-        nameLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 6).isActive = true
+        if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.edge){
+            nameLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 6).isActive = true
+        }else{
+            nameLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 3).isActive = true
+        }
+        
         nameLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 57).isActive = true
 
         nameLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -56).isActive = true
@@ -85,7 +87,11 @@ class ALKFriendVideoCell: ALKVideoCell {
         avatarImageView.widthAnchor.constraint(equalTo: avatarImageView.heightAnchor).isActive = true
 
         photoView.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor, constant: -56).isActive = true
-        photoView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16).isActive = true
+
+        if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.edge){
+            photoViewBottom.constant = -16
+        }
+        photoViewBottom.isActive = true
 
         timeLabel.leadingAnchor.constraint(equalTo: bubbleView.trailingAnchor, constant: 2).isActive = true
         timeLabel.bottomAnchor.constraint(equalTo: bubbleView.bottomAnchor, constant: 2).isActive = true
@@ -99,6 +105,14 @@ class ALKFriendVideoCell: ALKVideoCell {
         avatarImageView.isHidden = isHideProfilePicOrTimeLabel;
         nameLabel.isHidden = isHideMemberName;
         timeLabel.isHidden = isHideProfilePicOrTimeLabel
+
+        if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
+            if(!isHideProfilePicOrTimeLabel){
+                photoViewBottom.constant = -14.5
+            }else{
+                photoViewBottom.constant = -1.5
+            }
+        }
 
         if(!isHideProfilePicOrTimeLabel){
             let placeHolder = UIImage(named: "placeholder", in: Bundle.applozic, compatibleWith: nil)

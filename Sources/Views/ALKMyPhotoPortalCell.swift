@@ -39,7 +39,11 @@ final class ALKMyPhotoPortalCell: ALKPhotoCell {
         photoView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -14).isActive = true
         
         photoView.widthAnchor.constraint(equalToConstant: width*0.48).isActive = true
-        photoView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -6).isActive = true
+
+        if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.edge){
+            photoViewBottom.constant = -16
+        }
+        photoViewBottom.isActive = true
         
         bubbleView.backgroundColor = UIColor.hex8(Color.Background.grayF2.rawValue).withAlphaComponent(0.26)
         
@@ -57,6 +61,14 @@ final class ALKMyPhotoPortalCell: ALKPhotoCell {
     
     override func update(viewModel: ALKMessageViewModel) {
         super.update(viewModel: viewModel)
+
+        if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
+            if(!isHideProfilePicOrTimeLabel){
+                photoViewBottom.constant = -14.5
+            }else{
+                photoViewBottom.constant = -1.5
+            }
+        }
 
         timeLabel.isHidden = isHideProfilePicOrTimeLabel
         if viewModel.isAllRead {

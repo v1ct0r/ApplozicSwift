@@ -61,7 +61,7 @@ open class ALKBaseCell<T>: UITableViewCell {
     }
 
     class  func rowHeight(viewModel: T,width: CGFloat,isNameHide:Bool,isProfileHide:Bool) -> CGFloat{
-        return 44
+        return 40
     }
     
 }

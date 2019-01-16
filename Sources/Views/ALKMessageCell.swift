@@ -70,7 +70,6 @@ open class ALKFriendMessageCell: ALKMessageCell {
 
         contentView.addViewsForAutolayout(views: [avatarImageView,nameLabel])
 
-
         nameLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 3).isActive = true
 
         nameLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 57).isActive = true
@@ -273,7 +272,7 @@ open class ALKFriendMessageCell: ALKMessageCell {
         if ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.edge{
             minimumHeigh = 20.0
         }else if ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round{
-            minimumHeigh = isNameHide ? 65.0: 80.0
+            minimumHeigh = isNameHide ? 60.0 : 80
         }
         // 2x because padding is for both the sides.
         let totalRowHeigh = super.rowHeight(viewModel: viewModel, width: width-CGFloat(2*ALKMessageStyle.receivedBubble.widthPadding), isNameHide: isNameHide, isProfileHide: isProfileHide)
@@ -388,7 +387,6 @@ open class ALKMyMessageCell: ALKMessageCell {
 
         if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
        bubbleView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 1.5).isActive = true
-            bubbleViewBottom.constant = -1.5
             bubbleViewBottom.isActive = true
         }else{
         bubbleView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 6).isActive = true
@@ -449,9 +447,10 @@ open class ALKMyMessageCell: ALKMessageCell {
 
 
     timeLabel.isHidden = isHideProfilePicOrTimeLabel
+
     if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
         if(!isHideProfilePicOrTimeLabel){
-            bubbleViewBottom.constant = -14.5
+            bubbleViewBottom.constant = -8
         }else{
             bubbleViewBottom.constant = -1.5
         }
@@ -491,7 +490,7 @@ open class ALKMyMessageCell: ALKMessageCell {
         if ALKMessageStyle.sentBubble.style == ALKMessageStyle.BubbleStyle.edge{
             minimumHeight = 45.0
         }else if ALKMessageStyle.sentBubble.style == ALKMessageStyle.BubbleStyle.round{
-            minimumHeight = 60.0
+            minimumHeight = 60
         }
 
         // 2x because padding is for both the sides.
@@ -697,10 +696,12 @@ open class ALKMessageCell: ALKChatBaseCell<ALKMessageViewModel>, ALKCopyMenuItem
     if let message = viewModel.message {
 
         var widthNoPadding = width - leftPadding() - rightPadding()
-        if !viewModel.isMyMessage{
-            widthNoPadding -= 20
-        }else{
-            widthNoPadding += 20
+        if ALKMessageStyle.receivedBubble.style != ALKMessageStyle.BubbleStyle.round{
+            if !viewModel.isMyMessage{
+                widthNoPadding -= 20
+            }else{
+                widthNoPadding += 20
+            }
         }
         let maxSize = CGSize.init(width: widthNoPadding, height: CGFloat.greatestFiniteMagnitude)
 
@@ -731,7 +732,9 @@ open class ALKMessageCell: ALKChatBaseCell<ALKMessageViewModel>, ALKCopyMenuItem
             let framesetter = CTFramesetterCreateWithAttributedString(attrbString)
             size =  CTFramesetterSuggestFrameSizeWithConstraints(framesetter, CFRange(location: 0,length: 0), nil, maxSize, nil)
         }
-        messageHeigh = ceil(size.height) + 10 // due to textview's bottom pading
+
+        messageHeigh = ceil(size.height)+10  // due to textview's bottom pading
+
         if viewModel.isReplyMessage {
             messageHeigh += 90
         }

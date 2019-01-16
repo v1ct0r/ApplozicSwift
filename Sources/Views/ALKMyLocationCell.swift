@@ -29,7 +29,12 @@ final class ALKMyLocationCell: ALKLocationCell {
         contentView.addViewsForAutolayout(views: [stateView])
 
         bubbleView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 6.0).isActive = true
-        bubbleView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -6.0).isActive = true
+
+        if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.edge){
+            bubbleViewBottom.constant = -6.0
+        }
+        bubbleViewBottom.isActive = true
+
         bubbleView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -14.0).isActive = true
 
         stateView.bottomAnchor.constraint(equalTo: bubbleView.bottomAnchor, constant: -1.0).isActive = true
@@ -43,6 +48,14 @@ final class ALKMyLocationCell: ALKLocationCell {
     
     override func update(viewModel: ALKMessageViewModel) {
         super.update(viewModel: viewModel)
+
+        if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
+            if(!isHideProfilePicOrTimeLabel){
+                bubbleViewBottom.constant = -14.5
+            }else{
+                bubbleViewBottom.constant = -1.5
+            }
+        }
 
         timeLabel.isHidden = isHideProfilePicOrTimeLabel
 

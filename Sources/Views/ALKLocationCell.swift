@@ -19,6 +19,8 @@ class ALKLocationCell: ALKChatBaseCell<ALKMessageViewModel>,
     
     var isHideProfilePicOrTimeLabel : Bool = false
     var isHideMemberName : Bool = false
+    lazy var  bubbleViewBottom =  bubbleView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 0)
+
     weak var delegate:ALKLocationCellDelegate?
 
     // MARK: - Declare Variables or Types

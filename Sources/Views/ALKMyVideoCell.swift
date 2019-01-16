@@ -30,8 +30,12 @@ class ALKMyVideoCell: ALKVideoCell {
         photoView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -14).isActive = true
 
         photoView.widthAnchor.constraint(equalToConstant: width*0.60).isActive = true
-        photoView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -6).isActive = true
 
+        if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.edge){
+            photoViewBottom.constant = -6
+        }
+        photoViewBottom.isActive = true
+        
         bubbleView.backgroundColor = UIColor.hex8(Color.Background.grayF2.rawValue).withAlphaComponent(0.26)
 
         fileSizeLabel.rightAnchor.constraint(equalTo: bubbleView.rightAnchor, constant: 0).isActive = true
@@ -48,6 +52,14 @@ class ALKMyVideoCell: ALKVideoCell {
     override func update(viewModel: ALKMessageViewModel) {
         super.update(viewModel: viewModel)
 
+        if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
+            if(!isHideProfilePicOrTimeLabel){
+                photoViewBottom.constant = -14.5
+            }else{
+                photoViewBottom.constant = -1.5
+            }
+        }
+        timeLabel.isHidden = isHideProfilePicOrTimeLabel
         if viewModel.isAllRead {
             stateView.image = UIImage(named: "read_state_3", in: Bundle.applozic, compatibleWith: nil)
             stateView.tintColor = UIColor(netHex: 0x0578FF)

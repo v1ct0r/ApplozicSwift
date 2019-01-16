@@ -13,6 +13,11 @@ import AVKit
 class ALKVideoCell: ALKChatBaseCell<ALKMessageViewModel>,
                     ALKReplyMenuItemProtocol {
     
+    var isHideProfilePicOrTimeLabel : Bool = false
+    var isHideMemberName : Bool = false
+
+    lazy var  photoViewBottom =  bubbleView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 0)
+
     enum state {
         case download
         case downloading(progress: Double, totalCount: Int64)

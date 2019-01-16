@@ -30,8 +30,10 @@ final class ALKMyPhotoLandscapeCell: ALKPhotoCell {
         photoView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -14).isActive = true
         
         photoView.widthAnchor.constraint(equalToConstant: width*0.64).isActive = true
-        photoView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -6).isActive = true
-        
+        if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.edge){
+            photoViewBottom.constant = -16
+        }
+        photoViewBottom.isActive = true
         bubbleView.backgroundColor = UIColor.hex8(Color.Background.grayF2.rawValue).withAlphaComponent(0.26)
         
         fileSizeLabel.rightAnchor.constraint(equalTo: bubbleView.rightAnchor, constant: 0).isActive = true
@@ -50,7 +52,15 @@ final class ALKMyPhotoLandscapeCell: ALKPhotoCell {
 
         timeLabel.isHidden = isHideProfilePicOrTimeLabel
 
-        if viewModel.isAllRead {
+        if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
+            if(!isHideProfilePicOrTimeLabel){
+                photoViewBottom.constant = -14.5
+            }else{
+                photoViewBottom.constant = -1.5
+            }
+        }
+
+      if viewModel.isAllRead {
             stateView.image = UIImage(named: "read_state_3", in: Bundle.applozic, compatibleWith: nil)
         } else if viewModel.isAllReceived {
             stateView.image = UIImage(named: "read_state_2", in: Bundle.applozic, compatibleWith: nil)

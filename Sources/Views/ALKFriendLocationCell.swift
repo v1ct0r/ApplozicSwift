@@ -41,8 +41,12 @@ final class ALKFriendLocationCell: ALKLocationCell {
         
         // add view to contenview and setup constraint
         contentView.addViewsForAutolayout(views: [avatarImageView,nameLabel])
-        
-        nameLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 6.0).isActive = true
+
+        if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.edge){
+            nameLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 6).isActive = true
+        }else{
+            nameLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 3).isActive = true
+        }
         nameLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 57.0).isActive = true
         nameLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -56.0).isActive = true
         nameLabel.heightAnchor.constraintEqualToAnchor(constant: 0, identifier: ConstraintIdentifier.memberNameHeightIdentifier.rawValue).isActive = true
@@ -54,7 +58,12 @@ final class ALKFriendLocationCell: ALKLocationCell {
         avatarImageView.heightAnchor.constraint(equalTo: avatarImageView.widthAnchor).isActive = true
         
         bubbleView.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 6.0).isActive = true
-        bubbleView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -6.0).isActive = true
+
+        if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.edge){
+            bubbleViewBottom.constant = -6.0
+        }
+        bubbleViewBottom.isActive = true
+        
         bubbleView.leadingAnchor.constraint(equalTo: avatarImageView.trailingAnchor, constant: 10.0).isActive = true
         
         timeLabel.leadingAnchor.constraint(equalTo: bubbleView.trailingAnchor, constant: 2.0).isActive = true

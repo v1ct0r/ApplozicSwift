@@ -221,7 +221,7 @@ open class ALKConversationViewModel: NSObject, Localizable {
             } else {
 
 
-                let heigh = ALKFriendMessageCell.rowHeight(viewModel: messageModel, width: maxWidth, isNameHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: true,isMyMessage: true), isProfileHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: false,isMyMessage: false))
+                let heigh = ALKFriendMessageCell.rowHeight(viewModel: messageModel, width: maxWidth, isNameHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: true,isMyMessage: false), isProfileHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: false,isMyMessage: false))
                 //                cache?.setDouble(value: Double(heigh), forKey: identifier)
                 return heigh
 
@@ -262,7 +262,7 @@ open class ALKConversationViewModel: NSObject, Localizable {
             if messageModel.isMyMessage {
                 height = ALKVoiceCell.rowHeight(viewModel: messageModel, width: maxWidth, isNameHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: true,isMyMessage: true), isProfileHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: false,isMyMessage:true))
             } else {
-                height = ALKFriendVoiceCell.rowHeight(viewModel: messageModel, width: maxWidth, isNameHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: true,isMyMessage: true), isProfileHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: false,isMyMessage: true))
+                height = ALKFriendVoiceCell.rowHeight(viewModel: messageModel, width: maxWidth, isNameHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: true,isMyMessage: false), isProfileHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: false,isMyMessage: false))
             }
             return height
         case .information:

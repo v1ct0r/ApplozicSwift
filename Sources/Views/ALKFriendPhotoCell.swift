@@ -58,8 +58,8 @@ class ALKFriendPhotoCell: ALKPhotoCell {
         
         nameLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -56).isActive = true
         nameLabel.bottomAnchor.constraint(equalTo: photoView.topAnchor, constant: -6).isActive = true
-        nameLabel.heightAnchor.constraint(equalToConstant: 16).isActive = true
-        
+        nameLabel.heightAnchor.constraintEqualToAnchor(constant: 0, identifier: ConstraintIdentifier.memberNameHeightIdentifier.rawValue).isActive = true
+
         avatarImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 18).isActive = true
         avatarImageView.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: 0).isActive = true
         
@@ -70,7 +70,14 @@ class ALKFriendPhotoCell: ALKPhotoCell {
         avatarImageView.widthAnchor.constraint(equalTo: avatarImageView.heightAnchor).isActive = true
         
         photoView.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor, constant: -56).isActive = true
-        photoView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16).isActive = true
+
+        if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
+            photoViewBottom.constant = -1.5
+            photoViewBottom.isActive = true
+        } else{
+            photoViewBottom.constant = -16
+            photoViewBottom.isActive = true
+        }
         
         timeLabel.leadingAnchor.constraint(equalTo: bubbleView.trailingAnchor, constant: 2).isActive = true
         timeLabel.bottomAnchor.constraint(equalTo: bubbleView.bottomAnchor, constant: 2).isActive = true
@@ -84,6 +91,15 @@ class ALKFriendPhotoCell: ALKPhotoCell {
         avatarImageView.isHidden = isHideProfilePicOrTimeLabel
         timeLabel.isHidden = isHideProfilePicOrTimeLabel
         nameLabel.isHidden = isHideMemberName
+
+        if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
+
+            if(!isHideProfilePicOrTimeLabel){
+                photoViewBottom.constant = -14.5
+            }else{
+                photoViewBottom.constant = -1.5
+            }
+        }
 
         if(!isHideProfilePicOrTimeLabel){
 
