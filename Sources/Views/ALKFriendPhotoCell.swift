@@ -12,6 +12,7 @@ import Kingfisher
 // MARK: - FriendPhotoCell
 class ALKFriendPhotoCell: ALKPhotoCell {
 
+ lazy var  avatarImageViewBottom = avatarImageView.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: 0)
 
     private var avatarImageView: UIImageView = {
         let imv = UIImageView()
@@ -52,27 +53,30 @@ class ALKFriendPhotoCell: ALKPhotoCell {
         contentView.addViewsForAutolayout(views: [avatarImageView,nameLabel])
         
         bubbleView.backgroundColor = UIColor.hex8(Color.Background.grayF2.rawValue).withAlphaComponent(0.26)
-        
-        nameLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 6).isActive = true
+
+        if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.edge){
+            nameLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 6).isActive = true
+            avatarImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 18).isActive = true
+        } else{
+            nameLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 3).isActive = true
+        }
+        photoView.topAnchor.constraint(equalTo: nameLabel.bottomAnchor).isActive = true
+
         nameLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 57).isActive = true
         
         nameLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -56).isActive = true
         nameLabel.bottomAnchor.constraint(equalTo: photoView.topAnchor, constant: -6).isActive = true
         nameLabel.heightAnchor.constraintEqualToAnchor(constant: 0, identifier: ConstraintIdentifier.memberNameHeightIdentifier.rawValue).isActive = true
-
-        avatarImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 18).isActive = true
-        avatarImageView.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: 0).isActive = true
-        
+        avatarImageViewBottom.isActive = true
         avatarImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 9).isActive = true
         avatarImageView.trailingAnchor.constraint(equalTo: photoView.leadingAnchor, constant: -10).isActive = true
         
         avatarImageView.heightAnchor.constraint(equalToConstant: 37).isActive = true
         avatarImageView.widthAnchor.constraint(equalTo: avatarImageView.heightAnchor).isActive = true
-        
+
         photoView.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor, constant: -56).isActive = true
 
         if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
-            photoViewBottom.constant = -1.5
             photoViewBottom.isActive = true
         } else{
             photoViewBottom.constant = -16
@@ -99,6 +103,7 @@ class ALKFriendPhotoCell: ALKPhotoCell {
             }else{
                 photoViewBottom.constant = -1.5
             }
+            avatarImageViewBottom.constant = -10
         }
 
         if(!isHideProfilePicOrTimeLabel){

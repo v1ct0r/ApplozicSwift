@@ -1185,6 +1185,11 @@ extension ALKConversationViewController: ALKConversationViewModelDelegate {
             NSLog("current indexpath: %i and tableview section %i", indexPath.section, self.tableView.numberOfSections)
             guard indexPath.section >= self.tableView.numberOfSections else {
                 NSLog("rejected indexpath: %i and tableview and section %i", indexPath.section, self.tableView.numberOfSections)
+                if(indexPath.section != 0){
+                    self.tableView.reloadSections(IndexSet(integer: indexPath.section-1), with: .none)
+                }
+                self.tableView.scrollToBottom(animated: false)
+
                 return
             }
             self.tableView.beginUpdates()
@@ -1507,12 +1512,6 @@ extension ALKConversationViewController: ALKCustomPickerDelegate {
                 let image = images[i]
                 let (message, indexPath) =  self.viewModel.send(photo: image, metadata : self.configuration.messageMetadata)
                 guard let _ = message, let newIndexPath = indexPath else { return }
-                //            DispatchQueue.main.async {
-                self.tableView.beginUpdates()
-                self.tableView.insertSections(IndexSet(integer: newIndexPath.section), with: .automatic)
-                self.tableView.endUpdates()
-                self.tableView.scrollToBottom(animated: false)
-                //            }
                 guard let cell = tableView.cellForRow(at: newIndexPath) as? ALKMyPhotoPortalCell else { return }
                 guard ALDataNetworkConnection.checkDataNetworkAvailable() else {
                     let notificationView = ALNotificationView()
@@ -1523,10 +1522,6 @@ extension ALKConversationViewController: ALKCustomPickerDelegate {
             } else {
                 let path = videos[i - images.count]
                 let (_, indexPath) = viewModel.sendVideo(atPath: path, sourceType: .photoLibrary, metadata : self.configuration.messageMetadata)
-                self.tableView.beginUpdates()
-                self.tableView.insertSections(IndexSet(integer: (indexPath?.section)!), with: .automatic)
-                self.tableView.endUpdates()
-                self.tableView.scrollToBottom(animated: false)
                 guard let newIndexPath = indexPath, let cell = tableView.cellForRow(at: newIndexPath) as? ALKMyVideoCell else { return }
                 guard ALDataNetworkConnection.checkDataNetworkAvailable() else {
                     let notificationView = ALNotificationView()

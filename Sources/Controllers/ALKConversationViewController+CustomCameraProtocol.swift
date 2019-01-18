@@ -17,10 +17,6 @@ extension ALKConversationViewController: ALKCustomCameraProtocol {
 
         let (message, indexPath) =  viewModel.send(photo: cropedImage,metadata : configuration.messageMetadata)
         guard let _ = message, let newIndexPath = indexPath else { return }
-        tableView.beginUpdates()
-        tableView.insertSections(IndexSet(integer: newIndexPath.section), with: .automatic)
-        tableView.endUpdates()
-        tableView.scrollToBottom(animated: false)
 
         guard let cell = tableView.cellForRow(at: newIndexPath) as? ALKMyPhotoPortalCell else { return }
         cell.setLocalizedStringFileName(configuration.localizedStringFileName)

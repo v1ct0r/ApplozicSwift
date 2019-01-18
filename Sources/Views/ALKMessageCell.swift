@@ -14,8 +14,12 @@ import Applozic
 // MARK: - ALKFriendMessageCell
 open class ALKFriendMessageCell: ALKMessageCell {
 
+<<<<<<< HEAD
     var isHideProfilePicOrTimeLabel : Bool = false
     var isHideMemberName : Bool = false
+=======
+    lazy var  avatarImageViewBottom = avatarImageView.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: 0)
+>>>>>>> AL-3175 Move the profile image to bottom in message and add the suport in voice message cell
 
     private var avatarImageView: UIImageView = {
         let imv = UIImageView()
@@ -57,9 +61,19 @@ open class ALKFriendMessageCell: ALKMessageCell {
         enum MessageView {
             static let top: CGFloat = 4
         }
+        enum AvatarImageView{
+            static let bottomClubedPadding: CGFloat =  -10
+
+        }
+
+        enum BubbleView {
+            static let bottomClubedPadding: CGFloat =  -1.5
+            static let bottomUnClubedPadding: CGFloat =  -8.0
+        }
     }
 
     private var widthPadding: CGFloat = CGFloat(ALKMessageStyle.receivedBubble.widthPadding)
+
 
 
     override func setupViews() {
@@ -77,8 +91,12 @@ open class ALKFriendMessageCell: ALKMessageCell {
 
         nameLabel.heightAnchor.constraintEqualToAnchor(constant: 0, identifier: ConstraintIdentifier.memberNameHeightIdentifier.rawValue).isActive = true
 
-        avatarImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 18).isActive = true
-        avatarImageView.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: 0).isActive = true
+        if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.edge){
+            avatarImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 18).isActive = true
+        }else{
+            avatarImageViewBottom.constant = Padding.AvatarImageView.bottomClubedPadding
+        }
+        avatarImageViewBottom.isActive = true
 
         avatarImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 9).isActive = true
 
@@ -146,14 +164,10 @@ open class ALKFriendMessageCell: ALKMessageCell {
 
         bubbleView.trailingAnchor.constraint(equalTo: previewImageView.trailingAnchor, constant: widthPadding).isActive = true
 
-        if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
-            bubbleViewBottom.constant = 0
-            bubbleViewBottom.isActive = true
-        }else{
-            bubbleViewBottom.constant = -12
-            bubbleViewBottom.isActive = true
+        if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.edge){
+            bubbleViewBottom.constant = 8
         }
-
+        bubbleViewBottom.isActive = true
         replyView.topAnchor.constraint(equalTo: bubbleView.topAnchor, constant: 5).isActive = true
         replyView.heightAnchor.constraintEqualToAnchor(constant: 80, identifier: ConstraintIdentifier.replyViewHeightIdentifier.rawValue).isActive = true
         replyView.leadingAnchor.constraint(equalTo: bubbleView.leadingAnchor, constant: 10).isActive = true
@@ -201,10 +215,11 @@ open class ALKFriendMessageCell: ALKMessageCell {
         if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
 
             if(!isHideProfilePicOrTimeLabel){
-                bubbleViewBottom.constant = -8
+                bubbleViewBottom.constant = Padding.BubbleView.bottomUnClubedPadding
             }else{
-                bubbleViewBottom.constant = -1.5
+                bubbleViewBottom.constant = Padding.BubbleView.bottomUnClubedPadding
             }
+
         }
 
         avatarImageView.isHidden = isHideProfilePicOrTimeLabel
@@ -323,6 +338,15 @@ open class ALKMyMessageCell: ALKMessageCell {
         enum MessageView {
             static let top: CGFloat = 4
         }
+
+        enum AvatarImageView{
+            static let bottomClubedPadding: CGFloat =  -10
+        }
+
+        enum BubbleView {
+            static let bottomClubedPadding: CGFloat =  -1.5
+            static let bottomUnClubedPadding: CGFloat =  -8.0
+        }
     }
 
 
@@ -384,15 +408,13 @@ open class ALKMyMessageCell: ALKMessageCell {
         messageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -1*ALKMessageCell.leftPadding()).isActive = true
         messageView.bottomAnchor.constraint(equalTo: bubbleView.bottomAnchor, constant: -1 * ALKMyMessageCell.bottomPadding()).isActive = true
 
-
         if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
        bubbleView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 1.5).isActive = true
-            bubbleViewBottom.isActive = true
         }else{
         bubbleView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 6).isActive = true
-            bubbleViewBottom.constant = -12
-            bubbleViewBottom.isActive = true
+            bubbleViewBottom.constant = 8
         }
+        bubbleViewBottom.isActive = true
 
         bubbleView.leadingAnchor.constraint(equalTo: messageView.leadingAnchor, constant: -widthPadding).isActive = true
         bubbleView.leadingAnchor.constraint(equalTo: replyNameLabel.leadingAnchor, constant: -widthPadding).isActive = true
@@ -449,11 +471,13 @@ open class ALKMyMessageCell: ALKMessageCell {
     timeLabel.isHidden = isHideProfilePicOrTimeLabel
 
     if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
+
         if(!isHideProfilePicOrTimeLabel){
-            bubbleViewBottom.constant = -8
+            bubbleViewBottom.constant = Padding.BubbleView.bottomUnClubedPadding
         }else{
-            bubbleViewBottom.constant = -1.5
+            bubbleViewBottom.constant = Padding.BubbleView.bottomUnClubedPadding
         }
+
     }
         if viewModel.isAllRead {
             stateView.image = UIImage(named: "read_state_3", in: Bundle.applozic, compatibleWith: nil)

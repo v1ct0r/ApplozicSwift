@@ -11,7 +11,8 @@ import Kingfisher
 
 class ALKFriendVideoCell: ALKVideoCell {
 
-   
+    lazy var  avatarImageViewBottom = avatarImageView.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: 0)
+    
     private var avatarImageView: UIImageView = {
         let imv = UIImageView()
         imv.contentMode = .scaleAspectFill
@@ -42,18 +43,6 @@ class ALKFriendVideoCell: ALKVideoCell {
         nameLabel.setStyle(ALKMessageStyle.displayName)
     }
 
-    override func setMessageModels(messageModels:[ALKMessageModel],index:Int,namelabelFlag: Bool,profilePicFlag: Bool){
-
-        self.messageModels = messageModels;
-        self.index = index
-        
-        if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
-            isHideProfilePicOrTimeLabel = profilePicFlag
-            isHideMemberName = namelabelFlag
-        }
-
-    }
-
     override func setupViews() {
         super.setupViews()
 
@@ -66,6 +55,7 @@ class ALKFriendVideoCell: ALKVideoCell {
 
         if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.edge){
             nameLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 6).isActive = true
+            avatarImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 18).isActive = true
         }else{
             nameLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 3).isActive = true
         }
@@ -77,9 +67,7 @@ class ALKFriendVideoCell: ALKVideoCell {
 
         nameLabel.heightAnchor.constraintEqualToAnchor(constant: 0, identifier: ConstraintIdentifier.memberNameHeightIdentifier.rawValue).isActive = true
 
-        avatarImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 18).isActive = true
-        avatarImageView.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: 0).isActive = true
-
+        avatarImageViewBottom.isActive = true
         avatarImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 9).isActive = true
         avatarImageView.trailingAnchor.constraint(equalTo: photoView.leadingAnchor, constant: -10).isActive = true
 
@@ -112,6 +100,7 @@ class ALKFriendVideoCell: ALKVideoCell {
             }else{
                 photoViewBottom.constant = -1.5
             }
+            avatarImageViewBottom.constant = -10
         }
 
         if(!isHideProfilePicOrTimeLabel){

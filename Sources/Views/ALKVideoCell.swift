@@ -160,6 +160,18 @@ class ALKVideoCell: ALKChatBaseCell<ALKMessageViewModel>,
         fileSizeLabel.setStyle(ALKMessageStyle.time)
     }
 
+    override func setMessageModels(messageModels:[ALKMessageModel],index:Int,namelabelFlag: Bool,profilePicFlag: Bool){
+
+        self.messageModels = messageModels;
+        self.index = index
+
+        if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
+            isHideProfilePicOrTimeLabel = profilePicFlag
+            isHideMemberName = namelabelFlag
+        }
+
+    }
+
     override func setupViews() {
         super.setupViews()
         playButton.isHidden = true

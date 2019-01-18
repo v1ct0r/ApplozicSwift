@@ -30,6 +30,8 @@ class ALKVoiceCell:ALKChatBaseCell<ALKMessageViewModel>,
     var isHideProfilePicOrTimeLabel : Bool = false
     var isHideMemberName : Bool = false
 
+    lazy var soundPlayerViewBottom = soundPlayerView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 0)
+
     var soundPlayerView: UIView = {
         let mv = UIView()
         mv.backgroundColor = UIColor.background(.grayF2)
@@ -105,11 +107,11 @@ class ALKVoiceCell:ALKChatBaseCell<ALKMessageViewModel>,
         
         // Configure the view for the selected state
     }
-    
-    override class func rowHeigh(viewModel: ALKMessageViewModel,width: CGFloat) -> CGFloat {
-        
+
+    override class func  rowHeight(viewModel: ALKMessageViewModel, width: CGFloat, isNameHide: Bool, isProfileHide: Bool) -> CGFloat{
         let heigh: CGFloat
-        heigh = 37
+        heigh = 40
+
         return topPadding()+heigh+bottomPadding()
     }
     

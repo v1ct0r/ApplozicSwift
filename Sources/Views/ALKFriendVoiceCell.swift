@@ -11,7 +11,9 @@ import Kingfisher
 import AVFoundation
 
 class ALKFriendVoiceCell: ALKVoiceCell {
-    
+
+    lazy var  avatarImageViewBottom = avatarImageView.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: 0)
+
     private var avatarImageView: UIImageView = {
         let imv = UIImageView()
         imv.contentMode = .scaleAspectFill
@@ -35,13 +37,6 @@ class ALKFriendVoiceCell: ALKVoiceCell {
     override class func topPadding() -> CGFloat {
         return 28
     }
-    
-    override class func rowHeigh(viewModel: ALKMessageViewModel,width: CGFloat) -> CGFloat {
-        let heigh: CGFloat
-        heigh = 40
-        return topPadding()+heigh+bottomPadding()
-    }
-
 
     override class func  rowHeight(viewModel: ALKMessageViewModel, width: CGFloat, isNameHide: Bool, isProfileHide: Bool) -> CGFloat{
         let heigh: CGFloat
@@ -72,24 +67,27 @@ class ALKFriendVoiceCell: ALKVoiceCell {
         bubbleView.backgroundColor = UIColor.hex8(Color.Background.grayF2.rawValue).withAlphaComponent(0.26)
         
         let width = UIScreen.main.bounds.width
-        
-        soundPlayerView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 0).isActive = true
+
+        if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.edge){
+            soundPlayerViewBottom.constant = -6
+        }
+        soundPlayerViewBottom.isActive = true;
         soundPlayerView.widthAnchor.constraint(equalToConstant: width*0.48).isActive = true
 
         if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.edge){
             nameLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 6).isActive = true
+            avatarImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 18).isActive = true
         }else{
             nameLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 3).isActive = true
         }
+
         nameLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 57).isActive = true
         
         nameLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -56).isActive = true
         nameLabel.bottomAnchor.constraint(equalTo: soundPlayerView.topAnchor, constant: -6).isActive = true
         nameLabel.heightAnchor.constraintEqualToAnchor(constant: 0, identifier: ConstraintIdentifier.memberNameHeightIdentifier.rawValue).isActive = true
         
-        avatarImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 18).isActive = true
-        avatarImageView.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: 0).isActive = true
-        
+        avatarImageViewBottom.isActive = true
         avatarImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 9).isActive = true
         avatarImageView.trailingAnchor.constraint(equalTo: soundPlayerView.leadingAnchor, constant: -10).isActive = true
         
@@ -106,6 +104,15 @@ class ALKFriendVoiceCell: ALKVoiceCell {
         avatarImageView.isHidden = isHideProfilePicOrTimeLabel
         timeLabel.isHidden = isHideProfilePicOrTimeLabel
         nameLabel.isHidden = isHideMemberName
+
+        if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
+            if(!isHideProfilePicOrTimeLabel){
+                soundPlayerViewBottom.constant = -12.5
+            }else{
+                soundPlayerViewBottom.constant = -1.5
+            }
+            avatarImageViewBottom.constant = -10
+        }
 
         if(!isHideProfilePicOrTimeLabel){
             let placeHolder = UIImage(named: "placeholder", in: Bundle.applozic, compatibleWith: nil)

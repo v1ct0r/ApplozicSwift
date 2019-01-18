@@ -29,12 +29,18 @@ class ALKMyVoiceCell: ALKVoiceCell {
         
         contentView.addViewsForAutolayout(views: [stateView])
         
-        soundPlayerView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 6).isActive = true
         soundPlayerView.leadingAnchor.constraint(greaterThanOrEqualTo: contentView.leadingAnchor, constant: 48).isActive = true
         soundPlayerView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -14).isActive = true
         soundPlayerView.widthAnchor.constraint(equalToConstant: width*0.48).isActive = true
-        soundPlayerView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -6).isActive = true
-        
+
+        if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.edge){
+            soundPlayerViewBottom.constant = -6
+            soundPlayerView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 6).isActive = true
+
+        }else{
+            soundPlayerView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 3).isActive = true
+        }
+        soundPlayerViewBottom.isActive = true
         bubbleView.backgroundColor = UIColor.hex8(Color.Background.grayF2.rawValue).withAlphaComponent(0.26)
         
         stateView.widthAnchor.constraint(equalToConstant: 17.0).isActive = true
@@ -48,7 +54,17 @@ class ALKMyVoiceCell: ALKVoiceCell {
     
     override func update(viewModel: ALKMessageViewModel) {
         super.update(viewModel: viewModel)
-        
+
+        timeLabel.isHidden = isHideProfilePicOrTimeLabel
+
+        if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
+            if(!isHideProfilePicOrTimeLabel){
+                soundPlayerViewBottom.constant = -14.5
+            }else{
+                soundPlayerViewBottom.constant = -1.5
+            }
+        }
+
         if viewModel.isAllRead {
             stateView.image = UIImage(named: "read_state_3", in: Bundle.applozic, compatibleWith: nil)
             stateView.tintColor = UIColor(netHex: 0x0578FF)

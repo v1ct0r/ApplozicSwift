@@ -17,7 +17,6 @@ class ALKPhotoCell: ALKChatBaseCell<ALKMessageViewModel>,
 
     var isHideProfilePicOrTimeLabel : Bool = false
     var isHideMemberName : Bool = false
-
     lazy var  photoViewBottom =  bubbleView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 0)
 
     var photoView: UIImageView = {

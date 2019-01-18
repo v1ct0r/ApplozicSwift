@@ -11,7 +11,7 @@ import Kingfisher
 
 final class ALKFriendLocationCell: ALKLocationCell {
 
-
+    lazy var  avatarImageViewBottom = avatarImageView.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: 0)
     // MARK: - Declare Variables or Types
     // MARK: Environment in chat
     private var avatarImageView: UIImageView = {
@@ -52,7 +52,8 @@ final class ALKFriendLocationCell: ALKLocationCell {
         nameLabel.heightAnchor.constraintEqualToAnchor(constant: 0, identifier: ConstraintIdentifier.memberNameHeightIdentifier.rawValue).isActive = true
 
         avatarImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 18.0).isActive = true
-        avatarImageView.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: 0.0).isActive = true
+
+        avatarImageViewBottom.isActive = true
         avatarImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 9.0).isActive = true
         avatarImageView.widthAnchor.constraint(equalToConstant: 37.0).isActive = true
         avatarImageView.heightAnchor.constraint(equalTo: avatarImageView.widthAnchor).isActive = true
@@ -81,6 +82,15 @@ final class ALKFriendLocationCell: ALKLocationCell {
         avatarImageView.isHidden = isHideProfilePicOrTimeLabel
         timeLabel.isHidden = isHideProfilePicOrTimeLabel
         nameLabel.isHidden = isHideMemberName
+
+        if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
+            if(!isHideProfilePicOrTimeLabel){
+                bubbleViewBottom.constant = -14.5
+            }else{
+                bubbleViewBottom.constant = -1.5
+            }
+            avatarImageViewBottom.constant = -10
+        }
 
         if(!isHideProfilePicOrTimeLabel){
             let placeHolder = UIImage(named: "placeholder", in: Bundle.applozic, compatibleWith: nil)

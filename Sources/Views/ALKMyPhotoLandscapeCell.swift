@@ -24,14 +24,15 @@ final class ALKMyPhotoLandscapeCell: ALKPhotoCell {
         
         contentView.addViewsForAutolayout(views: [stateView])
         
-        photoView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 6).isActive = true
-        
         photoView.leadingAnchor.constraint(greaterThanOrEqualTo: contentView.leadingAnchor, constant: 48).isActive = true
         photoView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -14).isActive = true
         
         photoView.widthAnchor.constraint(equalToConstant: width*0.64).isActive = true
         if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.edge){
             photoViewBottom.constant = -16
+          photoView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 6).isActive = true
+        }else{
+            photoView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 3).isActive = true
         }
         photoViewBottom.isActive = true
         bubbleView.backgroundColor = UIColor.hex8(Color.Background.grayF2.rawValue).withAlphaComponent(0.26)

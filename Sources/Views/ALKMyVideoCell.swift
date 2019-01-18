@@ -24,8 +24,6 @@ class ALKMyVideoCell: ALKVideoCell {
 
         contentView.addViewsForAutolayout(views: [stateView])
 
-        photoView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 6).isActive = true
-
         photoView.leadingAnchor.constraint(greaterThanOrEqualTo: contentView.leadingAnchor, constant: 48).isActive = true
         photoView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -14).isActive = true
 
@@ -33,7 +31,11 @@ class ALKMyVideoCell: ALKVideoCell {
 
         if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.edge){
             photoViewBottom.constant = -6
+            photoView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 6).isActive = true
+        }else{
+            photoView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 3).isActive = true
         }
+
         photoViewBottom.isActive = true
         
         bubbleView.backgroundColor = UIColor.hex8(Color.Background.grayF2.rawValue).withAlphaComponent(0.26)
@@ -59,6 +61,7 @@ class ALKMyVideoCell: ALKVideoCell {
                 photoViewBottom.constant = -1.5
             }
         }
+        
         timeLabel.isHidden = isHideProfilePicOrTimeLabel
         if viewModel.isAllRead {
             stateView.image = UIImage(named: "read_state_3", in: Bundle.applozic, compatibleWith: nil)

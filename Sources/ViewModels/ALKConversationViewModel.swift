@@ -260,7 +260,7 @@ open class ALKConversationViewModel: NSObject, Localizable {
         case .voice:
             var height: CGFloat =  0
             if messageModel.isMyMessage {
-                height = ALKVoiceCell.rowHeight(viewModel: messageModel, width: maxWidth, isNameHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: true,isMyMessage: true), isProfileHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: false,isMyMessage:true))
+                height = ALKMyVoiceCell.rowHeight(viewModel: messageModel, width: maxWidth, isNameHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: true,isMyMessage: true), isProfileHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: false,isMyMessage:true))
             } else {
                 height = ALKFriendVoiceCell.rowHeight(viewModel: messageModel, width: maxWidth, isNameHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: true,isMyMessage: false), isProfileHide: checkProfileAndName(messageModels: messageModels, index: indexPath.section, isNameHide: false,isMyMessage: false))
             }
@@ -607,6 +607,7 @@ open class ALKConversationViewModel: NSObject, Localizable {
             return (nil, nil)
         }
         self.addToWrapper(message: alMessage)
+        self.delegate?.messageSent(at:  IndexPath(row: 0, section: self.messageModels.count-1))
         return (alMessage, IndexPath(row: 0, section: self.messageModels.count-1))
 
 
@@ -664,6 +665,7 @@ open class ALKConversationViewModel: NSObject, Localizable {
 
         guard let alMessage = self.processAttachment(filePath: url, text: "", contentType: Int(contentType), isVideo: true, metadata:metadata ) else { return (nil, nil) }
         self.addToWrapper(message: alMessage)
+        self.delegate?.messageSent(at:  IndexPath(row: 0, section: self.messageModels.count-1))
         return (alMessage, IndexPath(row: 0, section: messageModels.count-1))
     }
 
