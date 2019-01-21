@@ -58,7 +58,7 @@ class ALKFriendPhotoCell: ALKPhotoCell {
             nameLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 6).isActive = true
             avatarImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 18).isActive = true
         } else{
-            nameLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 3).isActive = true
+            nameLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 1.5).isActive = true
         }
         photoView.topAnchor.constraint(equalTo: nameLabel.bottomAnchor).isActive = true
 

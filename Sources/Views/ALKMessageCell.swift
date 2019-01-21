@@ -165,9 +165,11 @@ open class ALKFriendMessageCell: ALKMessageCell {
         bubbleView.trailingAnchor.constraint(equalTo: previewImageView.trailingAnchor, constant: widthPadding).isActive = true
 
         if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.edge){
-            bubbleViewBottom.constant = 8
+            bubbleView.bottomAnchor.constraint(equalTo: messageView.bottomAnchor, constant: 8).isActive = true
+        }else{
+            bubbleViewBottom.isActive = true
         }
-        bubbleViewBottom.isActive = true
+
         replyView.topAnchor.constraint(equalTo: bubbleView.topAnchor, constant: 5).isActive = true
         replyView.heightAnchor.constraintEqualToAnchor(constant: 80, identifier: ConstraintIdentifier.replyViewHeightIdentifier.rawValue).isActive = true
         replyView.leadingAnchor.constraint(equalTo: bubbleView.leadingAnchor, constant: 10).isActive = true
@@ -217,7 +219,7 @@ open class ALKFriendMessageCell: ALKMessageCell {
             if(!isHideProfilePicOrTimeLabel){
                 bubbleViewBottom.constant = Padding.BubbleView.bottomUnClubedPadding
             }else{
-                bubbleViewBottom.constant = Padding.BubbleView.bottomUnClubedPadding
+                bubbleViewBottom.constant = Padding.BubbleView.bottomClubedPadding
             }
 
         }
@@ -409,12 +411,12 @@ open class ALKMyMessageCell: ALKMessageCell {
         messageView.bottomAnchor.constraint(equalTo: bubbleView.bottomAnchor, constant: -1 * ALKMyMessageCell.bottomPadding()).isActive = true
 
         if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
-       bubbleView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 1.5).isActive = true
+            bubbleView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 1.5).isActive = true
+            bubbleViewBottom.isActive = true
         }else{
-        bubbleView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 6).isActive = true
-            bubbleViewBottom.constant = 8
+            bubbleView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 6).isActive = true
+            bubbleView.bottomAnchor.constraint(equalTo: messageView.bottomAnchor, constant: 8).isActive = true
         }
-        bubbleViewBottom.isActive = true
 
         bubbleView.leadingAnchor.constraint(equalTo: messageView.leadingAnchor, constant: -widthPadding).isActive = true
         bubbleView.leadingAnchor.constraint(equalTo: replyNameLabel.leadingAnchor, constant: -widthPadding).isActive = true
@@ -475,7 +477,7 @@ open class ALKMyMessageCell: ALKMessageCell {
         if(!isHideProfilePicOrTimeLabel){
             bubbleViewBottom.constant = Padding.BubbleView.bottomUnClubedPadding
         }else{
-            bubbleViewBottom.constant = Padding.BubbleView.bottomUnClubedPadding
+            bubbleViewBottom.constant = Padding.BubbleView.bottomClubedPadding
         }
 
     }
