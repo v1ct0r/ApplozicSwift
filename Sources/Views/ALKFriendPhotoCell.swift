@@ -12,7 +12,7 @@ import Kingfisher
 // MARK: - FriendPhotoCell
 class ALKFriendPhotoCell: ALKPhotoCell {
 
- lazy var  avatarImageViewBottom = avatarImageView.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: 0)
+ lazy var  avatarImageViewBottom = avatarImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 0)
 
     private var avatarImageView: UIImageView = {
         let imv = UIImageView()
@@ -57,8 +57,10 @@ class ALKFriendPhotoCell: ALKPhotoCell {
         if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.edge){
             nameLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 6).isActive = true
             avatarImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 18).isActive = true
+            avatarImageView.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: 0)
         } else{
             nameLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 1.5).isActive = true
+            avatarImageViewBottom.isActive = true
         }
         photoView.topAnchor.constraint(equalTo: nameLabel.bottomAnchor).isActive = true
 
@@ -67,7 +69,6 @@ class ALKFriendPhotoCell: ALKPhotoCell {
         nameLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -56).isActive = true
         nameLabel.bottomAnchor.constraint(equalTo: photoView.topAnchor, constant: -6).isActive = true
         nameLabel.heightAnchor.constraintEqualToAnchor(constant: 0, identifier: ConstraintIdentifier.memberNameHeightIdentifier.rawValue).isActive = true
-        avatarImageViewBottom.isActive = true
         avatarImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 9).isActive = true
         avatarImageView.trailingAnchor.constraint(equalTo: photoView.leadingAnchor, constant: -10).isActive = true
         
@@ -99,11 +100,11 @@ class ALKFriendPhotoCell: ALKPhotoCell {
         if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
 
             if(!isHideProfilePicOrTimeLabel){
-                photoViewBottom.constant = -14.5
+                photoViewBottom.constant = Padding.PhotoView.bottomUnClubedPadding
             }else{
-                photoViewBottom.constant = -1.5
+                photoViewBottom.constant = Padding.PhotoView.bottomClubedPadding
             }
-            avatarImageViewBottom.constant = -10
+            avatarImageViewBottom.constant = Padding.AvatarImageView.bottomClubedPadding
         }
 
         if(!isHideProfilePicOrTimeLabel){

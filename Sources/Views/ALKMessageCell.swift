@@ -14,12 +14,7 @@ import Applozic
 // MARK: - ALKFriendMessageCell
 open class ALKFriendMessageCell: ALKMessageCell {
 
-<<<<<<< HEAD
-    var isHideProfilePicOrTimeLabel : Bool = false
-    var isHideMemberName : Bool = false
-=======
-    lazy var  avatarImageViewBottom = avatarImageView.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: 0)
->>>>>>> AL-3175 Move the profile image to bottom in message and add the suport in voice message cell
+    lazy var  avatarImageViewBottom = avatarImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 0)
 
     private var avatarImageView: UIImageView = {
         let imv = UIImageView()
@@ -68,7 +63,18 @@ open class ALKFriendMessageCell: ALKMessageCell {
 
         enum BubbleView {
             static let bottomClubedPadding: CGFloat =  -1.5
-            static let bottomUnClubedPadding: CGFloat =  -8.0
+            static let bottomUnClubedPadding: CGFloat =  -16.5
+        }
+
+        enum HeightPadding {
+            static let bothImageAndNameIsHidden: CGFloat =  20.5
+            static let onlyNameIsHidden: CGFloat =  18
+            static let onlyProfileIsHidden: CGFloat =  16
+            static let defualtPadding: CGFloat =  13
+        }
+
+        enum WidthPadding {
+            static let recivedBubble: CGFloat = 34.0
         }
     }
 
@@ -93,10 +99,11 @@ open class ALKFriendMessageCell: ALKMessageCell {
 
         if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.edge){
             avatarImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 18).isActive = true
+            avatarImageView.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: 0)
         }else{
             avatarImageViewBottom.constant = Padding.AvatarImageView.bottomClubedPadding
+            avatarImageViewBottom.isActive = true
         }
-        avatarImageViewBottom.isActive = true
 
         avatarImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 9).isActive = true
 
@@ -261,7 +268,7 @@ open class ALKFriendMessageCell: ALKMessageCell {
     }
 
     override class func topPadding() -> CGFloat {
-        return 32 //6+16+10
+        return 15 //6+16+10
     }
 
     override class func bottomPadding() -> CGFloat {
@@ -285,15 +292,29 @@ open class ALKFriendMessageCell: ALKMessageCell {
         // minimum height based on font set and other params.
         // Maybe create a sample viewModel and pass a couple of words
         // as a message.
-        var minimumHeigh: CGFloat = 0.0
+        var minimumHeight: CGFloat = 0.0
         if ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.edge{
-            minimumHeigh = 20.0
-        }else if ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round{
-            minimumHeigh = isNameHide ? 60.0 : 80
+            minimumHeight = 20.0
         }
+
         // 2x because padding is for both the sides.
-        let totalRowHeigh = super.rowHeight(viewModel: viewModel, width: width-CGFloat(2*ALKMessageStyle.receivedBubble.widthPadding), isNameHide: isNameHide, isProfileHide: isProfileHide)
-        return totalRowHeigh < minimumHeigh ? minimumHeigh : totalRowHeigh
+        var totalRowHeight = super.rowHeight(viewModel: viewModel, width: width-Padding.WidthPadding.recivedBubble, isNameHide: isNameHide, isProfileHide: isProfileHide)
+
+        totalRowHeight += Padding.HeightPadding.defualtPadding
+
+        if ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round{
+            if(isProfileHide && !isNameHide){
+                totalRowHeight = totalRowHeight+Padding.HeightPadding.onlyProfileIsHidden
+            }else if((!isProfileHide && isNameHide)){
+                totalRowHeight = totalRowHeight+Padding.HeightPadding.onlyNameIsHidden
+            } else if (!isProfileHide && !isNameHide) {
+                totalRowHeight = totalRowHeight+Padding.HeightPadding.bothImageAndNameIsHidden
+            }
+        }else{
+            return max(totalRowHeight, minimumHeight)
+        }
+
+        return totalRowHeight
 
     }
 
@@ -347,7 +368,7 @@ open class ALKMyMessageCell: ALKMessageCell {
 
         enum BubbleView {
             static let bottomClubedPadding: CGFloat =  -1.5
-            static let bottomUnClubedPadding: CGFloat =  -8.0
+            static let bottomUnClubedPadding: CGFloat =  -16.5
         }
     }
 
@@ -515,14 +536,21 @@ open class ALKMyMessageCell: ALKMessageCell {
         var minimumHeight: CGFloat = 0.0
         if ALKMessageStyle.sentBubble.style == ALKMessageStyle.BubbleStyle.edge{
             minimumHeight = 45.0
-        }else if ALKMessageStyle.sentBubble.style == ALKMessageStyle.BubbleStyle.round{
-            minimumHeight = 60
         }
 
         // 2x because padding is for both the sides.
-        let totalRowHeight = super.rowHeight(viewModel: viewModel, width: width-CGFloat(2*ALKMessageStyle.receivedBubble.widthPadding), isNameHide: isNameHide, isProfileHide: isProfileHide)
-        return totalRowHeight < minimumHeight ? minimumHeight  : totalRowHeight
+        var totalRowHeight = super.rowHeight(viewModel: viewModel, width: width-CGFloat(2*ALKMessageStyle.receivedBubble.widthPadding), isNameHide: isNameHide, isProfileHide: isProfileHide)
 
+        if ALKMessageStyle.sentBubble.style == ALKMessageStyle.BubbleStyle.round{
+            if(viewModel.isMyMessage){
+                if(!isProfileHide){
+                    totalRowHeight = totalRowHeight+18
+                }
+            }
+        }else{
+            return max(totalRowHeight, minimumHeight)
+        }
+        return totalRowHeight
     }
 
     fileprivate func setPreviewImageWidthToZero() {
@@ -682,15 +710,11 @@ open class ALKMessageCell: ALKChatBaseCell<ALKMessageViewModel>, ALKCopyMenuItem
 
     }
 
-    override func setMessageModels(messageModels:[ALKMessageModel],index:Int,namelabelFlag: Bool,profilePicFlag: Bool){
-        self.messageModels = messageModels;
-        self.index = index
-
+    override func setMessageModels(namelabelFlag: Bool,profilePicFlag: Bool){
         if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
             isHideProfilePicOrTimeLabel = profilePicFlag
             isHideMemberName = namelabelFlag
         }
-
     }
 
 
@@ -722,13 +746,15 @@ open class ALKMessageCell: ALKChatBaseCell<ALKMessageViewModel>, ALKCopyMenuItem
     if let message = viewModel.message {
 
         var widthNoPadding = width - leftPadding() - rightPadding()
-        if ALKMessageStyle.receivedBubble.style != ALKMessageStyle.BubbleStyle.round{
+
+        if ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.edge{
             if !viewModel.isMyMessage{
                 widthNoPadding -= 20
             }else{
                 widthNoPadding += 20
             }
         }
+
         let maxSize = CGSize.init(width: widthNoPadding, height: CGFloat.greatestFiniteMagnitude)
 
         let font = ALKMessageStyle.message.font

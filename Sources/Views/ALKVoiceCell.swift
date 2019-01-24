@@ -29,7 +29,27 @@ class ALKVoiceCell:ALKChatBaseCell<ALKMessageViewModel>,
 
     var isHideProfilePicOrTimeLabel : Bool = false
     var isHideMemberName : Bool = false
+    
+    enum Padding {
+        enum AvatarImageView{
+            static let bottomClubedPadding: CGFloat =  -10
+        }
 
+        enum SoundPlayerView {
+            static let bottomClubedPadding: CGFloat =  -1.5
+            static let bottomUnClubedPadding: CGFloat =  -16.5
+        }
+
+        enum RecivedHeightPadding {
+            static let height: CGFloat =  45
+            static let defaultHeightPadding: CGFloat =  25
+        }
+
+        enum SentHeightPadding {
+            static let timeHiddenPadding: CGFloat =  60
+            static let defaultHeightPadding: CGFloat =  40
+        }
+    }
     lazy var soundPlayerViewBottom = soundPlayerView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 0)
 
     var soundPlayerView: UIView = {
@@ -300,12 +320,8 @@ class ALKVoiceCell:ALKChatBaseCell<ALKMessageViewModel>,
         menuAction?(.reply)
     }
 
-    override func setMessageModels(messageModels:[ALKMessageModel],index:Int,namelabelFlag: Bool,profilePicFlag: Bool){
-        self.messageModels = messageModels
-        self.index = index
-
+    override func setMessageModels(namelabelFlag: Bool,profilePicFlag: Bool){
         if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
-
             isHideProfilePicOrTimeLabel = profilePicFlag
             isHideMemberName = namelabelFlag
         }

@@ -51,7 +51,20 @@ class ALKMyVoiceCell: ALKVoiceCell {
         timeLabel.trailingAnchor.constraint(equalTo: stateView.leadingAnchor, constant: -2.0).isActive = true
         timeLabel.bottomAnchor.constraint(equalTo: bubbleView.bottomAnchor, constant: 0).isActive = true
     }
-    
+
+    override class func  rowHeight(viewModel: ALKMessageViewModel, width: CGFloat, isNameHide: Bool, isProfileHide: Bool) -> CGFloat{
+        var height: CGFloat = Padding.SentHeightPadding.defaultHeightPadding
+        if ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round{
+            if(!isProfileHide){
+                height =  Padding.SentHeightPadding.timeHiddenPadding
+            }
+        }else{
+            height = Padding.SentHeightPadding.defaultHeightPadding
+        }
+
+        return topPadding()+height+bottomPadding()
+    }
+
     override func update(viewModel: ALKMessageViewModel) {
         super.update(viewModel: viewModel)
 
@@ -59,9 +72,9 @@ class ALKMyVoiceCell: ALKVoiceCell {
 
         if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
             if(!isHideProfilePicOrTimeLabel){
-                soundPlayerViewBottom.constant = -14.5
+                soundPlayerViewBottom.constant = Padding.SoundPlayerView.bottomUnClubedPadding
             }else{
-                soundPlayerViewBottom.constant = -1.5
+                soundPlayerViewBottom.constant = Padding.SoundPlayerView.bottomClubedPadding
             }
         }
 

@@ -50,10 +50,8 @@ open class ALKBaseCell<T>: UITableViewCell {
         self.viewModel = viewModel
     }
 
-    func setMessageModels(messageModels:[ALKMessageModel],index:Int,namelabelFlag: Bool,profilePicFlag: Bool){
+    func setMessageModels(namelabelFlag: Bool,profilePicFlag: Bool){
 
-        self.messageModels = messageModels;
-        self.index = index
     }
     
     class func rowHeigh(viewModel: T,width: CGFloat) -> CGFloat {

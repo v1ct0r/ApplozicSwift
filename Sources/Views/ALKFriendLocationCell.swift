@@ -11,7 +11,7 @@ import Kingfisher
 
 final class ALKFriendLocationCell: ALKLocationCell {
 
-    lazy var  avatarImageViewBottom = avatarImageView.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: 0)
+    lazy var  avatarImageViewBottom = avatarImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 0)
     // MARK: - Declare Variables or Types
     // MARK: Environment in chat
     private var avatarImageView: UIImageView = {
@@ -44,8 +44,10 @@ final class ALKFriendLocationCell: ALKLocationCell {
 
         if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.edge){
             nameLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 6).isActive = true
+            avatarImageView.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: 0)
         }else{
             nameLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 1.5).isActive = true
+            avatarImageViewBottom.isActive = true
         }
         nameLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 57.0).isActive = true
         nameLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -56.0).isActive = true
@@ -53,7 +55,6 @@ final class ALKFriendLocationCell: ALKLocationCell {
 
         avatarImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 18.0).isActive = true
 
-        avatarImageViewBottom.isActive = true
         avatarImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 9.0).isActive = true
         avatarImageView.widthAnchor.constraint(equalToConstant: 37.0).isActive = true
         avatarImageView.heightAnchor.constraint(equalTo: avatarImageView.widthAnchor).isActive = true
@@ -85,11 +86,11 @@ final class ALKFriendLocationCell: ALKLocationCell {
 
         if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
             if(!isHideProfilePicOrTimeLabel){
-                bubbleViewBottom.constant = -14.5
+                bubbleViewBottom.constant = Padding.BubbleView.bottomUnClubedPadding
             }else{
-                bubbleViewBottom.constant = -1.5
+                bubbleViewBottom.constant = Padding.BubbleView.bottomClubedPadding
             }
-            avatarImageViewBottom.constant = -10
+            avatarImageViewBottom.constant = Padding.AvatarImageView.bottomClubedPadding
         }
 
         if(!isHideProfilePicOrTimeLabel){
@@ -118,10 +119,7 @@ final class ALKFriendLocationCell: ALKLocationCell {
         return super.rowHeight(viewModel: viewModel, width: width, isNameHide: isNameHide, isProfileHide: isProfileHide) + 34.0
     }
 
-   override func setMessageModels(messageModels:[ALKMessageModel],index:Int,namelabelFlag: Bool,profilePicFlag: Bool){
-
-        self.messageModels = messageModels;
-        self.index = index
+   override func setMessageModels(namelabelFlag: Bool,profilePicFlag: Bool){
         if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
             isHideProfilePicOrTimeLabel = profilePicFlag
             isHideMemberName = namelabelFlag

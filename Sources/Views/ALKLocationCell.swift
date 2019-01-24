@@ -20,6 +20,17 @@ class ALKLocationCell: ALKChatBaseCell<ALKMessageViewModel>,
     var isHideProfilePicOrTimeLabel : Bool = false
     var isHideMemberName : Bool = false
     lazy var  bubbleViewBottom =  bubbleView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 0)
+    enum Padding {
+        enum AvatarImageView{
+            static let bottomClubedPadding: CGFloat =  -10
+        }
+
+        enum BubbleView {
+            static let bottomClubedPadding: CGFloat =  -1.5
+            static let bottomUnClubedPadding: CGFloat =  -16.5
+        }
+    }
+
 
     weak var delegate:ALKLocationCellDelegate?
 
@@ -118,9 +129,7 @@ class ALKLocationCell: ALKChatBaseCell<ALKMessageViewModel>,
         timeLabel.setStyle(ALKMessageStyle.time)
     }
 
-    override func setMessageModels(messageModels:[ALKMessageModel],index:Int,namelabelFlag: Bool,profilePicFlag: Bool){
-        self.messageModels = messageModels;
-        self.index = index
+    override func setMessageModels(namelabelFlag: Bool,profilePicFlag: Bool){
         if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
             isHideProfilePicOrTimeLabel = profilePicFlag
             isHideMemberName = namelabelFlag

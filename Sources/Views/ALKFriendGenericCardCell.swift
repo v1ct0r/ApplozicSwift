@@ -35,11 +35,9 @@ open class ALKFriendGenericCardCell: ALKChatBaseCell<ALKMessageViewModel> {
         collectionView.reloadData()
     }
 
-    override func setMessageModels(messageModels:[ALKMessageModel],index:Int,namelabelFlag: Bool,profilePicFlag: Bool){
-        self.messageModels = messageModels
+    override func setMessageModels(namelabelFlag: Bool,profilePicFlag: Bool){
         self.isHideProfilePic = profilePicFlag
         self.isHideMemberName = namelabelFlag
-        self.index = index
     }
 
     override func setupViews() {

@@ -15,9 +15,21 @@ import Applozic
 class ALKPhotoCell: ALKChatBaseCell<ALKMessageViewModel>,
                     ALKReplyMenuItemProtocol {
 
+    
     var isHideProfilePicOrTimeLabel : Bool = false
     var isHideMemberName : Bool = false
     lazy var  photoViewBottom =  bubbleView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 0)
+
+    enum Padding {
+        enum AvatarImageView{
+            static let bottomClubedPadding: CGFloat =  -10
+        }
+
+        enum PhotoView {
+            static let bottomClubedPadding: CGFloat =  -1.5
+            static let bottomUnClubedPadding: CGFloat =  -16.5
+        }
+    }
 
     var photoView: UIImageView = {
         let mv = UIImageView()
@@ -139,11 +151,7 @@ class ALKPhotoCell: ALKChatBaseCell<ALKMessageViewModel>,
     }
 
 
-    override func setMessageModels(messageModels:[ALKMessageModel],index:Int,namelabelFlag: Bool,profilePicFlag: Bool){
-
-        self.messageModels = messageModels;
-        self.index = index
-
+    override func setMessageModels(namelabelFlag: Bool,profilePicFlag: Bool){
         if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
 
             isHideProfilePicOrTimeLabel = profilePicFlag

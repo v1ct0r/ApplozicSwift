@@ -51,9 +51,9 @@ final class ALKMyLocationCell: ALKLocationCell {
 
         if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
             if(!isHideProfilePicOrTimeLabel){
-                bubbleViewBottom.constant = -14.5
+                bubbleViewBottom.constant = Padding.BubbleView.bottomUnClubedPadding
             }else{
-                bubbleViewBottom.constant = -1.5
+                bubbleViewBottom.constant = Padding.BubbleView.bottomClubedPadding
             }
         }
 

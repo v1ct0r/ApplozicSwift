@@ -16,6 +16,17 @@ class ALKVideoCell: ALKChatBaseCell<ALKMessageViewModel>,
     var isHideProfilePicOrTimeLabel : Bool = false
     var isHideMemberName : Bool = false
 
+    enum Padding {
+        enum AvatarImageView{
+            static let bottomClubedPadding: CGFloat =  -10
+        }
+
+        enum PhotoView {
+            static let bottomClubedPadding: CGFloat =  -1.5
+            static let bottomUnClubedPadding: CGFloat =  -16.5
+        }
+    }
+
     lazy var  photoViewBottom =  bubbleView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 0)
 
     enum state {
@@ -160,16 +171,11 @@ class ALKVideoCell: ALKChatBaseCell<ALKMessageViewModel>,
         fileSizeLabel.setStyle(ALKMessageStyle.time)
     }
 
-    override func setMessageModels(messageModels:[ALKMessageModel],index:Int,namelabelFlag: Bool,profilePicFlag: Bool){
-
-        self.messageModels = messageModels;
-        self.index = index
-
+    override func setMessageModels(namelabelFlag: Bool,profilePicFlag: Bool){
         if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
             isHideProfilePicOrTimeLabel = profilePicFlag
             isHideMemberName = namelabelFlag
         }
-
     }
 
     override func setupViews() {
