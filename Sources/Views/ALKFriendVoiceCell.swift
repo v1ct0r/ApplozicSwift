@@ -110,11 +110,11 @@ class ALKFriendVoiceCell: ALKVoiceCell {
 
         if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
             if(!isHideProfilePicOrTimeLabel){
-                soundPlayerViewBottom.constant = Padding.SoundPlayerView.bottomUnClubedPadding
+                soundPlayerViewBottom.constant = -Padding.SoundPlayerView.bottomUnClubedPadding
             }else{
-                soundPlayerViewBottom.constant = Padding.SoundPlayerView.bottomClubedPadding
+                soundPlayerViewBottom.constant = -Padding.SoundPlayerView.bottomClubedPadding
             }
-            avatarImageViewBottom.constant = Padding.AvatarImageView.bottomClubedPadding
+            avatarImageViewBottom.constant = -Padding.AvatarImageView.bottomClubedPadding
         }
 
         if(!isHideProfilePicOrTimeLabel){

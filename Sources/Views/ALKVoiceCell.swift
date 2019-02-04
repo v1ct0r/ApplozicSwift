@@ -32,12 +32,12 @@ class ALKVoiceCell:ALKChatBaseCell<ALKMessageViewModel>,
     
     enum Padding {
         enum AvatarImageView{
-            static let bottomClubedPadding: CGFloat =  -10
+            static let bottomClubedPadding: CGFloat =  10
         }
 
         enum SoundPlayerView {
-            static let bottomClubedPadding: CGFloat =  -1.5
-            static let bottomUnClubedPadding: CGFloat =  -16.5
+            static let bottomClubedPadding: CGFloat =  1.5
+            static let bottomUnClubedPadding: CGFloat =  16.5
         }
 
         enum RecivedHeightPadding {

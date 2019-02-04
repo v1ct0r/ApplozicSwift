@@ -56,9 +56,9 @@ class ALKMyVideoCell: ALKVideoCell {
 
         if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
             if(!isHideProfilePicOrTimeLabel){
-                photoViewBottom.constant = Padding.PhotoView.bottomUnClubedPadding
+                photoViewBottom.constant = -Padding.PhotoView.bottomUnClubedPadding
             }else{
-                photoViewBottom.constant = Padding.PhotoView.bottomClubedPadding
+                photoViewBottom.constant = -Padding.PhotoView.bottomClubedPadding
             }
         }
         

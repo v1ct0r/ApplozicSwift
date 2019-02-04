@@ -78,12 +78,11 @@ class ALKFriendPhotoCell: ALKPhotoCell {
         photoView.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor, constant: -56).isActive = true
 
         if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
-            photoViewBottom.isActive = true
         } else{
             photoViewBottom.constant = -16
-            photoViewBottom.isActive = true
         }
-        
+        photoViewBottom.isActive = true
+
         timeLabel.leadingAnchor.constraint(equalTo: bubbleView.trailingAnchor, constant: 2).isActive = true
         timeLabel.bottomAnchor.constraint(equalTo: bubbleView.bottomAnchor, constant: 2).isActive = true
         
@@ -100,11 +99,11 @@ class ALKFriendPhotoCell: ALKPhotoCell {
         if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
 
             if(!isHideProfilePicOrTimeLabel){
-                photoViewBottom.constant = Padding.PhotoView.bottomUnClubedPadding
+                photoViewBottom.constant = -Padding.PhotoView.bottomUnClubedPadding
             }else{
-                photoViewBottom.constant = Padding.PhotoView.bottomClubedPadding
+                photoViewBottom.constant = -Padding.PhotoView.bottomClubedPadding
             }
-            avatarImageViewBottom.constant = Padding.AvatarImageView.bottomClubedPadding
+            avatarImageViewBottom.constant = -Padding.AvatarImageView.bottomClubedPadding
         }
 
         if(!isHideProfilePicOrTimeLabel){

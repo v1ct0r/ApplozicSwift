@@ -57,13 +57,13 @@ open class ALKFriendMessageCell: ALKMessageCell {
             static let top: CGFloat = 4
         }
         enum AvatarImageView{
-            static let bottomClubedPadding: CGFloat =  -10
+            static let bottomClubedPadding: CGFloat =  10
 
         }
 
         enum BubbleView {
-            static let bottomClubedPadding: CGFloat =  -1.5
-            static let bottomUnClubedPadding: CGFloat =  -16.5
+            static let bottomClubedPadding: CGFloat =  1.5
+            static let bottomUnClubedPadding: CGFloat =  16.5
         }
 
         enum HeightPadding {
@@ -101,7 +101,7 @@ open class ALKFriendMessageCell: ALKMessageCell {
             avatarImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 18).isActive = true
             avatarImageView.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: 0)
         }else{
-            avatarImageViewBottom.constant = Padding.AvatarImageView.bottomClubedPadding
+            avatarImageViewBottom.constant = -Padding.AvatarImageView.bottomClubedPadding
             avatarImageViewBottom.isActive = true
         }
 
@@ -224,9 +224,9 @@ open class ALKFriendMessageCell: ALKMessageCell {
         if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
 
             if(!isHideProfilePicOrTimeLabel){
-                bubbleViewBottom.constant = Padding.BubbleView.bottomUnClubedPadding
+                bubbleViewBottom.constant = -Padding.BubbleView.bottomUnClubedPadding
             }else{
-                bubbleViewBottom.constant = Padding.BubbleView.bottomClubedPadding
+                bubbleViewBottom.constant = -Padding.BubbleView.bottomClubedPadding
             }
 
         }
@@ -363,12 +363,12 @@ open class ALKMyMessageCell: ALKMessageCell {
         }
 
         enum AvatarImageView{
-            static let bottomClubedPadding: CGFloat =  -10
+            static let bottomClubedPadding: CGFloat =  10
         }
 
         enum BubbleView {
-            static let bottomClubedPadding: CGFloat =  -1.5
-            static let bottomUnClubedPadding: CGFloat =  -16.5
+            static let bottomClubedPadding: CGFloat =  1.5
+            static let bottomUnClubedPadding: CGFloat =  16.5
         }
     }
 
@@ -496,9 +496,9 @@ open class ALKMyMessageCell: ALKMessageCell {
     if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
 
         if(!isHideProfilePicOrTimeLabel){
-            bubbleViewBottom.constant = Padding.BubbleView.bottomUnClubedPadding
+            bubbleViewBottom.constant = -Padding.BubbleView.bottomUnClubedPadding
         }else{
-            bubbleViewBottom.constant = Padding.BubbleView.bottomClubedPadding
+            bubbleViewBottom.constant = -Padding.BubbleView.bottomClubedPadding
         }
 
     }

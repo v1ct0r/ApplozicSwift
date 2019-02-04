@@ -11,7 +11,7 @@ import Kingfisher
 
 final class ALKFriendLocationCell: ALKLocationCell {
 
-    lazy var  avatarImageViewBottom = avatarImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 0)
+    lazy var  avatarImageViewBottom = avatarImageView.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: 0)
     // MARK: - Declare Variables or Types
     // MARK: Environment in chat
     private var avatarImageView: UIImageView = {
@@ -42,6 +42,7 @@ final class ALKFriendLocationCell: ALKLocationCell {
         // add view to contenview and setup constraint
         contentView.addViewsForAutolayout(views: [avatarImageView,nameLabel])
 
+        
         if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.edge){
             nameLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 6).isActive = true
             avatarImageView.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: 0)
@@ -86,11 +87,11 @@ final class ALKFriendLocationCell: ALKLocationCell {
 
         if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
             if(!isHideProfilePicOrTimeLabel){
-                bubbleViewBottom.constant = Padding.BubbleView.bottomUnClubedPadding
+                bubbleViewBottom.constant = -Padding.BubbleView.bottomUnClubedPadding
             }else{
-                bubbleViewBottom.constant = Padding.BubbleView.bottomClubedPadding
+                bubbleViewBottom.constant = -Padding.BubbleView.bottomClubedPadding
             }
-            avatarImageViewBottom.constant = Padding.AvatarImageView.bottomClubedPadding
+            avatarImageViewBottom.constant = -Padding.AvatarImageView.bottomClubedPadding
         }
 
         if(!isHideProfilePicOrTimeLabel){

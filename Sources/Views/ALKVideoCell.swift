@@ -16,18 +16,18 @@ class ALKVideoCell: ALKChatBaseCell<ALKMessageViewModel>,
     var isHideProfilePicOrTimeLabel : Bool = false
     var isHideMemberName : Bool = false
 
-    enum Padding {
-        enum AvatarImageView{
-            static let bottomClubedPadding: CGFloat =  -10
+    struct Padding {
+        struct AvatarImageView{
+            static let bottomClubedPadding: CGFloat =  10
         }
 
-        enum PhotoView {
-            static let bottomClubedPadding: CGFloat =  -1.5
-            static let bottomUnClubedPadding: CGFloat =  -16.5
+        struct PhotoView {
+            static let bottomClubedPadding: CGFloat =  1.5
+            static let bottomUnClubedPadding: CGFloat =  16.5
         }
     }
 
-    lazy var  photoViewBottom =  bubbleView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 0)
+    lazy var  photoViewBottom =  photoView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 0)
 
     enum state {
         case download
