@@ -23,7 +23,6 @@ open class ALKBaseCell<T>: UITableViewCell {
     }
 
     var viewModel: T?
-    var index:Int = 0
     var  messageModels:[ALKMessageModel]?
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
