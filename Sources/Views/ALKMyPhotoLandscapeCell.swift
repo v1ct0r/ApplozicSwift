@@ -28,9 +28,9 @@ final class ALKMyPhotoLandscapeCell: ALKPhotoCell {
         photoView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -14).isActive = true
         
         photoView.widthAnchor.constraint(equalToConstant: width*0.64).isActive = true
-        if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.edge){
+        if(ALKMessageStyle.sentBubble.style == ALKMessageStyle.BubbleStyle.edge){
             photoViewBottom.constant = -16
-          photoView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 6).isActive = true
+            photoView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 6).isActive = true
         }else{
             photoView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 3).isActive = true
         }
@@ -53,7 +53,7 @@ final class ALKMyPhotoLandscapeCell: ALKPhotoCell {
 
         timeLabel.isHidden = isHideProfilePicOrTimeLabel
 
-        if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
+        if(ALKMessageStyle.sentBubble.style == ALKMessageStyle.BubbleStyle.round){
             if(!isHideProfilePicOrTimeLabel){
                 photoViewBottom.constant = -Padding.PhotoView.bottomUnClubedPadding
             }else{

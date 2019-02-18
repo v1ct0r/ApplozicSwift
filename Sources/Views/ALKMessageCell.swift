@@ -63,7 +63,7 @@ open class ALKFriendMessageCell: ALKMessageCell {
 
         enum HeightPadding {
             static let bothImageAndNameIsHidden: CGFloat =  20.5
-            static let onlyNameIsHidden: CGFloat =  18
+            static let onlyNameIsHidden: CGFloat =  16
             static let onlyProfileIsHidden: CGFloat =  16
             static let defualtPadding: CGFloat =  11
         }
@@ -299,11 +299,13 @@ open class ALKFriendMessageCell: ALKMessageCell {
 
         if ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round{
             if(isProfileHide && !isNameHide){
-                totalRowHeight = totalRowHeight+Padding.HeightPadding.onlyProfileIsHidden
+                totalRowHeight = totalRowHeight + Padding.BubbleView.bottomClubedPadding
             }else if((!isProfileHide && isNameHide)){
-                totalRowHeight = totalRowHeight+Padding.HeightPadding.onlyNameIsHidden
+                totalRowHeight = totalRowHeight + Padding.BubbleView.bottomClubedPadding
             } else if (!isProfileHide && !isNameHide) {
-                totalRowHeight = totalRowHeight+Padding.HeightPadding.bothImageAndNameIsHidden
+                totalRowHeight = totalRowHeight + Padding.BubbleView.bottomUnClubedPadding
+            } else if isProfileHide && isNameHide {
+                totalRowHeight = totalRowHeight + Padding.BubbleView.bottomClubedPadding - Padding.HeightPadding.defualtPadding
             }
         }else{
             return max(totalRowHeight, minimumHeight)
@@ -426,7 +428,7 @@ open class ALKMyMessageCell: ALKMessageCell {
         messageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -1*ALKMessageCell.leftPadding()).isActive = true
         messageView.bottomAnchor.constraint(equalTo: bubbleView.bottomAnchor, constant: -1 * ALKMyMessageCell.bottomPadding()).isActive = true
 
-        if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
+        if(ALKMessageStyle.sentBubble.style == ALKMessageStyle.BubbleStyle.round){
             bubbleView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 1.5).isActive = true
             bubbleViewBottom.isActive = true
         }else{

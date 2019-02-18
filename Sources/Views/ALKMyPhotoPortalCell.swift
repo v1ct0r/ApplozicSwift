@@ -37,7 +37,7 @@ final class ALKMyPhotoPortalCell: ALKPhotoCell {
         
         photoView.widthAnchor.constraint(equalToConstant: width*0.48).isActive = true
 
-        if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.edge){
+        if(ALKMessageStyle.sentBubble.style == ALKMessageStyle.BubbleStyle.edge){
             photoViewBottom.constant = -6
             photoView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 6).isActive = true
         }else{

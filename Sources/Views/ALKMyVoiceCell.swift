@@ -33,7 +33,7 @@ class ALKMyVoiceCell: ALKVoiceCell {
         soundPlayerView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -14).isActive = true
         soundPlayerView.widthAnchor.constraint(equalToConstant: width*0.48).isActive = true
 
-        if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.edge){
+        if(ALKMessageStyle.sentBubble.style == ALKMessageStyle.BubbleStyle.edge){
             soundPlayerViewBottom.constant = -6
             soundPlayerView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 6).isActive = true
 
@@ -70,7 +70,7 @@ class ALKMyVoiceCell: ALKVoiceCell {
 
         timeLabel.isHidden = isHideProfilePicOrTimeLabel
 
-        if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
+        if(ALKMessageStyle.sentBubble.style == ALKMessageStyle.BubbleStyle.round){
             if(!isHideProfilePicOrTimeLabel){
                 soundPlayerViewBottom.constant = -Padding.SoundPlayerView.bottomUnClubedPadding
             }else{

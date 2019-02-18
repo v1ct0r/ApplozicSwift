@@ -30,7 +30,7 @@ final class ALKMyLocationCell: ALKLocationCell {
 
         bubbleView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 6.0).isActive = true
 
-        if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.edge){
+        if(ALKMessageStyle.sentBubble.style == ALKMessageStyle.BubbleStyle.edge){
             bubbleViewBottom.constant = -6.0
         }
         bubbleViewBottom.isActive = true
@@ -49,7 +49,7 @@ final class ALKMyLocationCell: ALKLocationCell {
     override func update(viewModel: ALKMessageViewModel) {
         super.update(viewModel: viewModel)
 
-        if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
+        if(ALKMessageStyle.sentBubble.style == ALKMessageStyle.BubbleStyle.round){
             if(!isHideProfilePicOrTimeLabel){
                 bubbleViewBottom.constant = -Padding.BubbleView.bottomUnClubedPadding
             }else{

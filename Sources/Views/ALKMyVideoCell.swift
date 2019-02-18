@@ -54,7 +54,7 @@ class ALKMyVideoCell: ALKVideoCell {
     override func update(viewModel: ALKMessageViewModel) {
         super.update(viewModel: viewModel)
 
-        if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round){
+        if(ALKMessageStyle.sentBubble.style == ALKMessageStyle.BubbleStyle.round){
             if(!isHideProfilePicOrTimeLabel){
                 photoViewBottom.constant = -Padding.PhotoView.bottomUnClubedPadding
             }else{
