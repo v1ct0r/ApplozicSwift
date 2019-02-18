@@ -45,7 +45,7 @@ final class ALKFriendLocationCell: ALKLocationCell {
         
         if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.edge){
             nameLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 6).isActive = true
-            avatarImageView.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: 0)
+            avatarImageView.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: 0).isActive = true
         }else{
             nameLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 1.5).isActive = true
             avatarImageViewBottom.isActive = true
@@ -91,7 +91,7 @@ final class ALKFriendLocationCell: ALKLocationCell {
             }else{
                 bubbleViewBottom.constant = -Padding.BubbleView.bottomClubedPadding
             }
-            avatarImageViewBottom.constant = -Padding.AvatarImageView.bottomClubedPadding
+            avatarImageViewBottom.constant = bubbleViewBottom.constant
         }
 
         if(!isHideProfilePicOrTimeLabel){

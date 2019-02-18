@@ -21,10 +21,6 @@ class ALKPhotoCell: ALKChatBaseCell<ALKMessageViewModel>,
     lazy var  photoViewBottom =  photoView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 0)
 
     struct Padding {
-        struct AvatarImageView{
-            static let bottomClubedPadding: CGFloat =  10
-        }
-
         struct PhotoView {
             static let bottomClubedPadding: CGFloat =  1.5
             static let bottomUnClubedPadding: CGFloat =  16.5

@@ -56,11 +56,6 @@ open class ALKFriendMessageCell: ALKMessageCell {
         enum MessageView {
             static let top: CGFloat = 4
         }
-        enum AvatarImageView{
-            static let bottomClubedPadding: CGFloat =  10
-
-        }
-
         enum BubbleView {
             static let bottomClubedPadding: CGFloat =  1.5
             static let bottomUnClubedPadding: CGFloat =  16.5
@@ -70,7 +65,7 @@ open class ALKFriendMessageCell: ALKMessageCell {
             static let bothImageAndNameIsHidden: CGFloat =  20.5
             static let onlyNameIsHidden: CGFloat =  18
             static let onlyProfileIsHidden: CGFloat =  16
-            static let defualtPadding: CGFloat =  13
+            static let defualtPadding: CGFloat =  11
         }
 
         enum WidthPadding {
@@ -99,9 +94,8 @@ open class ALKFriendMessageCell: ALKMessageCell {
 
         if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.edge){
             avatarImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 18).isActive = true
-            avatarImageView.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: 0)
+            avatarImageView.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: 0).isActive = true
         }else{
-            avatarImageViewBottom.constant = -Padding.AvatarImageView.bottomClubedPadding
             avatarImageViewBottom.isActive = true
         }
 
@@ -228,6 +222,7 @@ open class ALKFriendMessageCell: ALKMessageCell {
             }else{
                 bubbleViewBottom.constant = -Padding.BubbleView.bottomClubedPadding
             }
+            avatarImageViewBottom.constant = bubbleViewBottom.constant
 
         }
 

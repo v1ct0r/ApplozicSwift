@@ -21,10 +21,6 @@ class ALKLocationCell: ALKChatBaseCell<ALKMessageViewModel>,
     var isHideMemberName : Bool = false
     lazy var  bubbleViewBottom =  bubbleView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 0)
     struct Padding {
-        struct AvatarImageView{
-            static let bottomClubedPadding: CGFloat =  10
-        }
-
         struct BubbleView {
             static let bottomClubedPadding: CGFloat =  1.5
             static let bottomUnClubedPadding: CGFloat =  16.5

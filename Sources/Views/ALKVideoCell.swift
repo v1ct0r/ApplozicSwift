@@ -17,10 +17,6 @@ class ALKVideoCell: ALKChatBaseCell<ALKMessageViewModel>,
     var isHideMemberName : Bool = false
 
     struct Padding {
-        struct AvatarImageView{
-            static let bottomClubedPadding: CGFloat =  10
-        }
-
         struct PhotoView {
             static let bottomClubedPadding: CGFloat =  1.5
             static let bottomUnClubedPadding: CGFloat =  16.5
