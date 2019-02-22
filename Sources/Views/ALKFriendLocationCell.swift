@@ -59,11 +59,13 @@ final class ALKFriendLocationCell: ALKLocationCell {
         avatarImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 9.0).isActive = true
         avatarImageView.widthAnchor.constraint(equalToConstant: 37.0).isActive = true
         avatarImageView.heightAnchor.constraint(equalTo: avatarImageView.widthAnchor).isActive = true
-        
-        bubbleView.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 6.0).isActive = true
 
         if(ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.edge){
             bubbleViewBottom.constant = -6.0
+            bubbleView.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 6.0).isActive = true
+        }else{
+            bubbleView.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 3).isActive = true
+
         }
         bubbleViewBottom.isActive = true
         

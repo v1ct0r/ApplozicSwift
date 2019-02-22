@@ -28,10 +28,12 @@ final class ALKMyLocationCell: ALKLocationCell {
         // add view to contenview and setup constraint
         contentView.addViewsForAutolayout(views: [stateView])
 
-        bubbleView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 6.0).isActive = true
 
         if(ALKMessageStyle.sentBubble.style == ALKMessageStyle.BubbleStyle.edge){
             bubbleViewBottom.constant = -6.0
+            bubbleView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 6.0).isActive = true
+        }else{
+            bubbleView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 3).isActive = true
         }
         bubbleViewBottom.isActive = true
 
