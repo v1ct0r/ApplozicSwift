@@ -765,15 +765,15 @@ open class ALKMessageCell: ALKChatBaseCell<ALKMessageViewModel>, ALKCopyMenuItem
         style.minimumLineHeight = 17
         style.maximumLineHeight = 17
 
-        let attributes: [NSAttributedStringKey: Any] = [
-            NSAttributedStringKey.font: font,
-            NSAttributedStringKey.foregroundColor: color]
+        let attributes: [NSAttributedString.Key: Any] = [
+            NSAttributedString.Key.font: font,
+            NSAttributedString.Key.foregroundColor: color]
 
         var size = CGSize()
         if viewModel.messageType == .html {
             guard let htmlText = message.data.attributedString else { return 30}
             let mutableText = NSMutableAttributedString(attributedString: htmlText)
-            let attributes: [NSAttributedStringKey : Any] = [NSAttributedStringKey.paragraphStyle: style]
+            let attributes: [NSAttributedString.Key : Any] = [NSAttributedString.Key.paragraphStyle: style]
             mutableText.addAttributes(attributes, range: NSMakeRange(0,mutableText.length))
             size = mutableText.boundingRect(with: maxSize, options: [NSStringDrawingOptions.usesFontLeading, NSStringDrawingOptions.usesLineFragmentOrigin], context: nil).size
         } else {
