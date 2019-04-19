@@ -5,6 +5,9 @@ PODS:
     - Applozic (~> 6.9.0)
     - Kingfisher (~> 4.7.0)
     - MGSwipeTableCell (~> 1.5.6)
+  - Crashlytics (3.12.0):
+    - Fabric (~> 1.9.0)
+  - Fabric (1.9.0)
   - iOSSnapshotTestCase (5.0.2):
     - iOSSnapshotTestCase/SwiftSupport (= 5.0.2)
   - iOSSnapshotTestCase/Core (5.0.2)
@@ -25,6 +28,8 @@ PODS:
 
 DEPENDENCIES:
   - ApplozicSwift (from `../ApplozicSwift.podspec`)
+  - Crashlytics (~> 3.12.0)
+  - Fabric (~> 1.9.0)
   - Nimble
   - Nimble-Snapshots
   - Quick
@@ -32,6 +37,8 @@ DEPENDENCIES:
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - Applozic
+    - Crashlytics
+    - Fabric
     - iOSSnapshotTestCase
     - Kingfisher
     - MGSwipeTableCell
@@ -47,6 +54,8 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   Applozic: e7ca1b4c8b981562d60ab412f2b5b821c213ed09
   ApplozicSwift: aa14e9b613e05ec062aaf9562fb1b3ccd8c9c497
+  Crashlytics: 07fb167b1694128c1c9a5a5cc319b0e9c3ca0933
+  Fabric: f988e33c97f08930a413e08123064d2e5f68d655
   iOSSnapshotTestCase: 2d51aa06775e95cecb0a1fb9c5c159ccd1dd4596
   Kingfisher: da6b005aa96d37698e3e4f1ccfe96a5b9bbf27d6
   MGSwipeTableCell: 616700eb0ffd1c611ba909066cb7fd739790a0a7
@@ -55,6 +64,6 @@ SPEC CHECKSUMS:
   Quick: ce1276c7c27ba2da3cb2fd0cde053c3648b3b22d
   SDWebImage: 3f3f0c02f09798048c47a5ed0a13f17b063572d8
 
-PODFILE CHECKSUM: 132ea2b243622fd1507bc328a3258f4b2f8d912e
+PODFILE CHECKSUM: 51cec080944f866852203ebd62702d3e50fc3c99
 
 COCOAPODS: 1.6.0

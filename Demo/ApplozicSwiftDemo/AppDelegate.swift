@@ -9,6 +9,9 @@
 import UIKit
 import Applozic
 import ApplozicSwift
+import Fabric
+import Crashlytics
+
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -25,6 +28,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         BuddyBuildSDK.setup()
+        Fabric.with([Crashlytics.self])
 
         registerForNotification()
 
