@@ -508,11 +508,16 @@ open class ALKMyMessageCell: ALKMessageCell {
 }
 
 open class ALKMessageCell: ALKChatBaseCell<ALKMessageViewModel>, ALKCopyMenuItemProtocol, ALKReplyMenuItemProtocol {
-    fileprivate lazy var messageView: ALKHyperLabel = {
-        let label = ALKHyperLabel.init(frame: .zero)
-        label.isUserInteractionEnabled = true
-        label.numberOfLines = 0
-        return label
+    fileprivate lazy var messageView: UITextView = {
+        let textView = UITextView.init(frame: .zero)
+        textView.isUserInteractionEnabled = true
+        textView.isSelectable = true
+        textView.isEditable = false
+        textView.dataDetectorTypes = .all
+        textView.linkTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.blue,NSAttributedString.Key.underlineStyle: NSUnderlineStyle.single.rawValue]
+        textView.isScrollEnabled = false
+        textView.delaysContentTouches = false
+        return textView
     }()
 
     fileprivate var timeLabel: UILabel = {
@@ -829,10 +834,8 @@ open class ALKMessageCell: ALKChatBaseCell<ALKMessageViewModel>, ALKCopyMenuItem
     }
 }
 
-extension ALKHyperLabel {
-
-    // To highlight when long pressed
-    override open var canBecomeFirstResponder: Bool {
+extension UITextView{
+    open override var canBecomeFirstResponder: Bool{
         return true
     }
 }

@@ -65,11 +65,18 @@ class ALKPhotoCell: ALKChatBaseCell<ALKMessageViewModel>,
 
     fileprivate let activityIndicator = UIActivityIndicatorView(style: UIActivityIndicatorView.Style.gray)
 
-    var captionLabel: UILabel = {
-        let label = UILabel()
-        label.numberOfLines = 0
-        return label
+     lazy var captionLabel: UITextView = {
+        let textView = UITextView.init(frame: .zero)
+        textView.isUserInteractionEnabled = true
+        textView.isSelectable = true
+        textView.isEditable = false
+        textView.dataDetectorTypes = .all
+        textView.linkTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.blue,NSAttributedString.Key.underlineStyle: NSUnderlineStyle.single.rawValue]
+        textView.isScrollEnabled = false
+        textView.delaysContentTouches = false
+        return textView
     }()
+
     static var maxWidth = UIScreen.main.bounds.width
 
     // To be changed from the class that is subclassing `ALKPhotoCell`
