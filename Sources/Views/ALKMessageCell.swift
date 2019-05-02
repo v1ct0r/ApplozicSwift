@@ -529,7 +529,7 @@ open class ALKMessageCell: ALKChatBaseCell<ALKMessageViewModel>, ALKCopyMenuItem
     fileprivate var bubbleView: UIImageView = {
         let bv = UIImageView()
         bv.clipsToBounds = true
-        bv.isUserInteractionEnabled = false
+        bv.isUserInteractionEnabled = true
         bv.isOpaque = true
         return bv
     }()
@@ -598,7 +598,8 @@ open class ALKMessageCell: ALKChatBaseCell<ALKMessageViewModel>, ALKCopyMenuItem
         self.messageView.text = nil
         guard let message = viewModel.message else { return }
         if viewModel.messageType == .text {
-            self.messageView.text = message
+            let attributedText: NSMutableAttributedString = NSMutableAttributedString(string: viewModel.message ?? "")
+            self.messageView.attributedText = attributedText
         } else if viewModel.messageType == .html {
 
             let style = NSMutableParagraphStyle.init()
@@ -623,7 +624,7 @@ open class ALKMessageCell: ALKChatBaseCell<ALKMessageViewModel>, ALKCopyMenuItem
     override func setupViews() {
         super.setupViews()
 
-        messageView.addGestureRecognizer(longPressGesture)
+        bubbleView.addGestureRecognizer(longPressGesture)
         contentView.addViewsForAutolayout(views: [messageView,bubbleView,replyView, replyNameLabel, replyMessageLabel,previewImageView,timeLabel])
         contentView.bringSubviewToFront(messageView)
 
@@ -834,7 +835,14 @@ open class ALKMessageCell: ALKChatBaseCell<ALKMessageViewModel>, ALKCopyMenuItem
     }
 }
 
+extension UIImageView{
+    open override var canBecomeFirstResponder: Bool{
+        return true
+    }
+}
+
 extension UITextView{
+
     open override var canBecomeFirstResponder: Bool{
         return true
     }
