@@ -66,7 +66,7 @@ open class ALKFriendMessageCell: ALKMessageCell {
         case replyPreviewImageWidthIdentifier = "ReplyPreviewImageWidth"
     }
 
-    override class var messageTextFont: UIFont {
+     class var messageTextFont: UIFont {
         return ALKMessageStyle.receivedMessage.font
     }
 
@@ -180,7 +180,8 @@ open class ALKFriendMessageCell: ALKMessageCell {
 
     override func update(viewModel: ALKMessageViewModel) {
         super.update(viewModel: viewModel)
-        
+
+
         if viewModel.isReplyMessage {
             replyView.constraint(withIdentifier: ConstraintIdentifier.replyViewHeightIdentifier.rawValue)?.constant = Padding.ReplyView.height
             replyNameLabel.constraint(withIdentifier: ConstraintIdentifier.replyNameHeightIdentifier.rawValue)?.constant = 30
@@ -214,6 +215,7 @@ open class ALKFriendMessageCell: ALKMessageCell {
 
             self.avatarImageView.image = placeHolder
         }
+        self.updateMessageText(viewModel: viewModel, font: ALKMessageStyle.receivedMessage.font)
 
         nameLabel.text = viewModel.displayName
     }
@@ -240,16 +242,28 @@ open class ALKFriendMessageCell: ALKMessageCell {
         // minimum height based on font set and other params.
         // Maybe create a sample viewModel and pass a couple of words
         // as a message.
-        var minimumHeigh: CGFloat = 0.0
-        if ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.edge{
-            minimumHeigh = 20.0
-        }else if ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round{
-            minimumHeigh = 85.0
-        }
+
+        // TODO: need to find a better way to calculate the
+        // minimum height based on font set and other params.
+        // Maybe create a sample viewModel and pass a couple of words
+        // as a message.
+
+        var messageHeight: CGFloat = 0
         // 2x because padding is for both the sides.
-        let totalRowHeigh = super.rowHeigh(viewModel: viewModel, width: width-CGFloat(2*ALKMessageStyle.receivedBubble.widthPadding))
-        return totalRowHeigh < minimumHeigh ? minimumHeigh : totalRowHeigh
+        messageHeight = self.viewHeight(viewModel: viewModel, width:  width - CGFloat(2*ALKMessageStyle.receivedBubble.widthPadding) - leftPadding() - rightPadding(),font: self.messageTextFont)
+
+        let totalRowHeight =  topPadding()+messageHeight+bottomPadding()
+
+        var minimumHeight: CGFloat = 0.0
+        if ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.edge{
+            minimumHeight = 20.0
+        }else if ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round{
+            minimumHeight = 85.0
+        }
+
+        return totalRowHeight < minimumHeight ? minimumHeight : totalRowHeight
     }
+
 
     @objc private func avatarTappedAction() {
         avatarTapped?()
@@ -326,7 +340,7 @@ open class ALKMyMessageCell: ALKMessageCell {
         static let replyViewHeightIdentifier = "ReplyViewHeight"
     }
 
-    override class var messageTextFont: UIFont {
+     class var messageTextFont: UIFont {
         return ALKMessageStyle.sentMessage.font
     }
 
@@ -414,7 +428,7 @@ open class ALKMyMessageCell: ALKMessageCell {
         }
     }
 
-   open override func update(viewModel: ALKMessageViewModel) {
+    open override func update(viewModel: ALKMessageViewModel) {
         super.update(viewModel: viewModel)
 
         if viewModel.isReplyMessage {
@@ -446,6 +460,8 @@ open class ALKMyMessageCell: ALKMessageCell {
             stateView.image = UIImage(named: "seen_state_0", in: Bundle.applozic, compatibleWith: nil)
             stateView.tintColor = UIColor.red
         }
+
+        self.updateMessageText(viewModel: viewModel, font: ALKMessageStyle.receivedMessage.font)
     }
 
     override class func rowHeigh(viewModel: ALKMessageViewModel, width: CGFloat) -> CGFloat {
@@ -454,6 +470,15 @@ open class ALKMyMessageCell: ALKMessageCell {
         // minimum height based on font set and other params.
         // Maybe create a sample viewModel and pass a couple of words
         // as a message.
+
+        var messageHeight: CGFloat = 0
+
+        // 2x because padding is for both the sides.
+
+        messageHeight = self.viewHeight(viewModel: viewModel, width:  width - CGFloat(2*ALKMessageStyle.sentBubble.widthPadding) - leftPadding() - rightPadding(),font: self.messageTextFont)
+
+        let totalRowHeight =  topPadding()+messageHeight+bottomPadding()
+
         var minimumHeight: CGFloat = 0.0
         if ALKMessageStyle.sentBubble.style == ALKMessageStyle.BubbleStyle.edge{
             minimumHeight = 45.0
@@ -461,8 +486,6 @@ open class ALKMyMessageCell: ALKMessageCell {
             minimumHeight = 75.0
         }
 
-        // 2x because padding is for both the sides.
-        let totalRowHeight = super.rowHeigh(viewModel: viewModel, width: width-CGFloat(2*ALKMessageStyle.sentBubble.widthPadding))
         return totalRowHeight < minimumHeight ? minimumHeight  : totalRowHeight
     }
 
@@ -505,6 +528,8 @@ open class ALKMyMessageCell: ALKMessageCell {
             self.bubbleView.image =  bubbleViewImage(for: ALKMessageStyle.sentBubble.style,isReceiverSide: false,showHangOverImage: false)
         }
     }
+
+
 }
 
 open class ALKMessageCell: ALKChatBaseCell<ALKMessageViewModel>, ALKCopyMenuItemProtocol, ALKReplyMenuItemProtocol {
@@ -560,11 +585,6 @@ open class ALKMessageCell: ALKChatBaseCell<ALKMessageViewModel>, ALKCopyMenuItem
     }()
     var replyViewAction: (()->())? = nil
 
-    // To be changed from the class that is subclassing `ALKMessageCell`
-    class var messageTextFont: UIFont {
-        return Font.normal(size: 12).font()
-    }
-
     override func update(viewModel: ALKMessageViewModel) {
         self.viewModel = viewModel
 
@@ -591,9 +611,20 @@ open class ALKMessageCell: ALKChatBaseCell<ALKMessageViewModel>, ALKCopyMenuItem
 
         self.messageView.attributedText = nil
         self.messageView.text = nil
+
+        self.timeLabel.text   = viewModel.time
+    }
+
+
+    func updateMessageText(viewModel: ALKMessageViewModel,font:UIFont) {
         guard let message = viewModel.message else { return }
         if viewModel.messageType == .text {
-            self.messageView.text = message
+
+            let attributes: [NSAttributedString.Key: Any] = [
+                .font: font]
+            let attrbString = NSAttributedString(string: message,attributes: attributes)
+            self.messageView.attributedText = attrbString
+
         } else if viewModel.messageType == .html {
 
             let style = NSMutableParagraphStyle.init()
@@ -610,9 +641,8 @@ open class ALKMessageCell: ALKChatBaseCell<ALKMessageViewModel>, ALKCopyMenuItem
             mutableText.addAttributes(attributes, range: NSMakeRange(0,mutableText.length))
             self.messageView.attributedText = mutableText
         }else if viewModel.messageType == .quickReply {
-             self.messageView.text = message
+            self.messageView.text = message
         }
-        self.timeLabel.text   = viewModel.time
     }
 
     override func setupViews() {
@@ -652,20 +682,19 @@ open class ALKMessageCell: ALKChatBaseCell<ALKMessageViewModel>, ALKCopyMenuItem
         return 10
     }
 
+    class func viewHeight(viewModel: ALKMessageViewModel,width: CGFloat,font:UIFont) -> CGFloat{
 
-
-    override class func rowHeigh(viewModel: ALKMessageViewModel,width: CGFloat) -> CGFloat {
-
-        var messageHeigh: CGFloat = 0
+        var messageHeight: CGFloat = 0
 
         if let message = viewModel.message {
 
-            var widthNoPadding = width - leftPadding() - rightPadding()
-            if !viewModel.isMyMessage{
-                widthNoPadding -= 20
-            }else{
+            var widthNoPadding = width
+            if(viewModel.isMyMessage){
                 widthNoPadding += 20
+            }else{
+                widthNoPadding -= 18
             }
+
             let maxSize = CGSize.init(width: widthNoPadding, height: CGFloat.greatestFiniteMagnitude)
 
             let style = NSMutableParagraphStyle.init()
@@ -677,7 +706,7 @@ open class ALKMessageCell: ALKChatBaseCell<ALKMessageViewModel>, ALKCopyMenuItem
             style.maximumLineHeight = 17
 
             let attributes: [NSAttributedString.Key: Any] = [
-                NSAttributedString.Key.font: messageTextFont]
+                .font: font]
 
             var size = CGSize()
             if viewModel.messageType == .html {
@@ -686,17 +715,20 @@ open class ALKMessageCell: ALKChatBaseCell<ALKMessageViewModel>, ALKCopyMenuItem
                 let attributes: [NSAttributedString.Key : Any] = [NSAttributedString.Key.paragraphStyle: style]
                 mutableText.addAttributes(attributes, range: NSMakeRange(0,mutableText.length))
                 size = mutableText.boundingRect(with: maxSize, options: [NSStringDrawingOptions.usesFontLeading, NSStringDrawingOptions.usesLineFragmentOrigin], context: nil).size
+                messageHeight = ceil(size.height)
             } else {
                 let attrbString = NSAttributedString(string: message,attributes: attributes)
-                let framesetter = CTFramesetterCreateWithAttributedString(attrbString)
-                size =  CTFramesetterSuggestFrameSizeWithConstraints(framesetter, CFRange(location: 0,length: 0), nil, maxSize, nil)
+                messageHeight = attrbString.height(withConstrainedWidth: widthNoPadding) + 10 // due to textview's bottom pading
             }
-            messageHeigh = ceil(size.height) + 10 // due to textview's bottom pading
             if viewModel.isReplyMessage {
-                messageHeigh += 90
+                messageHeight += 90
             }
         }
-        return topPadding()+messageHeigh+bottomPadding()
+        return messageHeight
+    }
+
+    override class func rowHeigh(viewModel: ALKMessageViewModel,width: CGFloat) -> CGFloat {
+        return super.rowHeigh(viewModel: viewModel, width: width)
     }
 
     func menuCopy(_ sender: Any) {
@@ -827,6 +859,7 @@ open class ALKMessageCell: ALKChatBaseCell<ALKMessageViewModel>, ALKCopyMenuItem
             return nil
         }
     }
+    
 }
 
 extension ALKHyperLabel {
