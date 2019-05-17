@@ -27,12 +27,10 @@ class ALKMyMessageView: UIView {
     }
 
     fileprivate var widthPadding: CGFloat = CGFloat(ALKMessageStyle.sentBubble.widthPadding)
-    fileprivate lazy var messageView: ALKHyperLabel = {
-        let label = ALKHyperLabel.init(frame: .zero)
-        label.isUserInteractionEnabled = true
-        label.numberOfLines = 0
-        label.lineBreakMode = .byWordWrapping
-        return label
+    fileprivate lazy var messageView: ALKUITextView = {
+        let messageTextView = ALKUITextView.init(frame: .zero)
+        messageTextView.isUserInteractionEnabled = true
+        return messageTextView
     }()
 
     fileprivate var timeLabel: UILabel = {

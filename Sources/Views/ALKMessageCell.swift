@@ -533,11 +533,18 @@ open class ALKMyMessageCell: ALKMessageCell {
 }
 
 open class ALKMessageCell: ALKChatBaseCell<ALKMessageViewModel>, ALKCopyMenuItemProtocol, ALKReplyMenuItemProtocol {
-    fileprivate lazy var messageView: ALKHyperLabel = {
-        let label = ALKHyperLabel.init(frame: .zero)
-        label.isUserInteractionEnabled = true
-        label.numberOfLines = 0
-        return label
+
+
+    fileprivate lazy var messageView: ALKUITextView = {
+        let textView = ALKUITextView.init(frame: .zero)
+        textView.isUserInteractionEnabled = true
+        textView.isSelectable = true
+        textView.isEditable = false
+        textView.dataDetectorTypes = .all
+        textView.linkTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.blue,NSAttributedString.Key.underlineStyle: NSUnderlineStyle.single.rawValue]
+        textView.isScrollEnabled = false
+        textView.delaysContentTouches = false
+        return textView
     }()
 
     fileprivate var timeLabel: UILabel = {
@@ -549,7 +556,7 @@ open class ALKMessageCell: ALKChatBaseCell<ALKMessageViewModel>, ALKCopyMenuItem
     fileprivate var bubbleView: UIImageView = {
         let bv = UIImageView()
         bv.clipsToBounds = true
-        bv.isUserInteractionEnabled = false
+        bv.isUserInteractionEnabled = true
         bv.isOpaque = true
         return bv
     }()
@@ -647,11 +654,9 @@ open class ALKMessageCell: ALKChatBaseCell<ALKMessageViewModel>, ALKCopyMenuItem
 
     override func setupViews() {
         super.setupViews()
-
-        messageView.addGestureRecognizer(longPressGesture)
         contentView.addViewsForAutolayout(views: [messageView,bubbleView,replyView, replyNameLabel, replyMessageLabel,previewImageView,timeLabel])
         contentView.bringSubviewToFront(messageView)
-
+        bubbleView.addGestureRecognizer(longPressGesture)
         let replyTapGesture = UITapGestureRecognizer(target: self, action: #selector(replyViewTapped))
         replyView.addGestureRecognizer(replyTapGesture)
     }
@@ -862,7 +867,7 @@ open class ALKMessageCell: ALKChatBaseCell<ALKMessageViewModel>, ALKCopyMenuItem
     
 }
 
-extension ALKHyperLabel {
+extension UIImageView {
 
     // To highlight when long pressed
     override open var canBecomeFirstResponder: Bool {

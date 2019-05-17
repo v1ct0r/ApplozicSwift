@@ -11,14 +11,19 @@ import Kingfisher
 class ALKFriendMessageView: UIView {
     
     private var widthPadding: CGFloat = CGFloat(ALKMessageStyle.receivedBubble.widthPadding)
-    
-    fileprivate lazy var messageView: ALKHyperLabel = {
-        let label = ALKHyperLabel.init(frame: .zero)
-        label.isUserInteractionEnabled = true
-        label.numberOfLines = 0
-        return label
+
+    fileprivate lazy var messageView: ALKUITextView = {
+        let textView = ALKUITextView.init(frame: .zero)
+        textView.isUserInteractionEnabled = true
+        textView.isSelectable = true
+        textView.isEditable = false
+        textView.dataDetectorTypes = .all
+        textView.linkTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.blue,NSAttributedString.Key.underlineStyle: NSUnderlineStyle.single.rawValue]
+        textView.isScrollEnabled = false
+        textView.delaysContentTouches = false
+        return textView
     }()
-    
+
     fileprivate var timeLabel: UILabel = {
         let lb = UILabel()
         lb.isOpaque = true
