@@ -1,6 +1,6 @@
 //
 //  ALKMessageCell.swift
-//  
+//
 //
 //  Created by Mukesh Thawani on 04/05/17.
 //  Copyright © 2017 Applozic. All rights reserved.
@@ -13,7 +13,7 @@ import Applozic
 
 // MARK: - ALKFriendMessageCell
 open class ALKFriendMessageCell: ALKMessageCell {
-    
+
     private var avatarImageView: UIImageView = {
         let imv = UIImageView()
         imv.contentMode = .scaleAspectFill
@@ -53,6 +53,7 @@ open class ALKFriendMessageCell: ALKMessageCell {
 
         enum MessageView {
             static let top: CGFloat = 4
+            static let leading: CGFloat = 18
         }
     }
 
@@ -66,7 +67,7 @@ open class ALKFriendMessageCell: ALKMessageCell {
         case replyPreviewImageWidthIdentifier = "ReplyPreviewImageWidth"
     }
 
-     class var messageTextFont: UIFont {
+    class var messageTextFont: UIFont {
         return ALKMessageStyle.receivedMessage.font
     }
 
@@ -136,13 +137,14 @@ open class ALKFriendMessageCell: ALKMessageCell {
 
         messageView.topAnchor.constraint(equalTo: replyView.bottomAnchor, constant: Padding.MessageView.top).isActive = true
         messageView.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor, constant: -1 * ALKMessageCell.rightPadding()).isActive = true
-
-        messageView.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: -1 * ALKFriendMessageCell.bottomPadding()).isActive = true
+        messageView.leadingAnchor.constraint(equalTo: avatarImageView.trailingAnchor, constant:  Padding.MessageView.leading).isActive = true
+        
+        messageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -1 * ALKFriendMessageCell.bottomPadding()).isActive = true
 
         timeLabel.leadingAnchor.constraint(equalTo: bubbleView.trailingAnchor, constant: 10).isActive = true
 
         bubbleView.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 0).isActive = true
-        bubbleView.bottomAnchor.constraint(equalTo: messageView.bottomAnchor, constant: 8).isActive = true
+        bubbleView.bottomAnchor.constraint(equalTo: messageView.bottomAnchor, constant: 5).isActive = true
 
         var bubbleViewLeftPadding = widthPadding
 
@@ -229,11 +231,11 @@ open class ALKFriendMessageCell: ALKMessageCell {
     }
 
     override class func topPadding() -> CGFloat {
-        return 32 //6+16+10
+        return 31 //6+16+10
     }
 
     override class func bottomPadding() -> CGFloat {
-        return 6
+        return 10
     }
 
     override class func rowHeigh(viewModel: ALKMessageViewModel,width: CGFloat) -> CGFloat {
@@ -250,18 +252,18 @@ open class ALKFriendMessageCell: ALKMessageCell {
 
         var messageHeight: CGFloat = 0
         // 2x because padding is for both the sides.
-        messageHeight = self.viewHeight(viewModel: viewModel, width:  width - CGFloat(2*ALKMessageStyle.receivedBubble.widthPadding) - leftPadding() - rightPadding(),font: self.messageTextFont)
+        messageHeight = self.viewHeight(viewModel: viewModel, width:  width - CGFloat(2*ALKMessageStyle.sentBubble.widthPadding) - leftPadding() - ALKMessageCell.rightPadding(),font: self.messageTextFont)
 
-        let totalRowHeight =  topPadding()+messageHeight+bottomPadding()
+        let totalRowHeight =  topPadding() + messageHeight+bottomPadding() + 10 //Padding
 
         var minimumHeight: CGFloat = 0.0
         if ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.edge{
             minimumHeight = 20.0
         }else if ALKMessageStyle.receivedBubble.style == ALKMessageStyle.BubbleStyle.round{
-            minimumHeight = 85.0
+            minimumHeight = 75.0
         }
 
-        return totalRowHeight < minimumHeight ? minimumHeight : totalRowHeight
+        return max(totalRowHeight, minimumHeight)
     }
 
 
@@ -311,6 +313,10 @@ open class ALKMyMessageCell: ALKMessageCell {
 
         enum ReplyView {
             static let height: CGFloat = 80.0
+            static let top: CGFloat = 5.0
+            static let leading: CGFloat = 5.0
+            static let trailing: CGFloat = 10.0
+
         }
 
         enum PreviewImageView {
@@ -322,6 +328,10 @@ open class ALKMyMessageCell: ALKMessageCell {
         }
         enum MessageView {
             static let top: CGFloat = 4
+        }
+
+        enum BubbleView {
+            static let bottom: CGFloat = 5
         }
     }
 
@@ -340,7 +350,7 @@ open class ALKMyMessageCell: ALKMessageCell {
         static let replyViewHeightIdentifier = "ReplyViewHeight"
     }
 
-     class var messageTextFont: UIFont {
+    class var messageTextFont: UIFont {
         return ALKMessageStyle.sentMessage.font
     }
 
@@ -386,10 +396,10 @@ open class ALKMyMessageCell: ALKMessageCell {
         messageView.topAnchor.constraint(equalTo: replyView.bottomAnchor, constant: Padding.MessageView.top).isActive = true
         messageView.leadingAnchor.constraint(greaterThanOrEqualTo: contentView.leadingAnchor, constant: ALKMessageCell.rightPadding()).isActive = true
         messageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -1*ALKMessageCell.leftPadding()).isActive = true
-        messageView.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: -1 * ALKMyMessageCell.bottomPadding()).isActive = true
+        messageView.bottomAnchor.constraint(equalTo: bubbleView.bottomAnchor, constant: -1 * ALKMessageCell.bottomPadding()).isActive = true
 
         bubbleView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0).isActive = true
-        bubbleView.bottomAnchor.constraint(equalTo: messageView.bottomAnchor, constant: 8).isActive = true
+        bubbleView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -Padding.BubbleView.bottom).isActive = true
         bubbleView.leadingAnchor.constraint(equalTo: messageView.leadingAnchor, constant: -widthPadding).isActive = true
         bubbleView.leadingAnchor.constraint(equalTo: replyNameLabel.leadingAnchor, constant: -widthPadding).isActive = true
         bubbleView.leadingAnchor.constraint(equalTo: replyMessageLabel.leadingAnchor, constant: -widthPadding).isActive = true
@@ -397,14 +407,14 @@ open class ALKMyMessageCell: ALKMessageCell {
         var bubbleViewRightPadding = widthPadding
 
         // Due to the extra edge on the right side
-        if ALKMessageStyle.receivedBubble.style == .edge {bubbleViewRightPadding += 5}
+        if ALKMessageStyle.receivedBubble.style == .edge { bubbleViewRightPadding += 5 }
+
         bubbleView.trailingAnchor.constraint(equalTo: messageView.trailingAnchor, constant: bubbleViewRightPadding).isActive = true
 
-        replyView.topAnchor.constraint(equalTo: bubbleView.topAnchor, constant: 5).isActive = true
+        replyView.topAnchor.constraint(equalTo: bubbleView.topAnchor, constant: Padding.ReplyView.top).isActive = true
         replyView.heightAnchor.constraintEqualToAnchor(constant: 0, identifier: ConstraintIdentifier.replyViewHeightIdentifier).isActive = true
-        replyView.leadingAnchor.constraint(equalTo: bubbleView.leadingAnchor, constant: 5).isActive = true
-
-        replyView.trailingAnchor.constraint(equalTo: bubbleView.trailingAnchor, constant: -10).isActive = true
+        replyView.leadingAnchor.constraint(equalTo: bubbleView.leadingAnchor, constant: Padding.ReplyView.leading).isActive = true
+        replyView.trailingAnchor.constraint(equalTo: bubbleView.trailingAnchor, constant: -Padding.ReplyView.trailing).isActive = true
 
         stateView.widthAnchor.constraint(equalToConstant: 17.0).isActive = true
         stateView.heightAnchor.constraint(equalToConstant: 9.0).isActive = true
@@ -412,7 +422,7 @@ open class ALKMyMessageCell: ALKMessageCell {
         stateView.trailingAnchor.constraint(equalTo: bubbleView.leadingAnchor, constant: -2.0).isActive = true
 
         timeLabel.trailingAnchor.constraint(equalTo: stateView.leadingAnchor, constant: -2.0).isActive = true
-        timeLabel.bottomAnchor.constraint(equalTo: bubbleView.bottomAnchor, constant: 2).isActive = true
+        timeLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -2).isActive = true
     }
 
     open  override func setupStyle() {
@@ -475,18 +485,19 @@ open class ALKMyMessageCell: ALKMessageCell {
 
         // 2x because padding is for both the sides.
 
-        messageHeight = self.viewHeight(viewModel: viewModel, width:  width - CGFloat(2*ALKMessageStyle.sentBubble.widthPadding) - leftPadding() - rightPadding(),font: self.messageTextFont)
+        messageHeight = self.viewHeight(viewModel: viewModel, width:  width - CGFloat(2*ALKMessageStyle.sentBubble.widthPadding) - ALKMessageCell.leftPadding() - ALKMessageCell.rightPadding(),font: self.messageTextFont)
 
-        let totalRowHeight =  topPadding()+messageHeight+bottomPadding()
+        let totalRowHeight =  messageHeight + Padding.MessageView.top + Padding.BubbleView.bottom + Padding.ReplyView.top + ALKMessageCell.bottomPadding() + 5 //Extra padding 5
+
 
         var minimumHeight: CGFloat = 0.0
         if ALKMessageStyle.sentBubble.style == ALKMessageStyle.BubbleStyle.edge{
             minimumHeight = 45.0
         }else if ALKMessageStyle.sentBubble.style == ALKMessageStyle.BubbleStyle.round{
-            minimumHeight = 75.0
+            minimumHeight = 60.0
         }
 
-        return totalRowHeight < minimumHeight ? minimumHeight  : totalRowHeight
+        return max(totalRowHeight,minimumHeight)
     }
 
     fileprivate func setPreviewImageWidthToZero() {
@@ -627,10 +638,11 @@ open class ALKMessageCell: ALKChatBaseCell<ALKMessageViewModel>, ALKCopyMenuItem
         guard let message = viewModel.message else { return }
         if viewModel.messageType == .text {
 
-            let attributes: [NSAttributedString.Key: Any] = [
-                .font: font]
-            let attrbString = NSAttributedString(string: message,attributes: attributes)
-            self.messageView.attributedText = attrbString
+            let attributes: [NSAttributedString.Key : Any] = [.font:font]
+            let mutableText =  NSMutableAttributedString(string: message, attributes: attributes)
+            mutableText.addAttributes(attributes, range: NSMakeRange(0,mutableText.length))
+
+            self.messageView.attributedText = mutableText
 
         } else if viewModel.messageType == .html {
 
@@ -684,21 +696,17 @@ open class ALKMessageCell: ALKChatBaseCell<ALKMessageViewModel>, ALKCopyMenuItem
     }
 
     class func bottomPadding() -> CGFloat {
-        return 10
+        return 5
     }
 
-    class func viewHeight(viewModel: ALKMessageViewModel,width: CGFloat,font:UIFont) -> CGFloat{
+    class func  viewHeight(viewModel: ALKMessageViewModel,width: CGFloat,font:UIFont) -> CGFloat{
 
         var messageHeight: CGFloat = 0
 
         if let message = viewModel.message {
 
             var widthNoPadding = width
-            if(viewModel.isMyMessage){
-                widthNoPadding += 20
-            }else{
-                widthNoPadding -= 18
-            }
+            widthNoPadding += 10
 
             let maxSize = CGSize.init(width: widthNoPadding, height: CGFloat.greatestFiniteMagnitude)
 
@@ -711,7 +719,7 @@ open class ALKMessageCell: ALKChatBaseCell<ALKMessageViewModel>, ALKCopyMenuItem
             style.maximumLineHeight = 17
 
             let attributes: [NSAttributedString.Key: Any] = [
-                .font: font]
+                .font: font,NSAttributedString.Key.paragraphStyle: style]
 
             var size = CGSize()
             if viewModel.messageType == .html {
@@ -722,8 +730,11 @@ open class ALKMessageCell: ALKChatBaseCell<ALKMessageViewModel>, ALKCopyMenuItem
                 size = mutableText.boundingRect(with: maxSize, options: [NSStringDrawingOptions.usesFontLeading, NSStringDrawingOptions.usesLineFragmentOrigin], context: nil).size
                 messageHeight = ceil(size.height)
             } else {
-                let attrbString = NSAttributedString(string: message,attributes: attributes)
-                messageHeight = attrbString.height(withConstrainedWidth: widthNoPadding) + 10 // due to textview's bottom pading
+                let mutableText =  NSMutableAttributedString(string: message, attributes: attributes)
+                mutableText.addAttributes(attributes, range: NSMakeRange(0,mutableText.length))
+                size = mutableText.boundingRect(with: maxSize, options: [NSStringDrawingOptions.usesFontLeading, NSStringDrawingOptions.usesLineFragmentOrigin], context: nil).size
+                messageHeight = size.height.rounded(.up) + 10
+
             }
             if viewModel.isReplyMessage {
                 messageHeight += 90
@@ -781,17 +792,17 @@ open class ALKMessageCell: ALKChatBaseCell<ALKMessageViewModel>, ALKCopyMenuItem
     }
 
     private func removeDefaultLongPressGestureFrom(_ textView: UITextView) {
-            if let gestures = textView.gestureRecognizers {
-                for ges in gestures {
-                    if ges.isKind(of: UILongPressGestureRecognizer.self) {
-                        ges.isEnabled = false
+        if let gestures = textView.gestureRecognizers {
+            for ges in gestures {
+                if ges.isKind(of: UILongPressGestureRecognizer.self) {
+                    ges.isEnabled = false
 
-                    }
-                    else if ges.isKind(of: UITapGestureRecognizer.self) {
-                        (ges as? UITapGestureRecognizer)?.numberOfTapsRequired = 1
-                    }
+                }
+                else if ges.isKind(of: UITapGestureRecognizer.self) {
+                    (ges as? UITapGestureRecognizer)?.numberOfTapsRequired = 1
                 }
             }
+        }
     }
 
     private func setImageFrom(url: URL?, to imageView: UIImageView) {
@@ -864,7 +875,7 @@ open class ALKMessageCell: ALKChatBaseCell<ALKMessageViewModel>, ALKCopyMenuItem
             return nil
         }
     }
-    
+
 }
 
 extension UIImageView {
