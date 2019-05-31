@@ -398,7 +398,7 @@ open class ALKMyMessageCell: ALKMessageCell {
         messageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -1*ALKMessageCell.leftPadding()).isActive = true
         messageView.bottomAnchor.constraint(equalTo: bubbleView.bottomAnchor, constant: -1 * ALKMessageCell.bottomPadding()).isActive = true
 
-        bubbleView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0).isActive = true
+        bubbleView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 4).isActive = true
         bubbleView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -Padding.BubbleView.bottom).isActive = true
         bubbleView.leadingAnchor.constraint(equalTo: messageView.leadingAnchor, constant: -widthPadding).isActive = true
         bubbleView.leadingAnchor.constraint(equalTo: replyNameLabel.leadingAnchor, constant: -widthPadding).isActive = true
@@ -730,6 +730,7 @@ open class ALKMessageCell: ALKChatBaseCell<ALKMessageViewModel>, ALKCopyMenuItem
                 size = mutableText.boundingRect(with: maxSize, options: [NSStringDrawingOptions.usesFontLeading, NSStringDrawingOptions.usesLineFragmentOrigin], context: nil).size
                 messageHeight = ceil(size.height)
             } else {
+
                 let mutableText =  NSMutableAttributedString(string: message, attributes: attributes)
                 mutableText.addAttributes(attributes, range: NSMakeRange(0,mutableText.length))
                 size = mutableText.boundingRect(with: maxSize, options: [NSStringDrawingOptions.usesFontLeading, NSStringDrawingOptions.usesLineFragmentOrigin], context: nil).size

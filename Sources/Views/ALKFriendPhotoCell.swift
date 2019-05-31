@@ -51,6 +51,7 @@ class ALKFriendPhotoCell: ALKPhotoCell {
         nameLabel.setStyle(ALKMessageStyle.displayName)
         captionLabel.font = ALKMessageStyle.receivedMessage.font
         captionLabel.textColor = ALKMessageStyle.receivedMessage.text
+        captionLabel.backgroundColor = ALKMessageStyle.receivedMessage.background
         if(ALKMessageStyle.receivedBubble.style == .edge){
             bubbleView.layer.cornerRadius = ALKMessageStyle.receivedBubble.cornerRadius
             bubbleView.backgroundColor = ALKMessageStyle.receivedBubble.color
@@ -60,7 +61,16 @@ class ALKFriendPhotoCell: ALKPhotoCell {
             bubbleView.layer.cornerRadius = ALKMessageStyle.receivedBubble.cornerRadius
         }
     }
-    
+
+    override class func rowHeigh( viewModel: ALKMessageViewModel,
+        width: CGFloat) -> CGFloat {
+        var height: CGFloat
+        height =  self.viewHeight(viewModel: viewModel, width: width,font: ALKMessageStyle.receivedMessage.font)
+
+        return topPadding()+height+bottomPadding()
+    }
+
+
     override func setupViews() {
         super.setupViews()
 
@@ -83,6 +93,7 @@ class ALKFriendPhotoCell: ALKPhotoCell {
         
         avatarImageView.heightAnchor.constraint(equalToConstant: 37).isActive = true
         avatarImageView.widthAnchor.constraint(equalTo: avatarImageView.heightAnchor).isActive = true
+
         
         photoView.trailingAnchor
             .constraint(lessThanOrEqualTo: contentView.trailingAnchor, constant: -Padding.PhotoView.right)
@@ -99,6 +110,7 @@ class ALKFriendPhotoCell: ALKPhotoCell {
         
         fileSizeLabel.leftAnchor.constraint(equalTo: bubbleView.leftAnchor, constant: 0).isActive = true
     }
+
     
     override func update(viewModel: ALKMessageViewModel) {
         super.update(viewModel: viewModel)
@@ -115,6 +127,15 @@ class ALKFriendPhotoCell: ALKPhotoCell {
             
             self.avatarImageView.image = placeHolder
         }
+        guard (viewModel.message != nil), let message = viewModel.message  else {
+            return;
+        }
+
+        let attributes: [NSAttributedString.Key : Any] = [.font:ALKMessageStyle.receivedMessage.font]
+        let mutableText =  NSMutableAttributedString(string: message, attributes: attributes)
+        mutableText.addAttributes(attributes, range: NSMakeRange(0,mutableText.length))
+        self.captionLabel.attributedText = mutableText
+
     }
 
     @objc private func avatarTappedAction() {

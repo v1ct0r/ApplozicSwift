@@ -65,11 +65,20 @@ class ALKPhotoCell: ALKChatBaseCell<ALKMessageViewModel>,
 
     fileprivate let activityIndicator = UIActivityIndicatorView(style: UIActivityIndicatorView.Style.gray)
 
-    var captionLabel: UILabel = {
-        let label = UILabel()
-        label.numberOfLines = 0
-        return label
+
+     lazy var captionLabel: ALKUITextView = {
+        let textView = ALKUITextView.init(frame: .zero)
+        textView.isUserInteractionEnabled = true
+        textView.isSelectable = true
+        textView.isEditable = false
+        textView.dataDetectorTypes = .all
+        textView.linkTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.blue,NSAttributedString.Key.underlineStyle: NSUnderlineStyle.single.rawValue]
+        textView.isScrollEnabled = false
+        textView.delaysContentTouches = false
+        return textView
     }()
+
+
     static var maxWidth = UIScreen.main.bounds.width
 
     // To be changed from the class that is subclassing `ALKPhotoCell`
@@ -116,17 +125,7 @@ class ALKPhotoCell: ALKChatBaseCell<ALKMessageViewModel>,
     override class func rowHeigh(
         viewModel: ALKMessageViewModel,
         width: CGFloat) -> CGFloat {
-
-        var height: CGFloat
-
-        height = ceil(width*heightPercentage)
-        if let message = viewModel.message, !message.isEmpty {
-            height += message.rectWithConstrainedWidth(
-                width*widthPercentage,
-                font: messageTextFont).height.rounded(.up) + Padding.CaptionLabel.bottom
-        }
-
-        return topPadding()+height+bottomPadding()
+        return 0
     }
 
     override func update(viewModel: ALKMessageViewModel) {
@@ -154,7 +153,6 @@ class ALKPhotoCell: ALKChatBaseCell<ALKMessageViewModel>,
             }
         }
         timeLabel.text   = viewModel.time
-        captionLabel.text = viewModel.message
 
     }
 
@@ -368,6 +366,37 @@ class ALKPhotoCell: ALKChatBaseCell<ALKMessageViewModel>,
             }
         }
     }
+
+    class func  viewHeight(viewModel: ALKMessageViewModel,width: CGFloat,font:UIFont) -> CGFloat{
+
+        var height: CGFloat
+        let maxSize = CGSize.init(width: width*widthPercentage, height: CGFloat.greatestFiniteMagnitude)
+
+        let style = NSMutableParagraphStyle.init()
+        style.lineBreakMode = .byWordWrapping
+        style.headIndent = 0
+        style.tailIndent = 0
+        style.firstLineHeadIndent = 0
+        style.minimumLineHeight = 17
+        style.maximumLineHeight = 17
+
+        let attributes: [NSAttributedString.Key: Any] = [
+            .font:font,NSAttributedString.Key.paragraphStyle: style]
+        height = ceil(width*heightPercentage)
+
+        if let message = viewModel.message, !message.isEmpty {
+            let mutableText =  NSMutableAttributedString(string: message, attributes: attributes)
+            mutableText.addAttributes(attributes, range: NSMakeRange(0,mutableText.length))
+
+            let framesetter = CTFramesetterCreateWithAttributedString(mutableText  as CFAttributedString)
+            let targetSize = maxSize
+            let fitSize: CGSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, CFRangeMake(0, mutableText.length), nil, targetSize, nil)
+            height +=  ceil(fitSize.height) + ALKPhotoCell.Padding.CaptionLabel.bottom
+        }
+
+        return height;
+    }
+
 
     @objc private func uploadButtonAction(_ selector: UIButton) {
         uploadTapped?(true)

@@ -55,14 +55,34 @@ final class ALKMyPhotoLandscapeCell: ALKPhotoCell {
         } else {
             stateView.image = UIImage(named: "seen_state_0", in: Bundle.applozic, compatibleWith: nil)
         }
+
+        guard (viewModel.message != nil), let message = viewModel.message  else {
+            return;
+        }
+
+        let attributes: [NSAttributedString.Key : Any] = [.font:ALKMessageStyle.receivedMessage.font]
+        let mutableText =  NSMutableAttributedString(string: message, attributes: attributes)
+        mutableText.addAttributes(attributes, range: NSMakeRange(0,mutableText.length))
+        self.captionLabel.attributedText = mutableText
     }
+
+    override class func rowHeigh( viewModel: ALKMessageViewModel,
+                                  width: CGFloat) -> CGFloat {
+        var height: CGFloat
+        height =  self.viewHeight(viewModel: viewModel, width: width,font: ALKMessageStyle.sentMessage.font)
+        return topPadding()+height+bottomPadding()
+    }
+
     
     override class func bottomPadding() -> CGFloat {
-        return 6
+        return 15
     }
 
     override func setupStyle() {
         super.setupStyle()
+        captionLabel.font = ALKMessageStyle.sentMessage.font
+        captionLabel.textColor = ALKMessageStyle.sentMessage.text
+        captionLabel.backgroundColor = ALKMessageStyle.sentMessage.background
         if(ALKMessageStyle.sentBubble.style == .edge){
             bubbleView.layer.cornerRadius = ALKMessageStyle.sentBubble.cornerRadius
             bubbleView.backgroundColor = ALKMessageStyle.sentBubble.color
