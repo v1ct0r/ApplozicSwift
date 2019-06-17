@@ -10,7 +10,12 @@ import DifferenceKit
 
 class MessageSection: Section {
 
+    var model: AnyDifferentiable {
+        return AnyDifferentiable(message)
+    }
+
     var message: ALKMessageModel
+
     var viewModels = [ChatItem]()
 
     required init(_ message: ALKMessageModel) {
@@ -50,12 +55,20 @@ struct UserItem: ChatItem {
     }
 }
 
-struct TextItem: ChatItem {
+struct TextItem: ChatItem, Differentiable {
     var reuseIdentifier: String {
         return ALKMyMessageCell.reuseIdentifier
     }
 
     var text: String
+
+    var differenceIdentifier: String {
+        return text
+    }
+
+    func isContentEqual(to source: TextItem) -> Bool {
+        return source.text == text
+    }
 }
 
 struct ImageItem: ChatItem {

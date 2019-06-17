@@ -16,7 +16,7 @@ private let reuseIdentifier = "Cell"
 
 class MessageThreadViewController: UICollectionViewController {
 
-    var internalData: [ArraySection<Section, ChatItem>] = []
+    var internalData: [ArraySection<AnySection, AnyChatItem>] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
