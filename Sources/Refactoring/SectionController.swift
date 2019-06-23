@@ -14,7 +14,7 @@ protocol ChatItem {
     //TODO: Add diffing key by default
 }
 
-class ChatCell: UICollectionViewCell {
+class ChatCell: UITableViewCell {
     var viewModel: ChatItem!
 }
 
@@ -23,19 +23,18 @@ protocol Section {
     // Like ALkMessageModel
     var model: AnyDifferentiable { get }
 
-    var viewModels: Array<ChatItem> { get }
+    var viewModels: Array<AnyChatItem> { get }
 
     func cellForRow(
-        _ viewModel: ChatItem,
-        collectionView: UICollectionView,
+        _ viewModel: AnyChatItem,
+        tableView: UITableView,
         indexPath: IndexPath) -> ChatCell
 }
 
 extension Section {
-    func cellForRow(_ viewModel: ChatItem, collectionView: UICollectionView, indexPath: IndexPath) -> ChatCell {
-        guard let cell = collectionView
-            .dequeueReusableCell(
-                withReuseIdentifier: viewModel.reuseIdentifier,
+    func cellForRow(_ viewModel: AnyChatItem, tableView: UITableView, indexPath: IndexPath) -> ChatCell {
+        guard let cell = tableView.dequeueReusableCell(
+                withIdentifier: viewModel.reuseIdentifier,
                 for: indexPath) as? ChatCell else {
                     return ChatCell()
         }
@@ -52,7 +51,7 @@ struct AnySection: Section, Differentiable {
         return base.model
     }
 
-    var viewModels: Array<ChatItem> {
+    var viewModels: Array<AnyChatItem> {
         return base.viewModels
     }
 
@@ -60,7 +59,7 @@ struct AnySection: Section, Differentiable {
         return AnyHashable(model.differenceIdentifier)
     }
 
-    init<S: Section>(base: S) {
+    init<S: Section>(_ base: S) {
         self.base = base
     }
 

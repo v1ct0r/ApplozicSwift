@@ -12,63 +12,54 @@ protocol MessageThreadUpdate {
     func update(data: [String])
 }
 
-private let reuseIdentifier = "Cell"
+public class MessageThreadViewController: UITableViewController {
 
-class MessageThreadViewController: UICollectionViewController {
+    // TODO: Add it in initialization
+    var sections: [ArraySection<AnySection, AnyChatItem>] = []
 
-    var internalData: [ArraySection<AnySection, AnyChatItem>] = []
-
-    override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
 
         // TODO: Replace this with empty cells
-        self.collectionView!.register(UICollectionViewCell.self, forCellWithReuseIdentifier: reuseIdentifier)
+//        tableView.register(UITableViewCell.self, forCellReuseIdentifier: reuseIdentifier)
+        tableView.backgroundColor = UIColor.red
+
+        // FIXME:[Temporary] maybe Use UICollectionViewDelegateFlowLayout
+//        self.collectionView.collectionViewLayout = UICollectionViewFlowLayout()
     }
 
-    // MARK: UICollectionViewDataSource
+    func update(sections: [ArraySection<AnySection, AnyChatItem>]) {
+        // First find out the diff then store
+        let changeSet = StagedChangeset(source: self.sections, target: sections)
+        tableView.reload(using: changeSet, with: UITableView.RowAnimation.automatic, setData: { data in
+            self.sections = data
+        })
+        //        tableView?.reload(using: changeSet, interrupt: { $0.changeCount > 100 }, setData: { data in
+//            self.sections = data
+//        })
+    }
 
-    override func numberOfSections(in collectionView: UICollectionView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
-        return 0
+    // MARK: - Table view data source
+
+    override public func numberOfSections(in tableView: UITableView) -> Int {
+
+        return sections.count
+    }
+
+    override public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        guard sections.count > section else { return 0 }
+        return sections[section].elements.count
     }
 
 
-    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of items
-        return 0
-    }
+    override public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+//        let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath)
+        // TODO: Create an extension on ArraySections to access elements safely
+        let section = sections[indexPath.section]
+        let chatItem = section.model.viewModels[indexPath.row]
 
-    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath)
-    
-        // Configure the cell
-    
+        let cell = section.model.cellForRow(chatItem, tableView: tableView, indexPath: indexPath)
+        cell.backgroundColor = UIColor.green
         return cell
-    }
-
-    // MARK: UICollectionViewDelegate
-
-
-    // Uncomment this method to specify if the specified item should be highlighted during tracking
-    override func collectionView(_ collectionView: UICollectionView, shouldHighlightItemAt indexPath: IndexPath) -> Bool {
-        return true
-    }
-
-    // Uncomment this method to specify if the specified item should be selected
-    override func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
-        return true
-    }
-
-    // Uncomment these methods to specify if an action menu should be displayed for the specified item, and react to actions performed on the item
-    override func collectionView(_ collectionView: UICollectionView, shouldShowMenuForItemAt indexPath: IndexPath) -> Bool {
-        return false
-    }
-
-    override func collectionView(_ collectionView: UICollectionView, canPerformAction action: Selector, forItemAt indexPath: IndexPath, withSender sender: Any?) -> Bool {
-        return false
-    }
-
-    override func collectionView(_ collectionView: UICollectionView, performAction action: Selector, forItemAt indexPath: IndexPath, withSender sender: Any?) {
-    
     }
 }

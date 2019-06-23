@@ -6,11 +6,16 @@ PODS:
   - ApplozicSwift/Complete (2.7.0):
     - Applozic (~> 6.10.0)
     - ApplozicSwift/RichMessageKit
-    - DifferenceKit/Core (~> 1.0)
+    - DifferenceKit (~> 1.0)
     - Kingfisher (~> 4.7.0)
     - MGSwipeTableCell (~> 1.5.6)
   - ApplozicSwift/RichMessageKit (2.7.0)
+  - DifferenceKit (1.1.2):
+    - DifferenceKit/Core (= 1.1.2)
+    - DifferenceKit/UIKitExtension (= 1.1.2)
   - DifferenceKit/Core (1.1.2)
+  - DifferenceKit/UIKitExtension (1.1.2):
+    - DifferenceKit/Core
   - iOSSnapshotTestCase (5.0.2):
     - iOSSnapshotTestCase/SwiftSupport (= 5.0.2)
   - iOSSnapshotTestCase/Core (5.0.2)
@@ -53,7 +58,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Applozic: 6bf1a748c69ca5197e7524b095c0f8837d6be4f3
-  ApplozicSwift: e0a56136dc6616efbef56c601d07492e59560940
+  ApplozicSwift: d99af96845d202eaac155b4b6dd835e0d2004faa
   DifferenceKit: 3a1cff9ac9a9cdf2a3f205671067797e83c3f066
   iOSSnapshotTestCase: 2d51aa06775e95cecb0a1fb9c5c159ccd1dd4596
   Kingfisher: da6b005aa96d37698e3e4f1ccfe96a5b9bbf27d6
@@ -65,4 +70,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 132ea2b243622fd1507bc328a3258f4b2f8d912e
 
-COCOAPODS: 1.6.0
+COCOAPODS: 1.7.2

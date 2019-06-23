@@ -16,7 +16,7 @@ class MessageSection: Section {
 
     var message: ALKMessageModel
 
-    var viewModels = [ChatItem]()
+    var viewModels = [AnyChatItem]()
 
     required init(_ message: ALKMessageModel) {
         self.message = message
@@ -24,23 +24,23 @@ class MessageSection: Section {
         self.viewModels = makeViewModels(from: message)
     }
 
-    func makeViewModels(from message: ALKMessageModel) -> [ChatItem] {
-        var items = [ChatItem]()
+    func makeViewModels(from message: ALKMessageModel) -> [AnyChatItem] {
+        var items = [AnyChatItem]()
 
         switch message.messageType {
         case .text:
-            items.append(TextItem(text: message.message ?? ""))
-        case .imageMessage:
+            items.append(AnyChatItem(TextItem(text: message.message ?? "")))
+//        case .imageMessage:
 
-            guard let imageMessage = message.imageMessage(),
-                let imageURL = URL(string: imageMessage.url) else {
-                break
-            }
+//            guard let imageMessage = message.imageMessage(),
+//                let imageURL = URL(string: imageMessage.url) else {
+//                break
+//            }
             // Text
-            items.append(TextItem(text: message.message ?? ""))
+//            items.append(AnyChatItem(TextItem(text: message.message ?? "")))
             // Image
-            let item = ImageItem(url: imageURL)
-            items.append(item)
+//            let item = ImageItem(url: imageURL)
+//            items.append(AnyChatItem(item))
         default:
             print("type not supported")
         }
@@ -57,7 +57,8 @@ struct UserItem: ChatItem {
 
 struct TextItem: ChatItem, Differentiable {
     var reuseIdentifier: String {
-        return ALKMyMessageCell.reuseIdentifier
+//        return ALKMyMessageCell.reuseIdentifier
+        return "Cell"
     }
 
     var text: String

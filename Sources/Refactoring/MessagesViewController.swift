@@ -6,28 +6,27 @@
 //
 
 import Foundation
+import DifferenceKit
 
-class MessagesViewController: MessageThreadViewController {
+private let reuseIdentifier = "Cell"
 
-    override func viewDidLoad() {
+public class MessagesViewController: MessageThreadViewController {
+
+    override public func viewDidLoad() {
         super.viewDidLoad()
+
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: reuseIdentifier)
 
         let textMessage = ALKMessageModel()
         textMessage.message = "First message"
         textMessage.identifier = "12344"
         textMessage.messageType = .text
 
-        let imageMessage = ALKMessageModel()
-        let payload = convert(
-            dict: ["caption": "Image caption", "url": "Image URL"]) ?? ""
-
-        let imageMetadata = [
-            "contentType": "300",
-            "templateId": "9",
-            "payload": "\(payload)"
-        ]
-        imageMessage.metadata = imageMetadata
-        
+        let textSection = MessageSection(textMessage)
+        let section = ArraySection(
+            model: AnySection(textSection),
+            elements: textSection.viewModels)
+        update(sections: [section])
     }
 
     func convert(dict: Dictionary<String, String>) -> String? {
