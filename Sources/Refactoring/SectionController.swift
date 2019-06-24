@@ -14,8 +14,8 @@ protocol ChatItem {
     //TODO: Add diffing key by default
 }
 
-class ChatCell: UITableViewCell {
-    var viewModel: ChatItem!
+protocol ChatCell: UITableViewCell {
+    var viewModel: AnyChatItem? { get set }
 }
 
 protocol Section {
@@ -36,7 +36,8 @@ extension Section {
         guard let cell = tableView.dequeueReusableCell(
                 withIdentifier: viewModel.reuseIdentifier,
                 for: indexPath) as? ChatCell else {
-                    return ChatCell()
+                    // Pass empty cell
+                    return SampleTableViewCell()
         }
         cell.viewModel = viewModel
         return cell

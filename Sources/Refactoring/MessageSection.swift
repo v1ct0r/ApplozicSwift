@@ -58,7 +58,7 @@ struct UserItem: ChatItem {
 struct TextItem: ChatItem, Differentiable {
     var reuseIdentifier: String {
 //        return ALKMyMessageCell.reuseIdentifier
-        return "Cell"
+        return SampleTableViewCell.reuseIdentifier
     }
 
     var text: String

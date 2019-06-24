@@ -22,7 +22,6 @@ public class MessageThreadViewController: UITableViewController {
 
         // TODO: Replace this with empty cells
 //        tableView.register(UITableViewCell.self, forCellReuseIdentifier: reuseIdentifier)
-        tableView.backgroundColor = UIColor.red
 
         // FIXME:[Temporary] maybe Use UICollectionViewDelegateFlowLayout
 //        self.collectionView.collectionViewLayout = UICollectionViewFlowLayout()
