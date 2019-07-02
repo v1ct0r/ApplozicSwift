@@ -8,6 +8,7 @@
 import Foundation
 import DifferenceKit
 
+// Section controller
 class MessageSection: Section {
 
     var model: AnyDifferentiable {
@@ -29,7 +30,11 @@ class MessageSection: Section {
 
         switch message.messageType {
         case .text:
-            items.append(AnyChatItem(TextItem(text: message.message ?? "")))
+            let textItem = TextItem(text: message.message ?? "", onDeleteCallback: {
+                // Call VC
+                print("deleted")
+            })
+            items.append(AnyChatItem(textItem))
 //        case .imageMessage:
 
 //            guard let imageMessage = message.imageMessage(),
@@ -56,12 +61,15 @@ struct UserItem: ChatItem {
 }
 
 struct TextItem: ChatItem, Differentiable {
+
     var reuseIdentifier: String {
 //        return ALKMyMessageCell.reuseIdentifier
         return SampleTableViewCell.reuseIdentifier
     }
 
     var text: String
+
+    var onDeleteCallback: (() -> ())
 
     var differenceIdentifier: String {
         return text

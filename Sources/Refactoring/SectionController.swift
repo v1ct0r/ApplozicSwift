@@ -25,6 +25,9 @@ protocol Section {
 
     var viewModels: Array<AnyChatItem> { get }
 
+    // TODO: Uncomment this as soon as possible
+//    var controllerContext: UIViewController? { get set }
+
     func cellForRow(
         _ viewModel: AnyChatItem,
         tableView: UITableView,
