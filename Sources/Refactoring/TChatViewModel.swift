@@ -6,35 +6,138 @@
 //
 
 import Foundation
+import Applozic
 import DifferenceKit
 
 struct TChatViewModel: ChatItem {
-    var reuseIdentifier: String {
-        return "<Change this>"
+
+    enum Action: Equatable {
+        case mute
+        case unmute
+        case delete
+        case leave
+        case block
+        case unblock
     }
 
-    // Unique identifier for Differentiable, by default
-    // it will be a random id
-    var id: Int
+    var reuseIdentifier: String {
+        return "cell"
+    }
 
-    var avatarURL: URL?
-    var name: String
-    var message: String
-    var totalNumberOfUnreadMessages: Int
-    var createdAt: String
+    // Inputs
+    private var message: ALMessage
+    private var contact: ALContact?
+    private var channel: ALChannel?
+    private var isMember: Bool
 
+    // Outputs
 
+    var name: String {
+        return message.isGroupChat ? message.groupName:message.name
+    }
+
+    var messageText: String {
+        return message.theLastMessage ?? ""
+    }
+
+    var isGroup: Bool {
+        return message.isGroupChat
+    }
+
+    var userAvatarURL: URL? {
+        if message.avatarImage != nil {
+            if let imgStr = message.avatarGroupImageUrl,
+                let imgURL = URL(string: imgStr) {
+                return imgURL
+            }
+        }else if let avatar = message.avatar {
+            return avatar
+        }
+        return nil
+    }
+
+    var unreadCount: String {
+        let unreadMsgCount = Int(message.totalNumberOfUnreadMessages)
+        let numberText: String = (unreadMsgCount < 1000 ? "\(unreadMsgCount)" : "999+")
+        let isHidden = unreadMsgCount < 1
+        return isHidden ? "":numberText
+    }
+
+    var createdAt: String? {
+        return message.createdAt
+    }
+
+    var isEmail: Bool {
+        return message.messageType == .email
+    }
+
+    var isOnline: Bool {
+        guard !isGroup, let contact = contact else { return false }
+        return contact.connected
+    }
+
+    var hideOnlineStatus: Bool {
+        guard !isGroup, let contact = contact else { return true }
+        return contact.block || contact.blockBy || contact.isDeleted
+    }
+
+    var actions: [Action] {
+        var actions: [Action] = []
+        actions.append(isConversationMuted ? .unmute:.mute)
+        if isGroup {
+            actions.append(isMember ? .leave:.delete)
+        } else if let contact = contact {
+            actions.append(.delete)
+            actions.append(contact.block ? .unblock:.block)
+        }
+        return actions
+    }
+
+    // Internal
+
+    private var isConversationMuted: Bool {
+        if isGroup, let channel = channel {
+            return channel.isNotificationMuted()
+        } else if let contact = contact {
+            return contact.isNotificationMuted()
+        }
+        return false
+    }
+
+    // TODO: Create an extension for different init combinations and avoid optional there.
+    private init(
+        message: ALMessage,
+        contact: ALContact?,
+        channel: ALChannel?,
+        isMember: Bool
+        ) {
+
+        self.message = message
+        self.contact = contact
+        self.channel = channel
+        self.isMember = isMember
+    }
+}
+
+extension TChatViewModel {
+    init(message: ALMessage, contact: ALContact) {
+        self.init(message: message, contact: contact, channel: nil, isMember: false)
+    }
+
+    init(message: ALMessage, channel: ALChannel, isMember: Bool) {
+        self.init(message: message, contact: nil, channel: channel, isMember: isMember)
+    }
 }
 
 extension TChatViewModel: Differentiable {
 
-    var differenceIdentifier: Int {
-        return id
+    var differenceIdentifier: String {
+        return name
     }
 
     func isContentEqual(to source: TChatViewModel) -> Bool {
-        return source.avatarURL == avatarURL
+        return source.userAvatarURL == userAvatarURL
             && source.name == name
-            && source.totalNumberOfUnreadMessages == totalNumberOfUnreadMessages
+            && source.unreadCount == unreadCount
     }
 }

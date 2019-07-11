@@ -40,7 +40,7 @@ public enum TChatCellAction {
 }
 
 public protocol TChatCellDelegate: class {
-    func chatCell(cell: TChatCell, action: TChatCellAction, viewModel: TChatViewModelProtocol)
+    func chatCell(cell: TChatCell, action: TChatCellAction)
 }
 
 public final class TChatCell: MGSwipeTableCell, Localizable, ChatCell {
@@ -206,35 +206,53 @@ public final class TChatCell: MGSwipeTableCell, Localizable, ChatCell {
         badgeNumberView.setBackgroundColor(.background(.main))
     }
 
-    private func isConversationMuted(viewModel: TChatViewModelProtocol) -> Bool{
-        if let channelKey = viewModel.channelKey,
-            let channel = ALChannelService().getChannelByKey(channelKey){
-            if channel.isNotificationMuted() {
-                return true
-            }else {
-                return false
-            }
-        }else if let contactId = viewModel.contactId,
-            let contact = ALContactService().loadContact(byKey: "userId", value: contactId){
-            if contact.isNotificationMuted() {
-                return true
-            }else {
-                return false
-            }
-        }else {
-            // Conversation is not for user or channel
-            return true
-        }
-    }
+//    private func isConversationMuted(viewModel: TChatViewModelProtocol) -> Bool{
+//        if let channelKey = viewModel.channelKey,
+//            let channel = ALChannelService().getChannelByKey(channelKey){
+//            if channel.isNotificationMuted() {
+//                return true
+//            }else {
+//                return false
+//            }
+//        }else if let contactId = viewModel.contactId,
+//            let contact = ALContactService().loadContact(byKey: "userId", value: contactId){
+//            if contact.isNotificationMuted() {
+//                return true
+//            }else {
+//                return false
+//            }
+//        }else {
+//            // Conversation is not for user or channel
+//            return true
+//        }
+//    }
 
     func configure(viewModel: AnyChatItem?) {
         guard let chatViewModel = viewModel?.base as? TChatViewModel else { return }
         nameLabel.text = chatViewModel.name
-        locationLabel.text = chatViewModel.message
-        if let avatarImageURL = chatViewModel.avatarURL {
+        locationLabel.text = chatViewModel.messageText
+        let placeHolder = placeholderImage(isGroup: chatViewModel.isGroup)
+        if let avatarImageURL = chatViewModel.userAvatarURL {
             let resource = ImageResource(downloadURL: avatarImageURL, cacheKey: "\(avatarImageURL)")
-            //TODO: Add placeholder
+            //TODO: Add placeholder(avatarImage property)
             avatarImageView.kf.setImage(with: resource)
+        } else {
+            avatarImageView.image = placeHolder
+        }
+        badgeNumberView.isHidden = chatViewModel.unreadCount.isEmpty
+        badgeNumberLabel.text = chatViewModel.unreadCount
+        timeLabel.text = chatViewModel.createdAt
+        onlineStatusView.isHidden = chatViewModel.hideOnlineStatus
+        onlineStatusView.isHidden = !chatViewModel.isOnline
+        setupLeftSwippableButtons(chatViewModel)
+        setupRightSwippableButtons(chatViewModel)
+
+        if chatViewModel.isEmail {
+            emailIcon.isHidden = false
+            emailIcon.constraint(withIdentifier: ConstraintIdentifier.iconWidthIdentifier.rawValue)?.constant = Padding.Email.width
+        }else{
+            emailIcon.isHidden = true
+            emailIcon.constraint(withIdentifier: ConstraintIdentifier.iconWidthIdentifier.rawValue)?.constant = 0
         }
     }
 
@@ -304,7 +322,7 @@ public final class TChatCell: MGSwipeTableCell, Localizable, ChatCell {
 //        self.voipButton.isEnabled = !viewModel.isGroupChat
 //    }
 
-    private func setupLeftSwippableButtons(_ viewModel: TChatViewModelProtocol) {
+    private func setupLeftSwippableButtons(_ viewModel: TChatViewModel) {
         leftSwipeSettings.transition = .static
 
         let deleteButton = MGSwipeButton.init(type: .system)
@@ -313,91 +331,78 @@ public final class TChatCell: MGSwipeTableCell, Localizable, ChatCell {
         deleteButton.tintColor = .white
         deleteButton.accessibilityIdentifier = "SwippableDeleteIcon"
         deleteButton.frame = CGRect.init(x: 0, y: 0, width: 69, height: 69)
-        if (!viewModel.isGroupChat || (viewModel.channelKey != nil && ALChannelService().isChannelLeft(viewModel.channelKey))) {
+        if viewModel.actions.contains(.delete) {
             let leaveTitle = localizedString(forKey: "DeleteButtonName", withDefaultValue: SystemMessage.ButtonName.Delete, fileName: localizationFileName)
             deleteButton.setTitle(leaveTitle, for: .normal)
-        } else {
+        } else if viewModel.actions.contains(.leave) {
             let leaveTitle = localizedString(forKey: "LeaveButtonName", withDefaultValue: SystemMessage.ButtonName.Leave, fileName: localizationFileName)
             deleteButton.setTitle(leaveTitle, for: .normal)
         }
         deleteButton.alignVertically()
-//        deleteButton.callback = { [weak self] (button) in
-//            guard let strongSelf = self else {return true}
-//            guard let viewModel = strongSelf.viewModel else {return true}
-//            strongSelf.chatCellDelegate?.chatCell(cell: strongSelf, action: .delete, viewModel: viewModel)
-//            return true
-//        }
-
-        guard !viewModel.isGroupChat else {
-            self.leftButtons = [deleteButton]
-            return
+        deleteButton.callback = { [weak self] (button) in
+            guard let strongSelf = self else {return true}
+            strongSelf.chatCellDelegate?.chatCell(cell: strongSelf, action: .delete)
+            return true
         }
-        ALUserService().getUserDetail(viewModel.contactId, withCompletion: { (contact) in
-            guard let contact = contact else {
-                self.leftButtons = [deleteButton]
-                return
-            }
-            let blockButton = MGSwipeButton.init(type: .system)
-            blockButton.setImage(UIImage(named: "icon_block", in: Bundle.applozic, compatibleWith: nil), for: .normal)
-            blockButton.tintColor = .white
-            blockButton.frame = CGRect.init(x: 70, y: 0, width: 69, height: 69)
-            if !contact.block {
-                blockButton.backgroundColor = UIColor(red: 248, green: 139, blue: 139)
-                let block = self.localizedString(forKey: "BlockTitle", withDefaultValue: SystemMessage.Block.BlockTitle, fileName: self.localizationFileName)
-                blockButton.setTitle(block, for: .normal)
-            } else {
-                blockButton.backgroundColor = UIColor(red: 111, green: 115, blue: 247)
-                let unblock = self.localizedString(forKey: "UnblockTitle", withDefaultValue: SystemMessage.Block.UnblockTitle, fileName: self.localizationFileName)
-                blockButton.setTitle(unblock, for: .normal)
-            }
-            blockButton.alignVertically()
-            let action: TChatCellAction = contact.block ? .unblock : .block
-//            blockButton.callback = { [weak self] (button) in
-//                guard
-//                    let strongSelf = self,
-//                    let viewModel = strongSelf.viewModel
-//                    else { return true }
-//                strongSelf.chatCellDelegate?.chatCell(cell: strongSelf, action: action, viewModel: viewModel)
-//                return true
-//            }
-            self.leftButtons = [deleteButton, blockButton]
-        })
+
+        let blockButton = MGSwipeButton.init(type: .system)
+        blockButton.setImage(UIImage(named: "icon_block", in: Bundle.applozic, compatibleWith: nil), for: .normal)
+        blockButton.tintColor = .white
+        blockButton.frame = CGRect.init(x: 70, y: 0, width: 69, height: 69)
+
+        var blockAction: TChatCellAction = .block
+        if viewModel.actions.contains(.block) {
+            blockButton.backgroundColor = UIColor(red: 248, green: 139, blue: 139)
+            let block = self.localizedString(forKey: "BlockTitle", withDefaultValue: SystemMessage.Block.BlockTitle, fileName: self.localizationFileName)
+            blockButton.setTitle(block, for: .normal)
+        } else if viewModel.actions.contains(.unblock) {
+            blockButton.backgroundColor = UIColor(red: 111, green: 115, blue: 247)
+            let unblock = self.localizedString(forKey: "UnblockTitle", withDefaultValue: SystemMessage.Block.UnblockTitle, fileName: self.localizationFileName)
+            blockButton.setTitle(unblock, for: .normal)
+            blockAction = .unblock
+        }
+        blockButton.alignVertically()
+        blockButton.callback = { [weak self] (button) in
+            guard
+                let strongSelf = self
+                else { return true }
+            strongSelf.chatCellDelegate?.chatCell(cell: strongSelf, action: blockAction)
+            return true
+        }
+        self.leftButtons = [deleteButton, blockButton]
     }
 
-    private func setupRightSwippableButtons(_ viewModel: TChatViewModelProtocol) {
+    private func setupRightSwippableButtons(_ viewModel: TChatViewModel) {
         let muteButton: MGSwipeButton = MGSwipeButton.init(type: .custom)
         muteButton.backgroundColor = UIColor.init(netHex: 0x999999)
-        if isConversationMuted(viewModel: viewModel) {
+        if viewModel.actions.contains(.unmute) {
             muteButton.setImage(UIImage(named: "icon_mute_inactive", in: Bundle.applozic, compatibleWith: nil), for: .normal)
             let unmute = self.localizedString(forKey: "UnmuteButton", withDefaultValue: SystemMessage.Mute.UnmuteButton, fileName: self.localizationFileName)
             muteButton.setTitle(unmute, for: .normal)
-        }else {
+        }else if viewModel.actions.contains(.mute) {
             muteButton.setImage(UIImage(named: "icon_mute_active", in: Bundle.applozic, compatibleWith: nil), for: .normal)
             let mute = self.localizedString(forKey: "MuteButton", withDefaultValue: SystemMessage.Mute.MuteButton, fileName: self.localizationFileName)
             muteButton.setTitle(mute, for: .normal)
         }
         muteButton.frame = CGRect.init(x: 0, y: 0, width: 69, height: 69)
         muteButton.alignVertically()
-//        muteButton.callback = { [weak self] (buttnon) in
-//            guard let strongSelf = self else {return true}
-//            guard let viewModel = strongSelf.viewModel else {return true}
-//            if strongSelf.isConversationMuted(viewModel: viewModel){
-//                strongSelf.chatCellDelegate?.chatCell(cell: strongSelf, action: .unmute, viewModel: viewModel)
-//            }else {
-//                strongSelf.chatCellDelegate?.chatCell(cell: strongSelf, action: .mute, viewModel: viewModel)
-//            }
-//            return true
-//        }
+        muteButton.callback = { [weak self] (buttnon) in
+            guard let strongSelf = self else {return true}
+            if viewModel.actions.contains(.unmute) {
+                strongSelf.chatCellDelegate?.chatCell(cell: strongSelf, action: .unmute)
+            }else {
+                strongSelf.chatCellDelegate?.chatCell(cell: strongSelf, action: .mute)
+            }
+            return true
+        }
         self.rightButtons = [muteButton]
         self.rightSwipeSettings.transition = .static
     }
 
-    private func placeholderImage(_ placeholderImage: UIImage? = nil, viewModel: TChatViewModelProtocol) -> UIImage? {
-        guard let image = placeholderImage else {
-            let placeholder = viewModel.isGroupChat ? "groupPlaceholder" : "contactPlaceholder"
-            return UIImage(named: placeholder, in: Bundle.applozic, compatibleWith: nil)
-        }
-        return image
+    //TODO: Handle placeholders passed from outside
+    private func placeholderImage(isGroup: Bool) -> UIImage? {
+        let placeholder = isGroup ? "groupPlaceholder" : "contactPlaceholder"
+        return UIImage(named: placeholder, in: Bundle.applozic, compatibleWith: nil)
     }
 
     private func setupConstraints() {

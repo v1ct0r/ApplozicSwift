@@ -10,6 +10,7 @@ import Foundation
 import UIKit
 import ContactsUI
 import Applozic
+import DifferenceKit
 
 /// The delegate of an `ALKConversationListViewController` object.
 /// Provides different methods to manage chat thread selections.
@@ -183,6 +184,7 @@ open class ALKConversationListViewController: ALKBaseViewController, Localizable
         alMqttConversationService.subscribeToConversation()
         dbService.delegate = self
         viewModel.delegate = self
+        viewModel.controllerContext = conversationListTableViewController
         setupView()
     }
 
@@ -331,14 +333,30 @@ extension ALKConversationListViewController: ALKConversationListViewModelDelegat
     open func listUpdated() {
         DispatchQueue.main.async {
             print("Number of rows \(self.tableView.numberOfRows(inSection: 0))")
-            self.tableView.reloadData()
+//            self.tableView.reloadData()
+            let sections = self.viewModel.chatSections
+                .map {
+                    ArraySection<AnySection, AnyChatItem>(
+                        model: AnySection($0),
+                        elements: $0.viewModels)
+            }
+            self.conversationListTableViewController
+                .update(sections: sections)
             self.activityIndicator.stopAnimating()
             self.tableView.isUserInteractionEnabled = true
         }
     }
 
     open func rowUpdatedAt(position: Int) {
-        tableView.reloadRows(at: [IndexPath(row: position, section: 0)], with: .automatic)
+        let sections = self.viewModel.chatSections
+            .map {
+                ArraySection<AnySection, AnyChatItem>(
+                    model: AnySection($0),
+                    elements: $0.viewModels)
+        }
+        self.conversationListTableViewController
+            .update(sections: sections)
+//        tableView.reloadRows(at: [IndexPath(row: position, section: 0)], with: .automatic)
     }
 }
 

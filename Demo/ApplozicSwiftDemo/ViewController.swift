@@ -42,5 +42,8 @@ class ViewController: UIViewController {
 //        let vc = ContainerViewController()
 //        let nav = ALKBaseNavigationViewController(rootViewController: vc)
 //        self.present(nav, animated: false, completion: nil)
+
+//        let messagesVC = MessagesViewController()
+//        self.present(messagesVC, animated: true, completion: nil)
     }
 }

@@ -25,8 +25,7 @@ protocol Section {
 
     var viewModels: Array<AnyChatItem> { get }
 
-    // TODO: Uncomment this as soon as possible
-//    var controllerContext: UIViewController? { get set }
+    var controllerContext: UIViewController? { get set }
 
     func cellForRow(
         _ viewModel: AnyChatItem,
@@ -34,18 +33,18 @@ protocol Section {
         indexPath: IndexPath) -> ChatCell
 }
 
-extension Section {
-    func cellForRow(_ viewModel: AnyChatItem, tableView: UITableView, indexPath: IndexPath) -> ChatCell {
-        guard let cell = tableView.dequeueReusableCell(
-                withIdentifier: viewModel.reuseIdentifier,
-                for: indexPath) as? ChatCell else {
-                    // Pass empty cell
-                    return SampleTableViewCell()
-        }
-        cell.viewModel = viewModel
-        return cell
-    }
-}
+//extension Section {
+//    func cellForRow(_ viewModel: AnyChatItem, tableView: UITableView, indexPath: IndexPath) -> ChatCell {
+//        guard let cell = tableView.dequeueReusableCell(
+//                withIdentifier: viewModel.reuseIdentifier,
+//                for: indexPath) as? ChatCell else {
+//                    // Pass empty cell
+//                    return SampleTableViewCell()
+//        }
+//        cell.viewModel = viewModel
+//        return cell
+//    }
+//}
 
 struct AnySection: Section, Differentiable {
 
@@ -59,6 +58,14 @@ struct AnySection: Section, Differentiable {
         return base.viewModels
     }
 
+    var controllerContext: UIViewController? {
+        get {
+            return base.controllerContext
+        } set {
+            base.controllerContext = newValue
+        }
+    }
+
     var differenceIdentifier: AnyHashable {
         return AnyHashable(model.differenceIdentifier)
     }
@@ -66,6 +73,11 @@ struct AnySection: Section, Differentiable {
     init<S: Section>(_ base: S) {
         self.base = base
     }
+
+    func cellForRow(_ viewModel: AnyChatItem, tableView: UITableView, indexPath: IndexPath) -> ChatCell {
+        return base.cellForRow(viewModel, tableView: tableView, indexPath: indexPath)
+    }
+
 
     func isContentEqual(to source: AnySection) -> Bool {
         return model.isContentEqual(to: source.model)

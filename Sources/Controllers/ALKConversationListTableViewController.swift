@@ -28,15 +28,15 @@ public protocol ALKConversationListTableViewDelegate: class {
  
  It uses ALKChatCell and EmptyChatCell as tableview cell and handles the swipe interaction of user with the chat cell.
  */
-public class ALKConversationListTableViewController: UITableViewController, Localizable {
+public class ALKConversationListTableViewController: MessageThreadViewController, Localizable {
     
     //MARK: - PUBLIC PROPERTIES
     public var viewModel: ALKConversationListViewModelProtocol
     public var dbService: ALMessageDBService!
     public lazy var dataSource = ConversationListTableViewDataSource(viewModel: self.viewModel, cellConfigurator: { (message, tableCell) in
-        let cell = tableCell as! ALKChatCell
-        cell.update(viewModel: message, identity: nil, disableSwipe: self.configuration.disableSwipeInChatCell)
-        cell.chatCellDelegate = self
+//        let cell = tableCell as! ALKChatCell
+//        cell.update(viewModel: message, identity: nil, disableSwipe: self.configuration.disableSwipeInChatCell)
+//        cell.chatCellDelegate = self
     })
 
     //MARK: - PRIVATE PROPERTIES
@@ -94,8 +94,8 @@ public class ALKConversationListTableViewController: UITableViewController, Loca
         setupView()
         searchBar.delegate = self
         self.tableView.delegate = self
-        self.tableView.dataSource = self
-        tableView.register(ALKChatCell.self, forCellReuseIdentifier: "cell")
+//        self.tableView.dataSource = self
+        tableView.register(TChatCell.self, forCellReuseIdentifier: "cell")
         tableView.estimatedRowHeight = 0
     }
     
@@ -109,30 +109,30 @@ public class ALKConversationListTableViewController: UITableViewController, Loca
     }
 
     //MARK: - TABLE VIEW DATA SOURCE METHODS
-    public override func numberOfSections(in tableView: UITableView) -> Int {
-        return dataSource.numberOfSections(in: tableView)
-    }
-    
-    public override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if searchActive {
-            return searchFilteredChat.count
-        }
-        return dataSource.tableView(tableView, numberOfRowsInSection: section)
-    }
-    
-    public override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if searchActive {
-            guard let chat = searchFilteredChat[indexPath.row] as? ALMessage else {
-                return UITableViewCell()
-            }
-            let cell: ALKChatCell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! ALKChatCell
-            cell.update(viewModel: chat, identity: nil, disableSwipe: configuration.disableSwipeInChatCell)
-            cell.chatCellDelegate = self
-            return cell
-        }
-        return dataSource.tableView(tableView, cellForRowAt: indexPath)
-    }
-    
+//    public override func numberOfSections(in tableView: UITableView) -> Int {
+//        return dataSource.numberOfSections(in: tableView)
+//    }
+//
+//    public override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+//        if searchActive {
+//            return searchFilteredChat.count
+//        }
+//        return dataSource.tableView(tableView, numberOfRowsInSection: section)
+//    }
+
+//    public override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+//        if searchActive {
+//            guard let chat = searchFilteredChat[indexPath.row] as? ALMessage else {
+//                return UITableViewCell()
+//            }
+//            let cell: ALKChatCell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! ALKChatCell
+//            cell.update(viewModel: chat, identity: nil, disableSwipe: configuration.disableSwipeInChatCell)
+//            cell.chatCellDelegate = self
+//            return cell
+//        }
+//        return dataSource.tableView(tableView, cellForRowAt: indexPath)
+//    }
+
     public override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         return true
     }
@@ -298,9 +298,10 @@ extension ALKConversationListTableViewController: UISearchResultsUpdating, UISea
 }
 
 //MARK: - ALKChatCell DELEGATE
-extension ALKConversationListTableViewController: ALKChatCellDelegate {
+extension ALKConversationListTableViewController: TChatCellDelegate {
+
     
-    public func chatCell(cell: ALKChatCell, action: ALKChatCellAction, viewModel: ALKChatViewModelProtocol) {
+    public func chatCell(cell: TChatCell, action: TChatCellAction) {
         
         switch action {
             

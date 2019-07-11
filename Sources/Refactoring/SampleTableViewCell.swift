@@ -14,11 +14,7 @@ class SampleTableViewCell: UITableViewCell, ChatCell {
         return button
     }()
 
-    var viewModel: AnyChatItem? {
-        didSet {
-            setup()
-        }
-    }
+    var viewModel: AnyChatItem?
 
     var onDelete:(() -> ()) = { }
 
@@ -27,14 +23,14 @@ class SampleTableViewCell: UITableViewCell, ChatCell {
         // Initialization code
     }
 
-    func setup() {
-        guard let viewModel = viewModel?.base as? TextItem else { return }
-        textLabel?.text = viewModel.text
-        self.onDelete = viewModel.onDeleteCallback
-
-        deleteButton.setTitle("Delete", for: .normal)
-        deleteButton.addTarget(self, action: #selector(deleteAction), for: .touchUpInside)
-    }
+//    func setup() {
+//        guard let viewModel = viewModel?.base as? TextItem else { return }
+//        textLabel?.text = viewModel.text
+//        self.onDelete = viewModel.onDeleteCallback
+//
+//        deleteButton.setTitle("Delete", for: .normal)
+//        deleteButton.addTarget(self, action: #selector(deleteAction), for: .touchUpInside)
+//    }
 
     @objc func deleteAction() {
         self.onDelete()

@@ -228,7 +228,7 @@ public final class ALKChatCell: MGSwipeTableCell, Localizable {
     public func update(viewModel: ALKChatViewModelProtocol, identity: ALKIdentityProtocol?, placeholder: UIImage? = nil, disableSwipe: Bool) {
 
         self.viewModel = viewModel
-        let placeHolder = placeholderImage(placeholder, viewModel: viewModel)
+        let placeHolder = placeholderImage(viewModel: viewModel)
 
         if let avatarImage = viewModel.avatarImage {
             if let imgStr = viewModel.avatarGroupImageUrl,let imgURL = URL.init(string: imgStr) {

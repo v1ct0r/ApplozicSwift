@@ -12,12 +12,12 @@ protocol MessageThreadUpdate {
     func update(data: [String])
 }
 
-public class MessageThreadViewController: UITableViewController {
+open class MessageThreadViewController: UITableViewController {
 
     // TODO: Add it in initialization
     var sections: [ArraySection<AnySection, AnyChatItem>] = []
 
-    override public func viewDidLoad() {
+    override open func viewDidLoad() {
         super.viewDidLoad()
 
         // TODO: Replace this with empty cells
@@ -30,8 +30,12 @@ public class MessageThreadViewController: UITableViewController {
     func update(sections: [ArraySection<AnySection, AnyChatItem>]) {
         // First find out the diff then store
         let changeSet = StagedChangeset(source: self.sections, target: sections)
-        tableView.reload(using: changeSet, with: UITableView.RowAnimation.automatic, setData: { data in
-            self.sections = data
+        
+        tableView.reload(
+            using: changeSet,
+            with: UITableView.RowAnimation.automatic,
+            setData: { data in
+                self.sections = data
         })
         //        tableView?.reload(using: changeSet, interrupt: { $0.changeCount > 100 }, setData: { data in
 //            self.sections = data
@@ -40,18 +44,18 @@ public class MessageThreadViewController: UITableViewController {
 
     // MARK: - Table view data source
 
-    override public func numberOfSections(in tableView: UITableView) -> Int {
+    override open func numberOfSections(in tableView: UITableView) -> Int {
 
         return sections.count
     }
 
-    override public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override open func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         guard sections.count > section else { return 0 }
         return sections[section].elements.count
     }
 
 
-    override public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    override open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 //        let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath)
         // TODO: Create an extension on ArraySections to access elements safely
         let section = sections[indexPath.section]

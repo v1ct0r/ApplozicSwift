@@ -98,7 +98,23 @@ final public class ALKConversationListViewModel: NSObject, ALKConversationListVi
     var alContactService = ALContactService()
     var conversationService = ALConversationService()
 
+    // For chat cell delegate
+    weak var controllerContext: UIViewController?
+
     fileprivate var allMessages = [Any]()
+
+    var chatSections: [ChatSection] {
+        var sections = [ChatSection]()
+        for message in allMessages {
+            guard let message = message as? ALMessage else { continue }
+            sections.append(ChatSection(
+                message: message,
+                contactService: alContactService,
+                channelService: alChannelService,
+                controllerContext: controllerContext))
+        }
+        return sections
+    }
 
     func prepareController(dbService: ALMessageDBService) {
         self.delegate?.startedLoading()
