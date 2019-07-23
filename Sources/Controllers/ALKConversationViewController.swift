@@ -1912,3 +1912,25 @@ extension ALKConversationViewController: NavigationBarCallbacks {
     }
 
 }
+
+extension ALKConversationViewController: AttachmentDelegate {
+    func tapAction(message: ALKMessageViewModel) {
+        let storyboard = UIStoryboard.name(
+            storyboard: UIStoryboard.Storyboard.mediaViewer,
+            bundle: Bundle.applozic)
+        guard let nav = storyboard.instantiateInitialViewController() as? UINavigationController else { return }
+        let vc = nav.viewControllers.first as? ALKMediaViewerViewController
+
+        let messageModels = viewModel.messageModels.filter {
+            $0.messageType == .photo || $0.messageType == .video
+        }
+
+        guard let msg = message as? ALKMessageModel,
+            let currentIndex = messageModels.index(of: msg) else { return }
+        vc?.viewModel = ALKMediaViewerViewModel(
+            messages: messageModels,
+            currentIndex: currentIndex,
+            localizedStringFileName: localizedStringFileName)
+        self.present(nav, animated: true, completion: nil)
+    }
+}

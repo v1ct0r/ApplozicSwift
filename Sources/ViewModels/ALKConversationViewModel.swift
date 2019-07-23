@@ -1261,14 +1261,7 @@ open class ALKConversationViewModel: NSObject, Localizable {
 
     private func updateDbMessageWith(key: String, value: String, filePath: String) {
         let messageService = ALMessageDBService()
-        let alHandler = ALDBHandler.sharedInstance()
-        let dbMessage: DB_Message = messageService.getMessageByKey(key, value: value) as! DB_Message
-        dbMessage.filePath = filePath
-        do {
-            try alHandler?.managedObjectContext.save()
-        } catch {
-            NSLog("Not saved due to error")
-        }
+        messageService.updateDbMessageWith(key: key, value: value, filePath: filePath)
     }
 
     private func getMessageToPost(isTextMessage: Bool = false) -> ALMessage {
