@@ -1922,7 +1922,7 @@ extension ALKConversationViewController: AttachmentDelegate {
         let vc = nav.viewControllers.first as? ALKMediaViewerViewController
 
         let messageModels = viewModel.messageModels.filter {
-            $0.messageType == .photo || $0.messageType == .video
+            ($0.messageType == .photo || $0.messageType == .video) && ($0.downloadPath() != nil) && ($0.downloadPath()!.1 != nil)
         }
 
         guard let msg = message as? ALKMessageModel,
