@@ -68,6 +68,15 @@ class ALKVideoCell: ALKChatBaseCell<ALKMessageViewModel>,
         return button
     }()
 
+    fileprivate let cancelButton: UIButton = {
+        let button = UIButton(type: .custom)
+        let image = UIImage(named: "close", in: Bundle.applozic, compatibleWith: nil)
+        button.setImage(image, for: .normal)
+        button.backgroundColor = .clear
+        button.isHidden = true
+        return button
+    }()
+
     var bubbleView: UIView = {
         let bv = UIView()
         bv.clipsToBounds = true
@@ -162,11 +171,12 @@ class ALKVideoCell: ALKChatBaseCell<ALKMessageViewModel>,
 
         frontView.addGestureRecognizer(longPressGesture)
         actionButton.addTarget(self, action: #selector(actionTapped), for: .touchUpInside)
-        downloadButton.addTarget(self, action: #selector(ALKVideoCell.downloadButtonAction(_:)), for: UIControl.Event.touchUpInside)
-        uploadButton.addTarget(self, action: #selector(ALKVideoCell.uploadButtonAction(_:)), for: .touchUpInside)
-        playButton.addTarget(self, action: #selector(ALKVideoCell.playButtonAction(_:)), for: .touchUpInside)
+        downloadButton.addTarget(self, action: #selector(buttonAction(_:)), for: .touchUpInside)
+        uploadButton.addTarget(self, action: #selector(buttonAction(_:)), for: .touchUpInside)
+        playButton.addTarget(self, action: #selector(buttonAction(_:)), for: .touchUpInside)
+        cancelButton.addTarget(self, action: #selector(buttonAction(_:)), for: .touchUpInside)
 
-        contentView.addViewsForAutolayout(views: [frontView, photoView,bubbleView, timeLabel,fileSizeLabel, downloadButton, playButton, progressView, uploadButton])
+        contentView.addViewsForAutolayout(views: [frontView, photoView,bubbleView, timeLabel,fileSizeLabel, downloadButton, playButton, progressView, uploadButton, cancelButton])
         contentView.bringSubviewToFront(photoView)
         contentView.bringSubviewToFront(frontView)
         contentView.bringSubviewToFront(actionButton)
@@ -174,6 +184,7 @@ class ALKVideoCell: ALKChatBaseCell<ALKMessageViewModel>,
         contentView.bringSubviewToFront(playButton)
         contentView.bringSubviewToFront(progressView)
         contentView.bringSubviewToFront(uploadButton)
+        contentView.bringSubviewToFront(cancelButton)
 
         frontView.topAnchor.constraint(equalTo: bubbleView.topAnchor).isActive = true
         frontView.bottomAnchor.constraint(equalTo: bubbleView.bottomAnchor).isActive = true
@@ -205,6 +216,11 @@ class ALKVideoCell: ALKChatBaseCell<ALKMessageViewModel>,
         progressView.heightAnchor.constraint(equalToConstant: 60).isActive = true
         progressView.widthAnchor.constraint(equalToConstant: 60).isActive = true
 
+        cancelButton.centerXAnchor.constraint(equalTo: progressView.centerXAnchor).isActive = true
+        cancelButton.centerYAnchor.constraint(equalTo: progressView.centerYAnchor).isActive = true
+        cancelButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        cancelButton.widthAnchor.constraint(equalToConstant: 30).isActive = true
+
         fileSizeLabel.topAnchor.constraint(equalTo: bubbleView.bottomAnchor, constant: 2).isActive = true
     }
 
@@ -220,34 +236,44 @@ class ALKVideoCell: ALKChatBaseCell<ALKMessageViewModel>,
         menuAction?(.reportMessage)
     }
 
-    @objc private func downloadButtonAction(_ selector: UIButton) {
-        downloadTapped?(true)
-    }
+    @objc private func buttonAction(_ selector: UIButton) {
+        switch selector {
+        case downloadButton:
+            downloadTapped?(true)
+        case uploadButton:
+            uploadTapped?(true)
+        case cancelButton:
+            guard let viewModel = viewModel else { return }
+            if SessionQueue.shared.cancelSession(withIdentifier: viewModel.identifier) {
+                if let filePath = viewModel.filePath, !filePath.isEmpty {
+                    updateView(for: .upload)
+                } else {
+                    updateView(for: .download)
+                }
+            }
+        case playButton:
+            let storyboard = UIStoryboard.name(storyboard: UIStoryboard.Storyboard.mediaViewer, bundle: Bundle.applozic)
 
-    @objc private func playButtonAction(_ selector: UIButton) {
-        let storyboard = UIStoryboard.name(storyboard: UIStoryboard.Storyboard.mediaViewer, bundle: Bundle.applozic)
+            let nav = storyboard.instantiateInitialViewController() as? UINavigationController
+            let vc = nav?.viewControllers.first as? ALKMediaViewerViewController
+            let dbService = ALMessageDBService()
+            guard let messages = dbService.getAllMessagesWithAttachment(
+                forContact: viewModel?.contactId,
+                andChannelKey: viewModel?.channelKey,
+                onlyDownloadedAttachments: true) as? [ALMessage] else { return }
 
-        let nav = storyboard.instantiateInitialViewController() as? UINavigationController
-        let vc = nav?.viewControllers.first as? ALKMediaViewerViewController
-        let dbService = ALMessageDBService()
-        guard let messages = dbService.getAllMessagesWithAttachment(
-            forContact: viewModel?.contactId,
-            andChannelKey: viewModel?.channelKey,
-            onlyDownloadedAttachments: true) as? [ALMessage] else { return }
+            let messageModels = messages.map { $0.messageModel }
+            NSLog("Messages with attachment: ", messages )
 
-        let messageModels = messages.map { $0.messageModel }
-        NSLog("Messages with attachment: ", messages )
-
-        guard let viewModel = viewModel as? ALKMessageModel,
-            let currentIndex = messageModels.index(of: viewModel) else { return }
-        vc?.viewModel = ALKMediaViewerViewModel(messages: messageModels, currentIndex: currentIndex, localizedStringFileName: localizedStringFileName)
-        UIViewController.topViewController()?.present(nav!, animated: true, completion: {
-            self.playButton.isEnabled = true
-        })
-    }
-
-    @objc private func uploadButtonAction(_ selector: UIButton) {
-        uploadTapped?(true)
+            guard let viewModel = viewModel as? ALKMessageModel,
+                let currentIndex = messageModels.index(of: viewModel) else { return }
+            vc?.viewModel = ALKMediaViewerViewModel(messages: messageModels, currentIndex: currentIndex, localizedStringFileName: localizedStringFileName)
+            UIViewController.topViewController()?.present(nav!, animated: true, completion: {
+                self.playButton.isEnabled = true
+            })
+        default:
+            print("Do nothing")
+        }
     }
 
     fileprivate func updateView(for state: State) {
@@ -258,26 +284,31 @@ class ALKVideoCell: ALKChatBaseCell<ALKMessageViewModel>,
             photoView.image = UIImage(named: "VIDEO", in: Bundle.applozic, compatibleWith: nil)
             playButton.isHidden = true
             progressView.isHidden = true
+            cancelButton.isHidden = true
         case .downloaded(let filePath):
             uploadButton.isHidden = true
             downloadButton.isHidden = true
             progressView.isHidden = true
+            cancelButton.isHidden = true
             viewModel?.filePath = filePath
             playButton.isHidden = false
             let docDirPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
             let path = docDirPath.appendingPathComponent(filePath)
             photoView.image = getThumbnail(filePath: path)
+            
         case .downloading(let progress, _):
             // show progress bar
             print("downloading")
             uploadButton.isHidden = true
             downloadButton.isHidden = true
             progressView.isHidden = false
+            cancelButton.isHidden = false
             progressView.angle = progress
             photoView.image = UIImage(named: "VIDEO", in: Bundle.applozic, compatibleWith: nil)
         case .upload:
             downloadButton.isHidden = true
             progressView.isHidden = true
+            cancelButton.isHidden = true
             playButton.isHidden = true
             photoView.image = UIImage(named: "VIDEO", in: Bundle.applozic, compatibleWith: nil)
             uploadButton.isHidden = false
@@ -298,19 +329,12 @@ class ALKVideoCell: ALKChatBaseCell<ALKMessageViewModel>,
             return nil
         }
     }
-
-    fileprivate func convertToDegree(total: Int64, written: Int64) -> Double {
-        let divergence = Double(total)/360.0
-        let degree = Double(written)/divergence
-        return degree
-
-    }
 }
 
 extension ALKVideoCell: ALKHTTPManagerUploadDelegate {
     func dataUploaded(task: ALKUploadTask) {
         NSLog("Data uploaded: \(task.totalBytesUploaded) out of total: \(task.totalBytesExpectedToUpload)")
-        let progress = self.convertToDegree(total: task.totalBytesExpectedToUpload, written: task.totalBytesUploaded)
+        let progress = task.totalBytesUploaded.degree(outOf: task.totalBytesExpectedToUpload)
         self.updateView(for: .downloading(progress: progress, totalCount: task.totalBytesExpectedToUpload))
     }
 
@@ -332,7 +356,7 @@ extension ALKVideoCell: ALKHTTPManagerDownloadDelegate {
     func dataDownloaded(task: ALKDownloadTask) {
         NSLog("VIDEO CELL DATA UPDATED AND FILEPATH IS: %@", viewModel?.filePath ?? "")
         let total = task.totalBytesExpectedToDownload
-        let progress = self.convertToDegree(total: total, written: task.totalBytesDownloaded)
+        let progress = task.totalBytesDownloaded.degree(outOf: total)
         self.updateView(for: .downloading(progress: progress, totalCount: total))
     }
 
