@@ -301,6 +301,7 @@ class ALKVideoCell: ALKChatBaseCell<ALKMessageViewModel>,
             print("downloading")
             uploadButton.isHidden = true
             downloadButton.isHidden = true
+            playButton.isHidden = true
             progressView.isHidden = false
             cancelButton.isHidden = false
             progressView.angle = progress

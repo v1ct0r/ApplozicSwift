@@ -350,7 +350,7 @@ extension ALMessage {
             let contentType = metadata["contentType"] as? String, contentType == "300",
             let templateId = metadata["templateId"] as? String
             else {
-                return .text
+                return getAttachmentType() ?? .text
         }
         switch templateId {
             case "2":

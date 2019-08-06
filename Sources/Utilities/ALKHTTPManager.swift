@@ -93,7 +93,7 @@ class ALKHTTPManager: NSObject {
     var downloadCompleted: ((_ task: ALKDownloadTask) ->Void)?
 
     var length: Int64 = 0
-    var buffer:NSMutableData = NSMutableData()
+    var buffer:NSMutableData! = NSMutableData()
 
     var uploadTask: ALKUploadTask?
     var downloadTask: ALKDownloadTask?
@@ -359,7 +359,8 @@ extension ALKHTTPManager: URLSessionDataDelegate {
             self.downloadCompleted?(downloadTask)
             self.downloadDelegate?.dataDownloadingFinished(task: downloadTask)
         }
-        buffer.resetBytes(in: NSRange(location: 0, length: buffer.length))
+        /// Required because it was not being collected by ARC
+        buffer = nil
     }
 
     func urlSession(_ session: URLSession, task: URLSessionTask, didSendBodyData bytesSent: Int64, totalBytesSent: Int64, totalBytesExpectedToSend: Int64) {
