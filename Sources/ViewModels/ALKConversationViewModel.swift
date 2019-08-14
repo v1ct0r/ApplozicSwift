@@ -1251,24 +1251,47 @@ open class ALKConversationViewModel: NSObject, Localizable {
             }
             let contactService = ALContactService()
             var contactsNotPresent = [String]()
+            var replyMessageKeys = [String]()
             for message in alMessages {
                 let contactId = message.to ?? ""
                 if !contactService.isContactExist(contactId) {
                     contactsNotPresent.append(contactId)
                 }
+                if let metadata = message.metadata,
+                    let key = metadata[AL_MESSAGE_REPLY_KEY] as? String {
+                    replyMessageKeys.append(key)
+                }
             }
-
-            if !contactsNotPresent.isEmpty {
-                let userService = ALUserService()
-                userService.fetchAndupdateUserDetails(NSMutableArray(array: contactsNotPresent), withCompletion: { (userDetails, _) in
-                    contactDbService.addUserDetails(userDetails)
-                    completion(alMessages)
+            if !replyMessageKeys.isEmpty {
+                ALMessageService().fetchReplyMessages(NSMutableArray(array: replyMessageKeys), withCompletion: { (replyMessages) in
+                    guard let replyMessages = replyMessages as? [ALMessage] else { return }
+                    for message in replyMessages {
+                        let contactId = message.to ?? ""
+                        if !contactService.isContactExist(contactId) {
+                            contactsNotPresent.append(contactId)
+                        }
+                    }
+                    self.processContacts(contactsNotPresent, completion: {
+                        completion(alMessages)
+                    })
                 })
             } else {
-                completion(alMessages)
+                self.processContacts(contactsNotPresent, completion: {
+                    completion(alMessages)
+                })
             }
-
         })
+    }
+
+    private func processContacts(_ contacts: [String], completion: @escaping () -> Void) {
+        if !contacts.isEmpty {
+            ALUserService().fetchAndupdateUserDetails(NSMutableArray(array: contacts), withCompletion: { (userDetails, _) in
+                ALContactDBService().addUserDetails(userDetails)
+                completion()
+            })
+        } else {
+            completion()
+        }
     }
 
     private func addMembersToGroup(users: [ALKFriendViewModel], completion: @escaping (Bool)->Void) {

@@ -166,7 +166,7 @@ open class ALKFriendMessageCell: ALKMessageCell {
                 constant: -Padding.PreviewImageView.right),
             previewImageView.heightAnchor.constraintEqualToAnchor(
                 constant: 0,
-                identifier: ConstraintIdentifier.replyMessageHeight),
+                identifier: ConstraintIdentifier.replyPreviewImageHeight),
             previewImageView.widthAnchor.constraintEqualToAnchor(
                 constant: 0,
                 identifier: ConstraintIdentifier.replyPreviewImageWidth),
@@ -242,23 +242,7 @@ open class ALKFriendMessageCell: ALKMessageCell {
 
     override func update(viewModel: ALKMessageViewModel) {
         super.update(viewModel: viewModel, style: ALKMessageStyle.receivedMessage)
-
-        if viewModel.isReplyMessage {
-            guard
-                let metadata = viewModel.metadata,
-                let replyId = metadata[AL_MESSAGE_REPLY_KEY] as? String,
-                let actualMessage = getMessageFor(key: replyId)
-                else { return }
-            showReplyView(true)
-            if actualMessage.messageType == .text || actualMessage.messageType == .html {
-                previewImageView.constraint(withIdentifier: ConstraintIdentifier.replyPreviewImageWidth)?.constant = 0
-            } else {
-                previewImageView.constraint(withIdentifier: ConstraintIdentifier.replyPreviewImageWidth)?.constant = Padding.PreviewImageView.width
-            }
-        } else {
-            showReplyView(false)
-        }
-
+        handleReplyView(viewModel: viewModel)
         let placeHolder = UIImage(named: "placeholder", in: Bundle.applozic, compatibleWith: nil)
         if let url = viewModel.avatarURL {
             let resource = ImageResource(downloadURL: url, cacheKey: url.absoluteString)
@@ -287,7 +271,9 @@ open class ALKFriendMessageCell: ALKMessageCell {
 
         guard
             let metadata = viewModel.metadata,
-            let _ = metadata[AL_MESSAGE_REPLY_KEY] as? String
+            let replyId = metadata[AL_MESSAGE_REPLY_KEY] as? String,
+            let actualMessage = ALMessageService().getALMessage(byKey: replyId)?.messageModel,
+            !actualMessage.identifier.isEmpty
             else {
                 return totalHeight
         }
@@ -310,6 +296,28 @@ open class ALKFriendMessageCell: ALKMessageCell {
         super.menuWillHide(sender)
         if(ALKMessageStyle.receivedBubble.style == .edge){
             self.bubbleView.image =  bubbleViewImage(for: ALKMessageStyle.receivedBubble.style,isReceiverSide: true,showHangOverImage: false)
+        }
+    }
+
+    private func handleReplyView(viewModel: ALKMessageViewModel) {
+        if viewModel.isReplyMessage {
+            guard
+                let metadata = viewModel.metadata,
+                let replyId = metadata[AL_MESSAGE_REPLY_KEY] as? String,
+                let actualMessage = getMessageFor(key: replyId),
+                !actualMessage.identifier.isEmpty
+            else {
+                showReplyView(false)
+                return
+            }
+            showReplyView(true)
+            if actualMessage.messageType == .text || actualMessage.messageType == .html {
+                previewImageView.constraint(withIdentifier: ConstraintIdentifier.replyPreviewImageWidth)?.constant = 0
+            } else {
+                previewImageView.constraint(withIdentifier: ConstraintIdentifier.replyPreviewImageWidth)?.constant = Padding.PreviewImageView.width
+            }
+        } else {
+            showReplyView(false)
         }
     }
 

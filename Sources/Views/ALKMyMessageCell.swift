@@ -205,23 +205,7 @@ open class ALKMyMessageCell: ALKMessageCell {
 
    open override func update(viewModel: ALKMessageViewModel) {
         super.update(viewModel: viewModel, style: ALKMessageStyle.sentMessage)
-
-        if viewModel.isReplyMessage {
-            guard
-                let metadata = viewModel.metadata,
-                let replyId = metadata[AL_MESSAGE_REPLY_KEY] as? String,
-                let actualMessage = getMessageFor(key: replyId)
-                else {return}
-            showReplyView(true)
-            if actualMessage.messageType == .text || actualMessage.messageType == .html {
-                previewImageView.constraint(withIdentifier: ConstraintIdentifier.PreviewImage.width)?.constant = 0
-            } else {
-                previewImageView.constraint(withIdentifier: ConstraintIdentifier.PreviewImage.width)?.constant = Padding.PreviewImageView.width
-            }
-        } else {
-            showReplyView(false)
-        }
-
+        handleReplyView(viewModel: viewModel)
         if viewModel.isAllRead {
             stateView.image = UIImage(named: "read_state_3", in: Bundle.applozic, compatibleWith: nil)
             stateView.tintColor = UIColor(netHex: 0x0578FF)
@@ -249,13 +233,36 @@ open class ALKMyMessageCell: ALKMessageCell {
         let totalHeight = messageHeight + heightPadding
         guard
             let metadata = viewModel.metadata,
-            let _ = metadata[AL_MESSAGE_REPLY_KEY] as? String
+            let replyId = metadata[AL_MESSAGE_REPLY_KEY] as? String,
+            let actualMessage = ALMessageService().getALMessage(byKey: replyId)?.messageModel,
+            !actualMessage.identifier.isEmpty
             else {
                 return totalHeight
         }
         return totalHeight + Padding.ReplyView.height
     }
 
+    private func handleReplyView(viewModel: ALKMessageViewModel) {
+        if viewModel.isReplyMessage {
+            guard
+                let metadata = viewModel.metadata,
+                let replyId = metadata[AL_MESSAGE_REPLY_KEY] as? String,
+                let actualMessage = getMessageFor(key: replyId),
+                !actualMessage.identifier.isEmpty
+            else {
+                showReplyView(false)
+                return
+            }
+            showReplyView(true)
+            if actualMessage.messageType == .text || actualMessage.messageType == .html {
+                previewImageView.constraint(withIdentifier: ConstraintIdentifier.PreviewImage.width)?.constant = 0
+            } else {
+                previewImageView.constraint(withIdentifier: ConstraintIdentifier.PreviewImage.width)?.constant = Padding.PreviewImageView.width
+            }
+        } else {
+            showReplyView(false)
+        }
+    }
 
     fileprivate func showReplyView(_ show: Bool) {
         replyView
