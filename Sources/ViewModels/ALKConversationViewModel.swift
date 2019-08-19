@@ -1245,14 +1245,17 @@ open class ALKConversationViewModel: NSObject, Localizable {
 
             let contactDbService = ALContactDBService()
             contactDbService.addUserDetails(userDetailsList)
-            guard let alMessages = messages as? [ALMessage] else {
+            guard var alMessages = messages as? [ALMessage] else {
                 completion(nil)
                 return
             }
             let contactService = ALContactService()
+            let messageDbService = ALMessageDBService()
             var contactsNotPresent = [String]()
             var replyMessageKeys = [String]()
-            for message in alMessages {
+
+            for index in 0..<alMessages.count {
+                let message = alMessages[index]
                 let contactId = message.to ?? ""
                 if !contactService.isContactExist(contactId) {
                     contactsNotPresent.append(contactId)
@@ -1260,6 +1263,14 @@ open class ALKConversationViewModel: NSObject, Localizable {
                 if let metadata = message.metadata,
                     let key = metadata[AL_MESSAGE_REPLY_KEY] as? String {
                     replyMessageKeys.append(key)
+                }
+                if message.getAttachmentType() != nil {
+let dbMessage = messageDbService.getMessageByKey("key", value: message.identifier) as? DB_Message
+                }
+                if message.getAttachmentType() != nil,
+                    let dbMessage = messageDbService.getMessageByKey("key", value: message.identifier) as? DB_Message,
+                    dbMessage.filePath != nil {
+                    alMessages[index] = messageDbService.createMessageEntity(dbMessage)
                 }
             }
             if !replyMessageKeys.isEmpty {
