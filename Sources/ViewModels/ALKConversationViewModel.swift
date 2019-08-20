@@ -191,6 +191,15 @@ open class ALKConversationViewModel: NSObject, Localizable {
         return messageModels[indexPath.section]
     }
 
+    open func replyMessageFor(message: ALKMessageViewModel) -> ALKMessageViewModel? {
+        guard let metadata = message.metadata,
+            let replyKey = metadata[AL_MESSAGE_REPLY_KEY] as? String
+        else {
+            return nil
+        }
+        return messageForRow(identifier: replyKey) ?? ALMessageService().getALMessage(byKey: replyKey)?.messageModel
+    }
+
     open func quickReplyDictionary(message: ALKMessageViewModel?,indexRow row: Int) -> Dictionary<String,Any>? {
 
         guard let metadata = message?.metadata else {
@@ -234,11 +243,12 @@ open class ALKConversationViewModel: NSObject, Localizable {
         }
         switch messageModel.messageType {
         case .text, .html, .email:
+            let replyMessage = replyMessageFor(message: messageModel)
             if messageModel.isMyMessage {
-                let height = ALKMyMessageCell.rowHeigh(viewModel: messageModel, width: maxWidth)
+                let height = ALKMyMessageCell.rowHeigh(viewModel: messageModel, width: maxWidth, replyMessage: replyMessage)
                 return height.cached(with: messageModel.identifier)
             } else {
-                let height = ALKFriendMessageCell.rowHeigh(viewModel: messageModel, width: maxWidth)
+                let height = ALKFriendMessageCell.rowHeigh(viewModel: messageModel, width: maxWidth, replyMessage: replyMessage)
                 return height.cached(with: messageModel.identifier)
             }
         case .photo:

@@ -136,21 +136,15 @@ open class ALKMessageCell: ALKChatBaseCell<ALKMessageViewModel>, ALKCopyMenuItem
 
     var replyViewAction: (()->())? = nil
 
-    func update(viewModel: ALKMessageViewModel, style: Style) {
+    func update(viewModel: ALKMessageViewModel, style: Style, replyMessage: ALKMessageViewModel?) {
         self.viewModel = viewModel
 
-        if viewModel.isReplyMessage {
-            guard
-                let metadata = viewModel.metadata,
-                let replyId = metadata[AL_MESSAGE_REPLY_KEY] as? String,
-                let actualMessage = getMessageFor(key: replyId),
-                actualMessage.identifier != nil
-                else { return }
-            replyNameLabel.text = actualMessage.isMyMessage ?
-                selfNameText : actualMessage.displayName
+        if let replyMessage = replyMessage {
+            replyNameLabel.text = replyMessage.isMyMessage ?
+                selfNameText : replyMessage.displayName
             replyMessageLabel.text =
-                getMessageTextFrom(viewModel: actualMessage)
-            let (url, image) = ReplyMessageImage().previewFor(message: actualMessage)
+                getMessageTextFrom(viewModel: replyMessage)
+            let (url, image) = ReplyMessageImage().previewFor(message: replyMessage)
             if let url = url {
                 setImageFrom(url: url, to: previewImageView)
             } else {
@@ -262,11 +256,6 @@ open class ALKMessageCell: ALKChatBaseCell<ALKMessageViewModel>, ALKCopyMenuItem
         menuAction?(.reply)
     }
 
-    func getMessageFor(key: String) -> ALKMessageViewModel? {
-        let messageService = ALMessageService()
-        return messageService.getALMessage(byKey: key)?.messageModel
-    }
-
     @objc func replyViewTapped() {
         replyViewAction?()
     }
@@ -290,30 +279,6 @@ open class ALKMessageCell: ALKChatBaseCell<ALKMessageViewModel>, ALKCopyMenuItem
     }
 
     // MARK: - Private helper methods
-
-    private func handleReplyMessage(viewModel: ALKMessageViewModel) {
-        replyNameLabel.text = ""
-        replyMessageLabel.text = ""
-        previewImageView.image = nil
-        if viewModel.isReplyMessage {
-            guard
-                let metadata = viewModel.metadata,
-                let replyId = metadata[AL_MESSAGE_REPLY_KEY] as? String,
-                let actualMessage = getMessageFor(key: replyId),
-                !actualMessage.identifier.isEmpty
-                else { return }
-            replyNameLabel.text = actualMessage.isMyMessage ?
-                selfNameText : actualMessage.displayName
-            replyMessageLabel.text =
-                getMessageTextFrom(viewModel: actualMessage)
-            let (url, image) = ReplyMessageImage().previewFor(message: actualMessage)
-            if let url = url {
-                setImageFrom(url: url, to: previewImageView)
-            } else {
-                previewImageView.image = image
-            }
-        }
-    }
 
     private class func attributedStringFrom(_ text: String, for id: String) -> NSAttributedString? {
         if let attributedString = attributedStringCache.object(forKey: id as NSString) {
