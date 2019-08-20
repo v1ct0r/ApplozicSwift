@@ -374,7 +374,7 @@ open class ALKConversationViewController: ALKBaseViewController, Localizable {
             setupView()
             self.refreshViewController()
         }
-        setupNavigation()
+        configureView()
         contentOffsetDictionary = Dictionary<NSObject,AnyObject>()
         print("id: ", viewModel.messageModels.first?.contactId as Any)
     }
@@ -831,16 +831,19 @@ open class ALKConversationViewController: ALKBaseViewController, Localizable {
     public func refreshViewController() {
         viewModel.clearViewModel()
         tableView.reloadData()
+        configureView()
+        viewModel.prepareController()
+        isFirstTime = false
+    }
 
+    func configureView() {
+        setupNavigation()
         prepareContextView()
         configureChatBar()
         //Check for group left
         isChannelLeft()
         checkUserBlock()
         subscribeChannelToMqtt()
-
-        viewModel.prepareController()
-        isFirstTime = false
     }
 
     /// Call this before changing viewModel contents
