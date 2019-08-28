@@ -9,6 +9,7 @@ import UIKit
 import AVKit
 import AVFoundation
 import Applozic
+import Kingfisher
 import SafariServices
 
 // swiftlint:disable:next type_body_length
@@ -386,6 +387,8 @@ open class ALKConversationViewController: ALKBaseViewController, Localizable {
 
     override open func viewDidLoad() {
         super.viewDidLoad()
+        Kingfisher.ImageCache.default.memoryStorage.config.totalCostLimit = 100 * 1024 * 1024
+
         setupConstraints()
         autocompletionView.contentInset = UIEdgeInsets(top: 0, left: -5, bottom: 0, right: 0)
         chatBar.setup(autocompletionView, withPrefex: "/")

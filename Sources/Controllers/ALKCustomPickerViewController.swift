@@ -188,7 +188,11 @@ class ALKCustomPickerViewController: ALKBaseViewController, Localizable {
 
     @IBAction func doneButtonAction(_ sender: UIBarButtonItem) {
         activityIndicator.startAnimating()
+        view.isUserInteractionEnabled = false
+        navigationController?.view.isUserInteractionEnabled = false
         export { (images, videos, error) in
+            self.view.isUserInteractionEnabled = true
+            self.navigationController?.view.isUserInteractionEnabled = true
             self.activityIndicator.stopAnimating()
             if error {
                 let alertTitle = self.localizedString(
