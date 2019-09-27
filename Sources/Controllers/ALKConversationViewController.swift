@@ -1049,7 +1049,11 @@ open class ALKConversationViewController: ALKBaseViewController, Localizable {
         guard
             let metadata = message.metadata,
             let replyId = metadata[AL_MESSAGE_REPLY_KEY] as? String
-            else {return}
+            else { return }
+        if let indexPath = viewModel.getIndexPathFor(messageKey: replyId) {
+            tableView.scrollToRow(at: indexPath, at: .top, animated: true)
+            return
+        }
         let actualMessage = messageService.getALMessage(byKey: replyId).messageModel
         guard let indexPath = viewModel.getIndexpathFor(message: actualMessage)
             else {return}

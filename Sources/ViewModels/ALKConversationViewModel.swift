@@ -1026,6 +1026,15 @@ open class ALKConversationViewModel: NSObject, Localizable {
         return IndexPath(row: 0, section: index)
     }
 
+    open func getIndexPathFor(messageKey: String) -> IndexPath? {
+        for (index, value) in messageModels.enumerated() {
+            if value.identifier == messageKey {
+                return IndexPath(row: 0, section: index)
+            }
+        }
+        return nil
+    }
+
     open func genericTemplateFor(message: ALKMessageViewModel) -> Any? {
 
         guard richMessages[message.identifier] == nil else {
@@ -1281,9 +1290,6 @@ open class ALKConversationViewModel: NSObject, Localizable {
                     let key = metadata[AL_MESSAGE_REPLY_KEY] as? String {
                     replyMessageKeys.append(key)
                 }
-                if message.getAttachmentType() != nil {
-let dbMessage = messageDbService.getMessageByKey("key", value: message.identifier) as? DB_Message
-                }
                 if message.getAttachmentType() != nil,
                     let dbMessage = messageDbService.getMessageByKey("key", value: message.identifier) as? DB_Message,
                     dbMessage.filePath != nil {
@@ -1292,7 +1298,10 @@ let dbMessage = messageDbService.getMessageByKey("key", value: message.identifie
             }
             if !replyMessageKeys.isEmpty {
                 ALMessageService().fetchReplyMessages(NSMutableArray(array: replyMessageKeys), withCompletion: { (replyMessages) in
-                    guard let replyMessages = replyMessages as? [ALMessage] else { return }
+                    guard let replyMessages = replyMessages as? [ALMessage] else {
+                        completion(alMessages)
+                        return
+                    }
                     for message in replyMessages {
                         let contactId = message.to ?? ""
                         if !contactService.isContactExist(contactId) {
