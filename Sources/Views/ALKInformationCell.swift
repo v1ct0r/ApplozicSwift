@@ -51,10 +51,11 @@ final class ALKInformationCell: UITableViewCell {
             
             let nomalizedMessage = message.replacingOccurrences(of: " ", with: "d")
             
-            let rect = (nomalizedMessage as NSString).boundingRect(with: CGSize.init(width: widthNoPadding, height: CGFloat.greatestFiniteMagnitude),
-                                                                   options: NSStringDrawingOptions.usesLineFragmentOrigin,
-                                                                   attributes: [NSFontAttributeName:UIFont.font(.bold(size: 12))],
-                                                                   context: nil)
+            let rect = (nomalizedMessage as NSString).boundingRect(
+                with: CGSize.init(width: widthNoPadding, height: CGFloat.greatestFiniteMagnitude),
+                options: .usesLineFragmentOrigin,
+                attributes: [.font: UIFont.font(.bold(size: 12))],
+                context: nil)
             messageHeigh = rect.height + 17
             
             messageHeigh = ceil(messageHeigh)
@@ -63,7 +64,7 @@ final class ALKInformationCell: UITableViewCell {
         return topPadding()+messageHeigh+bottomPadding()
     }
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupConstraints()
         
@@ -88,7 +89,7 @@ final class ALKInformationCell: UITableViewCell {
         contentView.backgroundColor = .clear
         
         contentView.addViewsForAutolayout(views: [messageView,bubbleView])
-        contentView.bringSubview(toFront: messageView)
+        contentView.bringSubviewToFront(messageView)
         
         messageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8).isActive = true
         messageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8).isActive = true

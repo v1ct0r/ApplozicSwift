@@ -158,16 +158,16 @@ final class ALKPreviewImageViewController: UIViewController {
 
             let photoAlbumSuccessTitleMsg = NSLocalizedString("PhotoAlbumSuccessTitle",value: SystemMessage.PhotoAlbum.SuccessTitle, comment: "")
             let photoAlbumSuccessMsg = NSLocalizedString("PhotoAlbumSuccess",value: SystemMessage.PhotoAlbum.Success, comment: "")
-            let alert = UIAlertController(title: photoAlbumSuccessTitleMsg, message: photoAlbumSuccessMsg, preferredStyle: UIAlertControllerStyle.alert)
+            let alert = UIAlertController(title: photoAlbumSuccessTitleMsg, message: photoAlbumSuccessMsg, preferredStyle: UIAlertController.Style.alert)
             let photoAlbumOkMsg = NSLocalizedString("PhotoAlbumOk",value: SystemMessage.PhotoAlbum.Ok, comment: "")
-            alert.addAction(UIAlertAction(title: photoAlbumOkMsg, style: UIAlertActionStyle.default, handler: nil))
+            alert.addAction(UIAlertAction(title: photoAlbumOkMsg, style: UIAlertAction.Style.default, handler: nil))
             self.present(alert, animated: true, completion: nil)
         }) { (error) in
             let photoAlbumFailureTitleMsg = NSLocalizedString("PhotoAlbumFailureTitle",value: SystemMessage.PhotoAlbum.FailureTitle, comment: "")
             let photoAlbumFailMsg = NSLocalizedString("PhotoAlbumFail",value: SystemMessage.PhotoAlbum.Fail, comment: "")
-            let alert = UIAlertController(title: photoAlbumFailureTitleMsg, message: photoAlbumFailMsg, preferredStyle: UIAlertControllerStyle.alert)
+            let alert = UIAlertController(title: photoAlbumFailureTitleMsg, message: photoAlbumFailMsg, preferredStyle: UIAlertController.Style.alert)
             let photoAlbumOkMsg = NSLocalizedString("PhotoAlbumOk",value: SystemMessage.PhotoAlbum.Ok, comment: "")
-            alert.addAction(UIAlertAction(title: photoAlbumOkMsg, style: UIAlertActionStyle.default, handler: nil))
+            alert.addAction(UIAlertAction(title: photoAlbumOkMsg, style: UIAlertAction.Style.default, handler: nil))
             self.present(alert, animated: true, completion: nil)
         }
     }

@@ -87,7 +87,7 @@ open class ALKSoundRecorderBtn: UIButton {
     {
         recordingSession = AVAudioSession.sharedInstance()
         do {
-            try recordingSession.setCategory(AVAudioSessionCategoryPlayAndRecord)
+            try recordingSession.setCategory(AVAudioSession.Category.playAndRecord)
             try recordingSession.overrideOutputAudioPort(.speaker)
             try recordingSession.setActive(true)
             recordingSession.requestRecordPermission() {[weak self] allowed in
@@ -109,7 +109,7 @@ open class ALKSoundRecorderBtn: UIButton {
     private func checkMicrophonePermission() -> Bool {
         
         let soundSession = AVAudioSession.sharedInstance()
-        let permissionStatus = soundSession.recordPermission()
+        let permissionStatus = soundSession.recordPermission
         var isAllow = false
         
         switch (permissionStatus) {
@@ -138,7 +138,7 @@ open class ALKSoundRecorderBtn: UIButton {
         return isAllow
     }
     
-    func startAudioRecordGesture(sender : UIGestureRecognizer){
+    @objc func startAudioRecordGesture(sender : UIGestureRecognizer){
         let point = sender.location(in: self)
         let width = self.frame.size.width
         let height = self.frame.size.height
@@ -189,7 +189,7 @@ open class ALKSoundRecorderBtn: UIButton {
             AVEncoderAudioQualityKey: AVAudioQuality.medium.rawValue
         ]
         do {
-            try recordingSession.setCategory(AVAudioSessionCategoryPlayAndRecord)
+            try recordingSession.setCategory(AVAudioSession.Category.playAndRecord)
             try recordingSession.overrideOutputAudioPort(.speaker)
             try recordingSession.setActive(true)
             audioRecorder = try AVAudioRecorder(url: audioFilename, settings: settings)
@@ -247,7 +247,7 @@ open class ALKSoundRecorderBtn: UIButton {
         
         recordingSession = AVAudioSession.sharedInstance()
         do {
-            try recordingSession.setCategory(AVAudioSessionCategoryPlayback)
+            try recordingSession.setCategory(AVAudioSession.Category.playback)
             audioPlayer = try AVAudioPlayer(contentsOf: url)
             guard let player = audioPlayer else { return }
             

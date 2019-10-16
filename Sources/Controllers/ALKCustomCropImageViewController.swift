@@ -36,7 +36,7 @@ final class ALKCustomCropImageViewController: ALKBaseViewController {
         self.previewScroll.addSubview(self.imgview)
         self.previewScroll.contentSize = self.imgview.image!.size
     
-        self.previewScroll.contentMode = UIViewContentMode.scaleAspectFit
+        self.previewScroll.contentMode = UIView.ContentMode.scaleAspectFit
         self.previewScroll.maximumZoomScale = 4.0
         self.previewScroll.minimumZoomScale = 1.0
         self.previewScroll.contentOffset.y  = imgview.bounds.size.height/2.0 - previewScroll.bounds.size.height/2.0
@@ -162,7 +162,7 @@ extension ALKCustomCropImageViewController:UINavigationControllerDelegate ,UIScr
         previewScroll.contentInset = UIEdgeInsets(top: verticalPadding, left: horizontalPadding, bottom: verticalPadding, right: horizontalPadding)
     }
     
-    func handleDoubleTap(recognizer: UITapGestureRecognizer) {
+    @objc func handleDoubleTap(recognizer: UITapGestureRecognizer) {
         if (previewScroll.zoomScale > previewScroll.minimumZoomScale) {
             previewScroll.setZoomScale(previewScroll.minimumZoomScale, animated: true)
         } else {

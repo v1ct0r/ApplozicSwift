@@ -66,7 +66,7 @@ class ALKPhotoCell: ALKChatBaseCell<ALKMessageViewModel>,
         return button
     }()
 
-    fileprivate let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.gray)
+    fileprivate let activityIndicator = UIActivityIndicatorView(style: .gray)
 
     var url: URL? = nil
     enum state {
@@ -133,7 +133,7 @@ class ALKPhotoCell: ALKChatBaseCell<ALKMessageViewModel>,
 
     }
 
-    func actionTapped(button: UIButton) {
+    @objc func actionTapped(button: UIButton) {
         let storyboard = UIStoryboard.name(storyboard: UIStoryboard.Storyboard.mediaViewer, bundle: Bundle.applozic)
 
         let nav = storyboard.instantiateInitialViewController() as? UINavigationController
@@ -171,11 +171,11 @@ class ALKPhotoCell: ALKChatBaseCell<ALKMessageViewModel>,
 
         downloadButton.addTarget(self, action: #selector(ALKPhotoCell.downloadButtonAction(_:)), for: .touchUpInside)
         contentView.addViewsForAutolayout(views: [frontView ,photoView,bubbleView,timeLabel,fileSizeLabel,uploadButton, downloadButton, activityIndicator])
-        contentView.bringSubview(toFront: photoView)
-        contentView.bringSubview(toFront: frontView)
-        contentView.bringSubview(toFront: downloadButton)
-        contentView.bringSubview(toFront: uploadButton)
-        contentView.bringSubview(toFront: activityIndicator)
+        contentView.bringSubviewToFront(photoView)
+        contentView.bringSubviewToFront(frontView)
+        contentView.bringSubviewToFront(downloadButton)
+        contentView.bringSubviewToFront(uploadButton)
+        contentView.bringSubviewToFront(activityIndicator)
 
         frontView.topAnchor.constraint(equalTo: bubbleView.topAnchor).isActive = true
         frontView.bottomAnchor.constraint(equalTo: bubbleView.bottomAnchor).isActive = true

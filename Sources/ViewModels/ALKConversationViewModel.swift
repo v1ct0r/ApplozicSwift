@@ -581,7 +581,7 @@ open class ALKConversationViewModel: NSObject {
         }
     }
 
-    open func sendVideo(atPath path: String, sourceType: UIImagePickerControllerSourceType) -> (ALMessage?, IndexPath?){
+    open func sendVideo(atPath path: String, sourceType: UIImagePickerController.SourceType) -> (ALMessage?, IndexPath?){
         guard let url = URL(string: path) else { return (nil, nil) }
         var contentType = ALMESSAGE_CONTENT_ATTACHMENT
         if sourceType == .camera {
@@ -693,7 +693,6 @@ open class ALKConversationViewModel: NSObject {
             syncOpenGroup(message: message)
             return
         }
-        guard message.conversationId != conversationId else { return }
         if let groupId = message.groupId, groupId != self.channelKey {
             let notificationView = ALNotificationView(alMessage: message, withAlertMessage: message.message)
             notificationView?.showNativeNotificationWithcompletionHandler({
@@ -704,7 +703,7 @@ open class ALKConversationViewModel: NSObject {
                 self.delegate?.updateDisplay(name: message.groupName)
                 self.prepareController()
             })
-        } else if let contactId = message.contactId, contactId != self.contactId {
+        } else if message.groupId == nil, let contactId = message.contactId, contactId != self.contactId {
             let notificationView = ALNotificationView(alMessage: message, withAlertMessage: message.message)
             notificationView?.showNativeNotificationWithcompletionHandler({
                 response in
@@ -846,10 +845,10 @@ open class ALKConversationViewModel: NSObject {
         let exportSession = AVAssetExportSession(asset: avAsset, presetName: AVAssetExportPresetPassthrough)
 
         exportSession!.outputURL = filePath
-        exportSession!.outputFileType = AVFileTypeMPEG4
+        exportSession!.outputFileType = AVFileType.mp4
         exportSession!.shouldOptimizeForNetworkUse = true
-        let start = CMTimeMakeWithSeconds(0.0, 0)
-        let range = CMTimeRangeMake(start, avAsset.duration)
+        let start = CMTimeMakeWithSeconds(0.0, preferredTimescale: 0)
+        let range = CMTimeRangeMake(start: start, duration: avAsset.duration)
         exportSession?.timeRange = range
 
         exportSession!.exportAsynchronously(completionHandler: {() -> Void in

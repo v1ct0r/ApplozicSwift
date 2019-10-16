@@ -46,7 +46,7 @@ open class ALKConversationListViewController: ALKBaseViewController {
     fileprivate var searchFilteredChat:[Any] = []
     fileprivate var alMqttConversationService: ALMQTTConversationService!
     fileprivate var dbService: ALMessageDBService!
-    fileprivate let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.gray)
+    fileprivate let activityIndicator = UIActivityIndicatorView(style: .gray)
 
     fileprivate var conversationViewController: ALKConversationViewController?
 
@@ -113,7 +113,7 @@ open class ALKConversationListViewController: ALKBaseViewController {
                     message.message = alertComponents.first
                 }
                 weakSelf.viewModel.addMessages(messages: [message])
-            } else if updateUI == Int(APP_STATE_BACKGROUND.rawValue) {
+            } else if updateUI == Int(APP_STATE_INACTIVE.rawValue) {
                 // Coming from background
 
                 guard contactId != nil || groupId != nil else { return }
@@ -152,7 +152,7 @@ open class ALKConversationListViewController: ALKBaseViewController {
         
     }
     
-    func paymentResponse(_ notification: NSNotification) {
+    @objc func paymentResponse(_ notification: NSNotification) {
         if let info = notification.userInfo, let cancelFlag = info["cancelFlag"]{
             openChat(info: info)
         }else {
@@ -160,7 +160,7 @@ open class ALKConversationListViewController: ALKBaseViewController {
         }
     }
     
-    public func openChat(info: [AnyHashable : Any]) {
+    @objc public func openChat(info: [AnyHashable : Any]) {
 //        let processPaymentMessage = ProcessPaymentMessage()
 //        processPaymentMessage.sendPaymentMessage(paymentJSON: info)
         if let groupIdOptional = info["groupId"] as? String, let groupIdInt = Int(groupIdOptional) {
@@ -195,7 +195,7 @@ open class ALKConversationListViewController: ALKBaseViewController {
         activityIndicator.center = CGPoint(x: view.bounds.size.width/2, y: view.bounds.size.height/2)
         activityIndicator.color = UIColor.gray
         view.addSubview(activityIndicator)
-        self.view.bringSubview(toFront: activityIndicator)
+        self.view.bringSubviewToFront(activityIndicator)
         viewModel.prepareController(dbService: dbService)
         self.edgesForExtendedLayout = []
     }
@@ -308,7 +308,7 @@ open class ALKConversationListViewController: ALKBaseViewController {
         
     }
 
-    func compose() {
+    @objc func compose() {
         searchClicked = true
         tableView.reloadData()
     }
@@ -339,7 +339,7 @@ open class ALKConversationListViewController: ALKBaseViewController {
         view.endEditing(true)
     }
     
-    func customDoneAction() {
+    @objc func customDoneAction() {
         isMultiSelectEnabled = false
         selectedRows.removeAll()
         tableView.reloadData()
@@ -348,7 +348,7 @@ open class ALKConversationListViewController: ALKBaseViewController {
         navigationItem.leftBarButtonItem = leftBarBackButtonItem
     }
 
-    func customBackAction() {
+    @objc func customBackAction() {
         guard let nav = self.navigationController else { return }
         let dd = nav.popViewController(animated: true)
         if dd == nil {
@@ -357,12 +357,12 @@ open class ALKConversationListViewController: ALKBaseViewController {
         BroadcastToIonic.sendBroadcast(name: "EXIT_BROADCAST")
     }
     
-    func deleteMultipleChats() {
-        let alert = UIAlertController(title: "Alert", message: "Are you sure you want to delete these conversations", preferredStyle: UIAlertControllerStyle.alert)
-        alert.addAction(UIAlertAction(title: "Continue", style: UIAlertActionStyle.destructive, handler: { (action) in
+    @objc func deleteMultipleChats() {
+        let alert = UIAlertController(title: "Alert", message: "Are you sure you want to delete these conversations", preferredStyle: UIAlertController.Style.alert)
+        alert.addAction(UIAlertAction(title: "Continue", style: UIAlertAction.Style.destructive, handler: { (action) in
             self.deleteMultipleChatsConfirmed()
         }))
-        alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil))
+        alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertAction.Style.cancel, handler: nil))
         self.present(alert, animated: true, completion: nil)
     }
 
@@ -471,8 +471,8 @@ extension ALKConversationListViewController: UITableViewDelegate, UITableViewDat
         searchBar.endEditing(true)
     }
     
-    func longPress(longPressGesture: UILongPressGestureRecognizer) {
-        if longPressGesture.state == UIGestureRecognizerState.began {
+    @objc func longPress(longPressGesture: UILongPressGestureRecognizer) {
+        if longPressGesture.state == UIGestureRecognizer.State.began {
             if searchClicked{
                 hideSearchBarAndKeyboard()
             }
@@ -565,7 +565,7 @@ extension ALKConversationListViewController: UITableViewDelegate, UITableViewDat
         return true
     }
     
-    public func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCellEditingStyle {
+    public func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
         return .none
     }
 
@@ -654,16 +654,19 @@ extension ALKConversationListViewController: ALMQTTConversationDelegate {
 
             
         } else {
-            let notificationView = ALNotificationView(alMessage: message, withAlertMessage: message.message)
+            var msg = message.message
+            if msg == nil {
+                msg = ""
+            }
+            let notificationView = ALNotificationView(alMessage: message, withAlertMessage: msg)
             notificationView?.showNativeNotificationWithcompletionHandler({
                 response in
                 self.launchChat(contactId: message.contactId, groupId: message.groupId, conversationId: message.conversationId)
             })
+            if let visibleController = self.navigationController?.visibleViewController, visibleController.isKind(of: ALKConversationListViewController.self) {
+                sync(message: alMessage)
+            }
         }
-
-
-//        sync(message: alMessage)
-
         
         }
 
@@ -699,6 +702,7 @@ extension ALKConversationListViewController: ALMQTTConversationDelegate {
     
     open func mqttConnectionClosed() {
         NSLog("MQTT connection closed")
+        alMqttConversationService.retryConnection()
     }
 }
 

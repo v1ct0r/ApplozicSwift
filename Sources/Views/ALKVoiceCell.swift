@@ -169,7 +169,7 @@ class ALKVoiceCell:ALKChatBaseCell<ALKMessageViewModel>,
         voiceDelegate = delegate
     }
     
-    func actionTapped() {
+    @objc func actionTapped() {
         guard let identifier = viewModel?.identifier else {return}
         voiceDelegate?.playAudioPress(identifier: identifier)
     }
@@ -191,12 +191,12 @@ class ALKVoiceCell:ALKChatBaseCell<ALKMessageViewModel>,
         clearButton.addTarget(self, action: #selector(ALKVoiceCell.soundPlayerAction), for: .touchUpInside)
 
         contentView.addViewsForAutolayout(views: [soundPlayerView,bubbleView,progressBar,actionButton,playTimeLabel,frameView,timeLabel,clearButton])
-        contentView.bringSubview(toFront: soundPlayerView)
-        contentView.bringSubview(toFront: progressBar)
-        contentView.bringSubview(toFront: playTimeLabel)
-        contentView.bringSubview(toFront: clearButton)
-        contentView.bringSubview(toFront: frameView)
-        contentView.bringSubview(toFront: actionButton)
+        contentView.bringSubviewToFront(soundPlayerView)
+        contentView.bringSubviewToFront(progressBar)
+        contentView.bringSubviewToFront(playTimeLabel)
+        contentView.bringSubviewToFront(clearButton)
+        contentView.bringSubviewToFront(frameView)
+        contentView.bringSubviewToFront(actionButton)
         
         bubbleView.topAnchor.constraint(equalTo: soundPlayerView.topAnchor).isActive = true
         bubbleView.bottomAnchor.constraint(equalTo: soundPlayerView.bottomAnchor).isActive = true
@@ -237,7 +237,7 @@ class ALKVoiceCell:ALKChatBaseCell<ALKMessageViewModel>,
 
     func updateViewForDownloadedState(data: Data) {
         do {
-            let player = try AVAudioPlayer(data: data, fileTypeHint: AVFileTypeWAVE)
+            let player = try AVAudioPlayer(data: data, fileTypeHint: AVFileType.wav.rawValue)
             viewModel?.voiceData = data
             viewModel?.voiceTotalDuration = CGFloat(player.duration)
             playTimeLabel.text = getTimeString(secLeft:viewModel!.voiceTotalDuration)

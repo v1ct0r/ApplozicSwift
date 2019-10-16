@@ -26,7 +26,7 @@ open class CustomViewController: UITabBarController, UITabBarControllerDelegate 
         super.viewWillAppear(animated)
         let conversationVC = ALKConversationListViewController()
         conversationVC.title = "Conversation"
-        conversationVC.tabBarItem = UITabBarItem.init(tabBarSystemItem: UITabBarSystemItem.more, tag: 0)
+        conversationVC.tabBarItem = UITabBarItem.init(tabBarSystemItem: UITabBarItem.SystemItem.more, tag: 0)
         let convNav = UINavigationController(rootViewController: conversationVC)
         
         let contactsVC = ALKContactListViewController()

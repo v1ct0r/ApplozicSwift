@@ -91,7 +91,7 @@ final class ALKChatCell: MGSwipeTableCell {
         bt.setImage(UIImage(named: "icon_favorite"), for: .normal)
         bt.setImage(UIImage(named: "icon_favorite_active"), for: .highlighted)
         bt.setImage(UIImage(named: "icon_favorite_active"), for: .selected)
-        bt.addTarget(self, action: #selector(favoriteTapped(button:)), for: UIControlEvents.touchUpInside)
+        bt.addTarget(self, action: #selector(favoriteTapped(button:)), for: UIControl.Event.touchUpInside)
         return bt
     }()
 
@@ -149,7 +149,7 @@ final class ALKChatCell: MGSwipeTableCell {
 
     weak var chatCellDelegate: ALKChatCellDelegate?
 
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         selectionStyle = .none
         voipButton.isHidden = true
@@ -348,7 +348,7 @@ final class ALKChatCell: MGSwipeTableCell {
         badgeNumberView.topAnchor.constraint(equalTo: avatarImageView.topAnchor, constant: 0).isActive = true
         badgeNumberView.leadingAnchor.constraint(equalTo: avatarImageView.trailingAnchor, constant: -12).isActive = true
 
-        badgeNumberLabel.setContentCompressionResistancePriority(1000, for: .horizontal)
+        badgeNumberLabel.setContentCompressionResistancePriority(UILayoutPriority(rawValue: 1000), for: .horizontal)
         badgeNumberLabel.topAnchor.constraint(equalTo: badgeNumberView.topAnchor, constant: 2.0).isActive = true
         badgeNumberLabel.bottomAnchor.constraint(equalTo: badgeNumberView.bottomAnchor, constant: -2.0).isActive = true
         badgeNumberLabel.leadingAnchor.constraint(equalTo: badgeNumberView.leadingAnchor, constant: 2.0).isActive = true
@@ -392,13 +392,13 @@ final class ALKChatCell: MGSwipeTableCell {
         comingSoonDelegate = delegate
     }
 
-    func callTapped(button: UIButton) {
+    @objc func callTapped(button: UIButton) {
 
         guard let viewModel = self.viewModel else {return}
         self.chatCellDelegate?.chatCell(cell: self, action: .call, viewModel:viewModel)
     }
 
-    func favoriteTapped(button: UIButton) {
+    @objc func favoriteTapped(button: UIButton) {
 //        comingSoonDelegate?.makeToast(SystemMessage.ComingSoon.Favorite, duration: 1.0, position: .center)
     }
 

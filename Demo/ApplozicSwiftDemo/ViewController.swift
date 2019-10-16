@@ -43,7 +43,7 @@ class ViewController: UIViewController {
         let tabBarController = UITabBarController()
         let conversationVC = ALKConversationListViewController()
         conversationVC.title = "Conversation"
-        conversationVC.tabBarItem = UITabBarItem.init(tabBarSystemItem: UITabBarSystemItem.contacts, tag: 0)
+        conversationVC.tabBarItem = UITabBarItem.init(tabBarSystemItem: UITabBarItem.SystemItem.favorites, tag: 0)
 
         let contactsVC = ALKContactListViewController()
         contactsVC.title = "Contacts"

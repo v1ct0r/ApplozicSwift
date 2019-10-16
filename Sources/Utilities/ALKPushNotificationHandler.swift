@@ -10,7 +10,7 @@ import Foundation
 import Applozic
 
 @objc public class ALKPushNotificationHandler: NSObject {
-    public static let shared = ALKPushNotificationHandler()
+    @objc public static let shared = ALKPushNotificationHandler()
     var navVC: UINavigationController?
 
     var contactId: String?
@@ -81,39 +81,16 @@ import Applozic
     }
 
     func launchIndividualChatWith(userId: String?, groupId: NSNumber?) {
-        NSLog("Called via notification and user id is: ", userId ?? "Not Present")
-
-        let conversationVC = ALKConversationListViewController()
-        conversationVC.title = "Conversation"
-        conversationVC.tabBarItem = UITabBarItem.init(tabBarSystemItem: UITabBarSystemItem.more, tag: 0)
-        let convNav = UINavigationController(rootViewController: conversationVC)
-        
-        let contactsVC = ALKContactListViewController()
-        contactsVC.title = "Contacts"
-        contactsVC.tabBarItem = UITabBarItem.init(tabBarSystemItem: .contacts, tag: 1)
-        let contNav = UINavigationController(rootViewController: contactsVC)
-        
-        let controllers = [conversationVC, contactsVC]
-        let tabBarController = UITabBarController()
-        tabBarController.viewControllers = controllers.map { UINavigationController(rootViewController: $0) }
-        tabBarController.tabBar.backgroundColor = UIColor.white
-        
         let pushAssist = ALPushAssist()
-        UIApplication.shared.keyWindow?.rootViewController = pushAssist.topViewController
-        UIApplication.shared.keyWindow?.makeKeyAndVisible()
-        
-        pushAssist.topViewController.present(tabBarController, animated: true, completion: nil)
-        
-        conversationVC.launchChat(contactId: userId, groupId: groupId)
-        
-//        let messagesVC = ALKConversationListViewController()
-//        messagesVC.contactId = userId
-//        messagesVC.channelKey = groupId
-//        let rootVC =  UIApplication.shared.keyWindow?.rootViewController?.presentedViewController
-//        let nav = ALKBaseNavigationViewController(rootViewController: messagesVC)
-//        navVC?.modalTransitionStyle = .crossDissolve
-//        rootVC?.present(nav, animated: true, completion: nil)
-
+        if let topVC = UIApplication.shared.keyWindow?.rootViewController?.presentedViewController as? ALKTabBarViewController {
+            topVC.selectedIndex = 0
+            topVC.conversationVC.launchChat(contactId: userId, groupId: groupId)
+            return
+        }
+        let controller = ALKTabBarViewController()
+        pushAssist.topViewController.present(controller, animated: false) {
+            controller.conversationVC.launchChat(contactId: userId, groupId: groupId)
+        }
     }
 
     func notificationTapped(userId: String?, groupId: NSNumber?) {

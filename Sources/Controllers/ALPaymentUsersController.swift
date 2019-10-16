@@ -63,7 +63,7 @@ class ALPaymentUsersController: ALKBaseViewController {
         setupSearchBar()
         
         self.navigationItem.title = NSLocalizedString("PaymentUsersTitle", value: SystemMessage.PaymentUsers.PaymentUsersTitle, comment: "")
-        self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName : UIColor.black]
+        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor : UIColor.black]
         
         
         definesPresentationContext = true
@@ -184,7 +184,7 @@ class ALPaymentUsersController: ALKBaseViewController {
         view.addGestureRecognizer(tapToDismiss!)
     }
     
-    func dismissSearchKeyboard() {
+    @objc func dismissSearchKeyboard() {
         if let text = searchController.searchBar.text, text.isEmpty == true {
             searchController.isActive = false
         }
@@ -289,7 +289,7 @@ extension ALPaymentUsersController: UITableViewDelegate, UITableViewDataSource {
             if !isInPreviousFriendGroup(fri: fri) {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.05, execute: {
                     tableView.deselectRow(at: indexPath, animated: true)
-                    tableView.reloadRows(at: [indexPath], with: UITableViewRowAnimation.fade)
+                    tableView.reloadRows(at: [indexPath], with: UITableView.RowAnimation.fade)
                 })
             }
         }

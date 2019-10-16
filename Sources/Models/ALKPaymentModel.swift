@@ -7,29 +7,20 @@
 
 import Foundation
 
-
 open class ALKPaymentModel: NSObject{
-    
     open var usersRequested: NSMutableArray?
-
     open var userId: String?
     open var groupId: NSNumber?
     open var messageKey: String?
-    
     open var launchPaymentPage: Bool = false
     open var paymentId: String?
     open var parentMessageKey: String?
     open var parentPaymentId: String?
-
     /// Text to display.
     open var paymentType: String?
-
     open var paymentAmount: String?
-
     open var paymentSubject: String?
-
     open var cancelFlag: Bool = false
-    
     func toString() -> String {
         var model = "{\"paymentType\": \""
         model += paymentType ?? ""
@@ -40,7 +31,6 @@ open class ALKPaymentModel: NSObject{
         model += ", \"cancelFlag\": \""
         model += String(describing: cancelFlag)
         model += "\""
-        
         if let groupID = groupId as? Int{
             let groupIDString = String(groupID)
             model += ", \"groupId\": \""
@@ -52,13 +42,11 @@ open class ALKPaymentModel: NSObject{
             model += userID
             model += "\""
         }
-        
         if usersRequested != nil {
             model += ", \"userRequested\": ["
             model += "\""
             model += usersRequested?[0] as! String
             model += "\""
-            
             for i in (1..<usersRequested!.count) {
                 model += ",\""
                 model += usersRequested?[i] as! String
@@ -66,12 +54,10 @@ open class ALKPaymentModel: NSObject{
             }
             model += "]"
         }
-        
         if messageKey != nil {
             model += ", \"messageKey\": \""
             model += messageKey ?? ""
             model += "\""
-            
         }
         if parentMessageKey != nil {
             model += ", \"parentMessageKey\": \""
@@ -88,11 +74,19 @@ open class ALKPaymentModel: NSObject{
             model += paymentId ?? ""
             model += "\""
         }
-        
+        if paymentAmount != nil {
+            model += ", \"paymentAmount\": \""
+            model += paymentAmount ?? ""
+            model += "\""
+        }
+        if paymentSubject != nil {
+            model += ", \"paymentSubject\": \""
+            model += paymentSubject ?? ""
+            model += "\""
+        }
         model += "}"
         return model
     }
-    
     func toDictionary() -> [String: Any] {
         return [
             "userRequested": usersRequested ?? [],
@@ -109,5 +103,4 @@ open class ALKPaymentModel: NSObject{
             "cancelFlag": cancelFlag
         ]
     }
-    
 }

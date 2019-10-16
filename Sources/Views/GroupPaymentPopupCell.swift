@@ -44,7 +44,7 @@ class GroupPaymentPopupCell: UITableViewCell {
         return view
     }()
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupConstraints()
     }
@@ -170,7 +170,7 @@ class GroupPaymentPopupHeader: UITableViewHeaderFooterView {
         checkBox.addTarget(self, action: #selector(toggleSelection), for: .touchUpInside)
     }
     
-    func toggleSelection() {
+    @objc func toggleSelection() {
         if checkBox.tag == 0{
             self.delegate.selectAll()
             selectCheckBox()

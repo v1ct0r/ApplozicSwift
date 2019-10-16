@@ -39,7 +39,7 @@ final class ALKAudioPlayer {
             timer = Timer.scheduledTimer(timeInterval: 1, target:self, selector: #selector(ALKAudioPlayer.updateCounter), userInfo: nil, repeats: true)
             
             do {
-                try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback)
+                try AVAudioSession.sharedInstance().setCategory(AVAudioSession.Category.playback)
             }
             catch {
             }
@@ -61,7 +61,7 @@ final class ALKAudioPlayer {
             timer = Timer.scheduledTimer(timeInterval: 1, target:self, selector: #selector(ALKAudioPlayer.updateCounter), userInfo: nil, repeats: true)
             
             do {
-                try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback)
+                try AVAudioSession.sharedInstance().setCategory(AVAudioSession.Category.playback)
             }
             catch {
             }
@@ -138,7 +138,7 @@ final class ALKAudioPlayer {
         //setup player
         do {
             audioData = data
-            audioPlayer = try AVAudioPlayer(data: data as Data, fileTypeHint: AVFileTypeWAVE)
+            audioPlayer = try AVAudioPlayer(data: data as Data, fileTypeHint: AVFileType.wav.rawValue)
             audioPlayer?.prepareToPlay()
             audioPlayer.volume = 1.0
             audiDelegate = delegate

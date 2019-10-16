@@ -15,21 +15,21 @@ class ShareApp: NSObject, UIActivityItemSource {
         return messageToBeShared
     }
     
-    public func activityViewController(_ activityViewController: UIActivityViewController, itemForActivityType activityType: UIActivityType) -> Any? {
-        if(activityType == UIActivityType.mail){
+    public func activityViewController(_ activityViewController: UIActivityViewController, itemForActivityType activityType: UIActivity.ActivityType?) -> Any? {
+        if(activityType == UIActivity.ActivityType.mail){
             return messageToBeShared
-        } else if(activityType == UIActivityType.postToTwitter){
+        } else if(activityType == UIActivity.ActivityType.postToTwitter){
             return messageToBeShared
         } else {
             return messageToBeShared
         }
     }
     
-    public func activityViewController(_ activityViewController: UIActivityViewController, subjectForActivityType activityType: UIActivityType?) -> String {
+    public func activityViewController(_ activityViewController: UIActivityViewController, subjectForActivityType activityType: UIActivity.ActivityType?) -> String {
         
-        if(activityType == UIActivityType.mail){
+        if(activityType == UIActivity.ActivityType.mail){
             return "Hey check this out!!"
-        } else if(activityType == UIActivityType.postToTwitter){
+        } else if(activityType == UIActivity.ActivityType.postToTwitter){
             return messageToBeShared
         } else {
             return messageToBeShared 

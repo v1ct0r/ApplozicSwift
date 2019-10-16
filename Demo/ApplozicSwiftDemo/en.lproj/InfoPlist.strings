@@ -1,0 +1,12 @@
+/* 
+  InfoPlist.strings
+  ApplozicSwiftDemo
+
+  Created by Shivam Pokhriyal on 10/10/18.
+  Copyright © 2018 Applozic. All rights reserved.
+*/
+"Privacy - Camera Usage Description" = "GERMAN";
+"Privacy - Location When In Use Usage Description" = "GERMAN";
+
+"Privacy - Microphone Usage Description" = "GErman";
+"Privacy - Photo Library Usage Description" = "GERMAN";

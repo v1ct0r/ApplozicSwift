@@ -61,7 +61,7 @@ open class PaymentView: UIView {
         layer.cornerRadius = 12
         
         addViewsForAutolayout(views: [paymentButtons])
-        bringSubview(toFront: paymentButtons)
+        bringSubviewToFront(paymentButtons)
         
         paymentButtons.leadingAnchor.constraint(equalTo: self.leadingAnchor).isActive = true
         paymentButtons.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
@@ -72,7 +72,7 @@ open class PaymentView: UIView {
         requestPaymentButton.addTarget(self, action: #selector(tapped(button:)), for: .touchUpInside)
     }
     
-    func tapped(button: UIButton){
+    @objc func tapped(button: UIButton){
         switch(button) {
             case sendPaymentButton:
                 print("Send payment button tapped")

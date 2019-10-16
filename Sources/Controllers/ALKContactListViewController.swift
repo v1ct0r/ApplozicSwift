@@ -91,7 +91,7 @@ open class ALKContactListViewController: ALKBaseViewController {
         tableView.register(ALKContactCell.self)
     }
     
-    func createGroup() {
+    @objc func createGroup() {
 //        let newChatVC = ALKNewChatViewController(viewModel: ALKNewChatViewModel())
 //        newChatVC.hidesBottomBarWhenPushed = true
 //        navigationController?.pushViewController(newChatVC, animated: true)
@@ -112,7 +112,7 @@ open class ALKContactListViewController: ALKBaseViewController {
 //            tableView.allowsMultipleSelectionDuringEditing = true //inside setupviews
 //    }
 
-    func customBackAction(){
+    @objc func customBackAction(){
         tabBarController?.selectedIndex = 0
     }
 }
@@ -170,7 +170,7 @@ extension ALKContactListViewController: UITableViewDelegate, UITableViewDataSour
             /* If you want to exclude certain types from sharing
              options you could add them to the excludedActivityTypes */
             //        vc.excludedActivityTypes = [UIActivityTypeMail]
-            let excludeActivities = [UIActivityType.airDrop, UIActivityType.print, UIActivityType.assignToContact, UIActivityType.saveToCameraRoll, UIActivityType.addToReadingList, UIActivityType.postToFlickr, UIActivityType.postToVimeo, UIActivityType.postToFacebook, UIActivityType.message, UIActivityType.postToWeibo]
+            let excludeActivities: [UIActivity.ActivityType] = [.airDrop, .print, .assignToContact, .saveToCameraRoll, .addToReadingList, .postToFlickr, .postToVimeo, .postToFacebook, .message, .postToWeibo]
             vc.excludedActivityTypes = excludeActivities
             self.present(vc, animated: true, completion: nil)
             self.tableView.isUserInteractionEnabled = true

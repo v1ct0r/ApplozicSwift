@@ -519,7 +519,7 @@ class ALKMessageCell: ALKChatBaseCell<ALKMessageViewModel>, ALKCopyMenuItemProto
             style.minimumLineHeight = 17
             style.maximumLineHeight = 17
 
-            let attributes: [String : Any] = [NSParagraphStyleAttributeName: style]
+            let attributes: [NSAttributedString.Key : Any] = [.paragraphStyle: style]
             guard let htmlText = message.data.attributedString else { return }
             let mutableText = NSMutableAttributedString(attributedString: htmlText)
             mutableText.addAttributes(attributes, range: NSMakeRange(0,mutableText.length))
@@ -533,7 +533,7 @@ class ALKMessageCell: ALKChatBaseCell<ALKMessageViewModel>, ALKCopyMenuItemProto
 
         messageView.addGestureRecognizer(longPressGesture)
         contentView.addViewsForAutolayout(views: [messageView,bubbleView,replyView, replyNameLabel, replyMessageLabel,previewImageView,timeLabel])
-        contentView.bringSubview(toFront: messageView)
+        contentView.bringSubviewToFront(messageView)
 
         let replyTapGesture = UITapGestureRecognizer(target: self, action: #selector(replyViewTapped))
         replyView.addGestureRecognizer(replyTapGesture)
@@ -585,19 +585,19 @@ class ALKMessageCell: ALKChatBaseCell<ALKMessageViewModel>, ALKCopyMenuItemProto
             style.minimumLineHeight = 17
             style.maximumLineHeight = 17
 
-            let attributes: [String : Any] = [NSFontAttributeName: font,
-                                              NSForegroundColorAttributeName: color,
-                                              NSParagraphStyleAttributeName: style
+            let attributes: [NSAttributedString.Key : Any] = [.font: font,
+                                              .foregroundColor: color,
+                                              .paragraphStyle: style
             ]
             var size = CGRect()
             if viewModel.messageType == .html {
                 guard let htmlText = message.data.attributedString else { return 30}
                 let mutableText = NSMutableAttributedString(attributedString: htmlText)
-                let attributes: [String : Any] = [NSParagraphStyleAttributeName: style]
+                let attributes: [NSAttributedString.Key : Any] = [.paragraphStyle: style]
                 mutableText.addAttributes(attributes, range: NSMakeRange(0,mutableText.length))
                 size = mutableText.boundingRect(with: maxSize, options: [NSStringDrawingOptions.usesFontLeading, NSStringDrawingOptions.usesLineFragmentOrigin], context: nil)
             } else {
-                size = message.boundingRect(with: maxSize, options: [NSStringDrawingOptions.usesFontLeading, NSStringDrawingOptions.usesLineFragmentOrigin],attributes: attributes, context: nil)
+                size = message.boundingRect(with: maxSize, options: [.usesFontLeading, .usesLineFragmentOrigin],attributes: attributes, context: nil)
             }
             messageHeigh = ceil(size.height) + 15 // due to textview's bottom pading
 
@@ -622,7 +622,7 @@ class ALKMessageCell: ALKChatBaseCell<ALKMessageViewModel>, ALKCopyMenuItemProto
         return messageService.getALMessage(byKey: key)?.messageModel
     }
 
-    func replyViewTapped() {
+    @objc func replyViewTapped() {
         replyViewAction?()
     }
 
@@ -711,7 +711,7 @@ class ALKMessageCell: ALKChatBaseCell<ALKMessageViewModel>, ALKCopyMenuItemProto
             let asset = AVURLAsset(url: filePath , options: nil)
             let imgGenerator = AVAssetImageGenerator(asset: asset)
             imgGenerator.appliesPreferredTrackTransform = true
-            let cgImage = try imgGenerator.copyCGImage(at: CMTimeMake(0, 1), actualTime: nil)
+            let cgImage = try imgGenerator.copyCGImage(at: CMTimeMake(value: 0, timescale: 1), actualTime: nil)
             return UIImage(cgImage: cgImage)
 
         } catch let error {

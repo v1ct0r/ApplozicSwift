@@ -53,7 +53,7 @@ final class ALKCreateGroupViewController: ALKBaseViewController {
     fileprivate var tempSelectedImg:UIImage!
     fileprivate var cropedImage: UIImage?
 
-    fileprivate let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.gray)
+    fileprivate let activityIndicator = UIActivityIndicatorView(style: .gray)
     
     var viewModel: ALKCreateGroupViewModel?
     
@@ -159,7 +159,7 @@ final class ALKCreateGroupViewController: ALKBaseViewController {
             // Button Create Group
             btnCreateGroup.layer.cornerRadius = 15
             btnCreateGroup.clipsToBounds = true
-            btnCreateGroup.setTitle(addContactMode.doneButtonTitle, for: UIControlState.normal)
+            btnCreateGroup.setTitle(addContactMode.doneButtonTitle, for: UIControl.State.normal)
         } else {
             btnCreateGroup.isHidden = true
         }
@@ -188,10 +188,10 @@ final class ALKCreateGroupViewController: ALKBaseViewController {
         style.lineBreakMode = .byWordWrapping
         
         guard let font      = UIFont(name: "HelveticaNeue-Italic", size: 14) else { return }
-        let attr:[String:Any] = [
-            NSFontAttributeName:font,
-            NSParagraphStyleAttributeName:style,
-            NSForegroundColorAttributeName: UIColor.placeholderGray()
+        let attr: [NSAttributedString.Key:Any] = [
+            .font: font,
+            .paragraphStyle: style,
+            .foregroundColor: UIColor.placeholderGray()
         ]
         let typeGroupNameMsg = NSLocalizedString("TypeGroupName", value: SystemMessage.LabelName.TypeGroupName, comment: "")
             textField.attributedPlaceholder  = NSAttributedString(string: typeGroupNameMsg, attributes: attr)

@@ -3,16 +3,16 @@ PODS:
     - SDWebImage (~> 4.2.2)
   - ApplozicSwift (0.6.0):
     - Applozic (~> 5.0.0)
-    - Kingfisher (~> 3.13.1)
+    - Kingfisher (~> 4.10.1)
     - MGSwipeTableCell (~> 1.5.6)
-  - Kingfisher (3.13.1)
+  - Kingfisher (4.10.1)
   - MGSwipeTableCell (1.5.6)
   - SDWebImage (4.2.3):
     - SDWebImage/Core (= 4.2.3)
   - SDWebImage/Core (4.2.3)
 
 DEPENDENCIES:
-  - Applozic (from `https://github.com/AppLozic/Applozic-Chat-iOS-Framework.git`, branch `payment`)
+  - Applozic (from `/Users/shivampokhriyal/Downloads/Applozic-Chat-iOS-Framework`)
   - ApplozicSwift (from `../ApplozicSwift.podspec`)
 
 SPEC REPOS:
@@ -23,23 +23,17 @@ SPEC REPOS:
 
 EXTERNAL SOURCES:
   Applozic:
-    :branch: payment
-    :git: https://github.com/AppLozic/Applozic-Chat-iOS-Framework.git
+    :path: "/Users/shivampokhriyal/Downloads/Applozic-Chat-iOS-Framework"
   ApplozicSwift:
     :path: "../ApplozicSwift.podspec"
 
-CHECKOUT OPTIONS:
-  Applozic:
-    :commit: e900de18119ef4a954c4c538f7c2ae5b232ebcec
-    :git: https://github.com/AppLozic/Applozic-Chat-iOS-Framework.git
-
 SPEC CHECKSUMS:
-  Applozic: 3d4decaeed5b53716b7e523e666c5bea9beaa2ab
-  ApplozicSwift: e1d6fe13a4520f661c50d5828d99dc5d0700eba1
-  Kingfisher: ed9707a409cc47fddafbcd12a43a9757e3600af5
+  Applozic: f049bbd979098883155e2a56c2ed3fd6d575d395
+  ApplozicSwift: acaedeea138fd7fcc7aaa780def624026106945d
+  Kingfisher: c148cd7b47ebde9989f6bc7c27dcaa79d81279a0
   MGSwipeTableCell: 616700eb0ffd1c611ba909066cb7fd739790a0a7
   SDWebImage: 791bb72962b3492327ddcac4b1880bd1b5458431
 
-PODFILE CHECKSUM: dc6ad517546d3413406bb0a3c057033c75bc08ee
+PODFILE CHECKSUM: 36846f8ff3af0a8fc810c57e3bc03e48cefe347f
 
-COCOAPODS: 1.5.3
+COCOAPODS: 1.7.5
