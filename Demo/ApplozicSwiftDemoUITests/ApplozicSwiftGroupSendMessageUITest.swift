@@ -37,12 +37,15 @@ class ApplozicSwiftGroupSendMessageUITest: XCTestCase {
     func testSendTextMessageInGroup() {
         let groupName = "DemogroupForText"
         let app = beforeStartTest_CreateAGroup_And_EnterInConversation(groupName: groupName) // Click on launch conversation and then create a group
-        waitFor(object: app) { $0.exists }
+        waitFor(object: app) { $0.isHittable }
         let inputView = app.otherElements[AppScreen.chatBar].children(matching: .textView).matching(identifier: AppTextFeild.chatTextView).firstMatch
-        waitFor(object: inputView) { $0.exists }
+        waitFor(object: inputView) { $0.isHittable }
+        let numberOfCells = app.tables.cells.count
         inputView.tap()
         inputView.typeText(GroupData.typeText) // typeing message
         app.buttons[InAppButton.ConversationScreen.send].tap() // sending message in group
+        XCTAssertEqual(app.tables.cells.count, numberOfCells + 1)
+        XCTAssertEqual(app.tables.cells.element(boundBy: numberOfCells).identifier, AppCells.textCell)
         let isGroupDeleted = deleteAGroup_FromConversationList_After_SendMessageInGroup(app: app) // leave the group and delete group
         XCTAssertTrue(isGroupDeleted, "Faild to delete group DemoGroupForImage")
     }
@@ -51,7 +54,8 @@ class ApplozicSwiftGroupSendMessageUITest: XCTestCase {
         let groupName = "DemoGroupForImage"
         let app = beforeStartTest_CreateAGroup_And_EnterInConversation(groupName: groupName) // Click on launch conversation and then create a group
         let openPhotos = app.buttons[InAppButton.ConversationScreen.openPhotos]
-        waitFor(object: openPhotos) { $0.exists }
+        waitFor(object: openPhotos) { $0.isHittable }
+        let numberOfCells = app.tables.cells.count
         app.buttons[InAppButton.ConversationScreen.openPhotos].tap() // Click on photo button
         addUIInterruptionMonitor(withDescription: AppPermission.AlertMessage.accessPhoto) { (alerts) -> Bool in
             if alerts.buttons[AppPermission.AlertButton.ok].exists {
@@ -66,20 +70,25 @@ class ApplozicSwiftGroupSendMessageUITest: XCTestCase {
         waitFor(object: thirdImageInFirstRow) { $0.exists }
         thirdImageInFirstRow.tap()
         let selectPhoto = app.navigationBars[InAppButton.ConversationScreen.selectPhoto]
-        waitFor(object: selectPhoto) { $0.exists }
+        waitFor(object: selectPhoto) { $0.isHittable }
         selectPhoto.tap()
         let doneButton = app.buttons[InAppButton.ConversationScreen.done]
-        waitFor(object: doneButton) { $0.exists }
+        waitFor(object: doneButton) { $0.isHittable }
         doneButton.tap()
+        waitFor(object: openPhotos) { $0.isHittable }
+        XCTAssertEqual(app.tables.cells.count, numberOfCells + 1)
+        XCTAssertEqual(app.tables.cells.element(boundBy: numberOfCells).identifier, AppCells.photoCell)
         let isGroupDeleted = deleteAGroup_FromConversationList_After_SendMessageInGroup(app: app) // leave the group and delete group
         XCTAssertTrue(isGroupDeleted, "Faild to delete group DemoGroupForImage")
     }
 
     func testSendContactInGroup() {
         let groupName = "DemoGroupForContact"
+
         let app = beforeStartTest_CreateAGroup_And_EnterInConversation(groupName: groupName) // Click on launch conversation and then create a group
         let openContact = app.buttons[InAppButton.ConversationScreen.openContact]
-        waitFor(object: openContact) { $0.exists }
+        waitFor(object: openContact) { $0.isHittable }
+        let numberOfCells = app.tables.cells.count
         openContact.tap() // Click on Contact button
         addUIInterruptionMonitor(withDescription: AppPermission.AlertMessage.accessContact) { (alerts) -> Bool in
             if alerts.buttons[AppPermission.AlertButton.ok].exists {
@@ -90,8 +99,11 @@ class ApplozicSwiftGroupSendMessageUITest: XCTestCase {
         }
         app.tap()
         let selectcontact = app.tables[InAppButton.ConversationScreen.selectcontact] // selection any conatct and than sending
-        waitFor(object: selectcontact) { $0.exists }
+        waitFor(object: selectcontact) { $0.isHittable }
         selectcontact.tap()
+        waitFor(object: openContact) { $0.isHittable }
+        XCTAssertEqual(app.tables.cells.count, numberOfCells + 1)
+        XCTAssertEqual(app.tables.cells.element(boundBy: numberOfCells).identifier, AppCells.contactCell)
         let isGroupDeleted = deleteAGroup_FromConversationList_After_SendMessageInGroup(app: app) // leave the group and delete group
         XCTAssertTrue(isGroupDeleted, "Faild to delete group DemoGroupForImage")
     }
@@ -100,7 +112,8 @@ class ApplozicSwiftGroupSendMessageUITest: XCTestCase {
         let groupName = "DemoGroupForLocation"
         let app = beforeStartTest_CreateAGroup_And_EnterInConversation(groupName: groupName) // Click on launch conversation and then create a group
         let openLocation = app.buttons[InAppButton.ConversationScreen.openLocation]
-        waitFor(object: openLocation) { $0.exists }
+        waitFor(object: openLocation) { $0.isHittable }
+        let numberOfCells = app.tables.cells.count
         openLocation.tap() // click on location button
         addUIInterruptionMonitor(withDescription: AppPermission.AlertMessage.accessLocation) { (alerts) -> Bool in
             if alerts.buttons[AppPermission.AlertButton.allowLoation].exists {
@@ -111,8 +124,11 @@ class ApplozicSwiftGroupSendMessageUITest: XCTestCase {
         }
         app.tap()
         let sendLocation = app.buttons[InAppButton.ConversationScreen.sendLocation] // sending current location
-        waitFor(object: sendLocation) { $0.exists }
+        waitFor(object: sendLocation) { $0.isHittable }
         sendLocation.tap()
+        waitFor(object: openLocation) { $0.isHittable }
+        XCTAssertEqual(app.tables.cells.count, numberOfCells + 1)
+        XCTAssertEqual(app.tables.cells.element(boundBy: numberOfCells).identifier, AppCells.locationCell)
         let isGroupDeleted = deleteAGroup_FromConversationList_After_SendMessageInGroup(app: app) // leave the group and delete group
         XCTAssertTrue(isGroupDeleted, "Faild to delete group DemoGroupForLocation")
     }
@@ -138,23 +154,23 @@ class ApplozicSwiftGroupSendMessageUITest: XCTestCase {
         let path = Bundle(for: ApplozicSwiftGroupSendMessageUITest.self).url(forResource: "Info", withExtension: "plist")
         let dict = NSDictionary(contentsOf: path!) as? [String: Any]
         let launchChat = app.buttons[InAppButton.LaunchScreen.launchChat]
-        waitFor(object: launchChat) { $0.exists }
+        waitFor(object: launchChat) { $0.isHittable }
         app.buttons[InAppButton.LaunchScreen.launchChat].tap()
         let newChat = app.buttons[InAppButton.CreatingGroup.newChat]
-        waitFor(object: newChat) { $0.exists }
+        waitFor(object: newChat) { $0.isHittable }
         app.navigationBars[AppScreen.myChatScreen].buttons[InAppButton.CreatingGroup.newChat].tap()
         let createGroup = app.tables.staticTexts[InAppButton.CreatingGroup.createGroup]
-        waitFor(object: createGroup) { $0.exists }
+        waitFor(object: createGroup) { $0.isHittable }
         createGroup.tap()
         let typeGroupNameTextField = app.textFields[AppTextFeild.typeGroupName]
-        waitFor(object: typeGroupNameTextField) { $0.exists }
+        waitFor(object: typeGroupNameTextField) { $0.isHittable }
         typeGroupNameTextField.tap()
         typeGroupNameTextField.typeText(groupName)
         let addParticipant = app.collectionViews.staticTexts[InAppButton.CreatingGroup.addParticipant]
-        waitFor(object: addParticipant) { $0.exists }
+        waitFor(object: addParticipant) { $0.isHittable }
         addParticipant.tap()
         let selectParticipantTableView = app.tables[AppScreen.selectParticipantView]
-        waitFor(object: selectParticipantTableView) { $0.exists }
+        waitFor(object: selectParticipantTableView) { $0.isHittable }
         selectParticipantTableView.staticTexts[dict?[GroupData.groupMember1] as! String].tap()
         selectParticipantTableView.staticTexts[dict?[GroupData.groupMember2] as! String].tap()
         app.buttons[InAppButton.CreatingGroup.invite].tap()
@@ -163,29 +179,29 @@ class ApplozicSwiftGroupSendMessageUITest: XCTestCase {
 
     private func deleteAGroup_FromConversationList_After_SendMessageInGroup(app: XCUIApplication) -> Bool {
         let back = app.navigationBars[AppScreen.myChatScreen].buttons[InAppButton.ConversationScreen.back]
-        waitFor(object: back) { $0.exists }
+        waitFor(object: back) { $0.isHittable }
         back.tap()
         let outerChatScreenTableView = app.tables[AppScreen.conversationList]
-        if outerChatScreenTableView.cells.allElementsBoundByIndex.isEmpty {
+        if outerChatScreenTableView.cells.isEmpty {
             return false
         }
         outerChatScreenTableView.cells.allElementsBoundByIndex.first?.swipeRight()
         let swippableDelete1 = app.buttons[InAppButton.ConversationScreen.swippableDelete]
-        waitFor(object: swippableDelete1) { $0.exists }
+        waitFor(object: swippableDelete1) { $0.isHittable }
         outerChatScreenTableView.buttons[InAppButton.ConversationScreen.swippableDelete].tap()
         let leave = app.alerts.scrollViews.otherElements.buttons[InAppButton.CreatingGroup.leave] // app.buttons[InAppButton.CreatingGroup.leave]
-        waitFor(object: leave) { $0.exists }
+        waitFor(object: leave) { $0.isHittable }
         leave.tap()
-        if outerChatScreenTableView.cells.allElementsBoundByIndex.isEmpty {
+        if outerChatScreenTableView.cells.isEmpty {
             return false
         }
         sleep(5)
         outerChatScreenTableView.cells.allElementsBoundByIndex.first?.swipeRight()
         let swippableDelete2 = app.buttons[InAppButton.ConversationScreen.swippableDelete]
-        waitFor(object: swippableDelete2) { $0.exists }
+        waitFor(object: swippableDelete2) { $0.isHittable }
         outerChatScreenTableView.buttons[InAppButton.ConversationScreen.swippableDelete].tap()
         let remove = app.alerts.scrollViews.otherElements.buttons[InAppButton.CreatingGroup.remove] // app.buttons[InAppButton.CreatingGroup.remove]
-        waitFor(object: remove) { $0.exists }
+        waitFor(object: remove) { $0.isHittable }
         remove.tap()
         return true
     }

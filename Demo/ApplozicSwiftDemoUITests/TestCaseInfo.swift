@@ -67,3 +67,10 @@ enum AppTextFeild {
     static let typeGroupName = "Type group name"
     static let chatTextView = "chatTextView"
 }
+
+enum AppCells {
+    static let textCell = "myTextCell"
+    static let photoCell = "myPhotoCell"
+    static let locationCell = "myLocationCell"
+    static let contactCell = "myContactCell"
+}
