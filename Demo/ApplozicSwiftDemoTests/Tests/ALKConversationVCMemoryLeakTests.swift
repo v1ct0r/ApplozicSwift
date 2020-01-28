@@ -11,9 +11,7 @@ import Quick
 @testable import ApplozicSwift
 
 class ALKConversationVCMemoryLeakTests: QuickSpec {
-
     override func spec() {
-
         var conversationVC: ALKConversationViewControllerMock?
         var isDeinitCalled: Bool = false
 
