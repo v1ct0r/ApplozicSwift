@@ -83,8 +83,9 @@ class ALChatManager: NSObject {
                 return;
             }
             guard response.isRegisteredSuccessfully() else {
-                let errorResponse = NSError(domain:"Applozic", code:0, userInfo:[NSLocalizedDescriptionKey: response.message])
-                completion(nil , errorResponse as NSError?)
+                let message = response.message ?? "Api error while registering to applozic"
+                let errorResponse = NSError(domain:"Applozic", code:0, userInfo:[NSLocalizedDescriptionKey: message])
+                completion(nil, errorResponse)
                 return
             }
             print("Registration successfull")

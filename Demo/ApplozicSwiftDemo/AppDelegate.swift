@@ -136,6 +136,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 service.processPushNotification(dict, updateUI: NSNumber(value: APP_STATE_BACKGROUND.rawValue))
             case .inactive:
                 service.processPushNotification(dict, updateUI: NSNumber(value: APP_STATE_INACTIVE.rawValue))
+            @unknown default:
+                print("Unknown application state in appdelegate")
             }
             completionHandler()
             return

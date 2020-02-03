@@ -605,7 +605,7 @@ extension ALKCreateGroupViewController: ALKSelectParticipantToAddProtocol {
     func selectedParticipant(selectedList: [ALKFriendViewModel], addedList: [ALKFriendViewModel]) {
         groupList = selectedList
         self.addedList = addedList
-        createGroupPress(btnCreateGroup)
+        createGroupPress(btnCreateGroup as Any)
     }
 }
 

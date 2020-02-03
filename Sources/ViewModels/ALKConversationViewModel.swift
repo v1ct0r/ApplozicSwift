@@ -784,8 +784,8 @@ open class ALKConversationViewModel: NSObject, Localizable {
         do {
             try alHandler?.managedObjectContext.save()
         } catch {}
-        print("content type: ", alMessage.fileMeta.contentType)
-        print("file path: ", alMessage.imageFilePath)
+        print("content type: ", alMessage.fileMeta.contentType ?? "")
+        print("file path: ", alMessage.imageFilePath ?? "")
         clientService.sendPhoto(forUserInfo: alMessage.dictionary(), withCompletion: {
             urlStr, error in
             guard error == nil, let urlStr = urlStr, let url = URL(string: urlStr) else {
