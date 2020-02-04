@@ -1835,7 +1835,7 @@ extension ALKConversationViewController: ALMQTTConversationDelegate {
         }
     }
 
-    public func syncCall(_ alMessage: ALMessage!, andMessageList messageArray: NSMutableArray!) {
+    public func syncCall(_ alMessage: ALMessage!, andMessageList _: NSMutableArray!) {
         guard let message = alMessage else { return }
         sync(message: message)
     }

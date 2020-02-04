@@ -14,10 +14,7 @@ class ALMessageDBServiceMock: ALMessageDBService {
     static var lastMessage: ALMessage! = MockMessage().message
 
     override func getMessages(_ subGroupList: NSMutableArray!) {
-        guard let latestMessageListArray = [ALMessageDBServiceMock.lastMessage] else {
-            return
-        }
-        delegate.getMessagesArray(latestMessageListArray)
+        delegate.getMessagesArray([ALMessageDBServiceMock.lastMessage] as? NSMutableArray)
     }
 
 }
