@@ -42,7 +42,7 @@ class LoginViewController: UIViewController {
         }
         alUser.userId = self.userName.text
         ALUserDefaultsHandler.setUserId(alUser.userId)
-        print("userName:: " , alUser.userId)
+        print("userName:: " ,alUser.userId ?? "")
         if(!((emailId.text?.isEmpty)!)){
             alUser.email = emailId.text
             ALUserDefaultsHandler.setEmailId(alUser.email)

@@ -200,7 +200,7 @@ open class AudioRecordButton: UIButton {
                 cancelAudioRecord()
             }
         @unknown default:
-           print("Unknown Microphone Permission state")
+            print("Unknown Microphone Permission state")
         }
     }
 }
