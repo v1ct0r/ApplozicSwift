@@ -380,8 +380,9 @@ extension ALKConversationListTableViewController: ALKChatCellDelegate {
                             channelService.leaveChannel(conversation.groupId, andUserId: ALUserDefaultsHandler.getUserId(), orClientChannelKey: nil, withCompletion: {
                                 error in
                                 self?.stopLoadingIndicator()
-                                if error != nil {
+                                guard error == nil else {
                                     print("Failed to leave the channel : \(String(describing: conversation.groupId))")
+                                    return
                                 }
                                 weakSelf.tableView.reloadData()
                             })
@@ -438,8 +439,9 @@ extension ALKConversationListTableViewController: ALKChatCellDelegate {
                             channelService.leaveChannel(conversation.groupId, andUserId: ALUserDefaultsHandler.getUserId(), orClientChannelKey: nil, withCompletion: {
                                 error in
                                 self?.stopLoadingIndicator()
-                                if error != nil {
-                                    print("Failed to leave the channel\(String(describing: conversation.groupId))")
+                                guard error == nil else {
+                                    print("Failed to leave the channel : \(String(describing: conversation.groupId))")
+                                    return
                                 }
                                 weakSelf.tableView.reloadData()
                             })
