@@ -341,7 +341,7 @@ extension ALKConversationListTableViewController: ALKChatCellDelegate {
                         forKey: "NoNameMessage",
                         withDefaultValue: SystemMessage.NoData.NoName,
                         fileName: localizedStringFileName
-                )
+                    )
                 let name = conversation.isGroupChat ? conversation.groupName : conversationName
                 let text = "\(prefixText) \(name)?"
                 let alert = UIAlertController(title: nil, message: text, preferredStyle: .alert)
@@ -380,9 +380,10 @@ extension ALKConversationListTableViewController: ALKChatCellDelegate {
                             channelService.leaveChannel(conversation.groupId, andUserId: ALUserDefaultsHandler.getUserId(), orClientChannelKey: nil, withCompletion: {
                                 error in
                                 self?.stopLoadingIndicator()
-                                if (error != nil) {
+                                if error != nil {
                                     print("Failed to leave the channel : \(String(describing: conversation.groupId))")
                                 }
+                                weakSelf.tableView.reloadData()
                             })
                         }
                     } else {
@@ -437,9 +438,10 @@ extension ALKConversationListTableViewController: ALKChatCellDelegate {
                             channelService.leaveChannel(conversation.groupId, andUserId: ALUserDefaultsHandler.getUserId(), orClientChannelKey: nil, withCompletion: {
                                 error in
                                 self?.stopLoadingIndicator()
-                                if (error != nil) {
+                                if error != nil {
                                     print("Failed to leave the channel\(String(describing: conversation.groupId))")
                                 }
+                                weakSelf.tableView.reloadData()
                             })
                         }
                     } else {
@@ -534,14 +536,14 @@ extension ALKConversationListTableViewController: ALKChatCellDelegate {
         }
     }
 
-    private func startLoadingIndicator () {
-        self.activityIndicator.startAnimating()
-        self.view.isUserInteractionEnabled = false
+    private func startLoadingIndicator() {
+        activityIndicator.startAnimating()
+        view.isUserInteractionEnabled = false
     }
 
-    private func stopLoadingIndicator () {
-        self.activityIndicator.stopAnimating()
-        self.view.isUserInteractionEnabled = true
+    private func stopLoadingIndicator() {
+        activityIndicator.stopAnimating()
+        view.isUserInteractionEnabled = true
     }
 
     private func confirmationAlert(with message: String) {
