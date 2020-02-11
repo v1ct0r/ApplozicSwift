@@ -363,8 +363,8 @@ extension ALKConversationListTableViewController: ALKChatCellDelegate {
                         if channelService.isChannelLeft(conversation.groupId) {
                             ALMessageService.deleteMessageThread(nil, orChannelKey: conversation.groupId, withCompletion: {
                                 _, error in
-                                guard error == nil else { return }
                                 self?.stopLoadingIndicator()
+                                guard error == nil else { return }
                                 ALChannelService.setUnreadCountZeroForGroupID(conversation.groupId)
                                 weakSelf.viewModel.remove(message: conversation)
                                 weakSelf.tableView.reloadData()
