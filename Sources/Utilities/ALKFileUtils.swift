@@ -26,10 +26,11 @@ class ALKFileUtils: NSObject {
 
         let filePath = getDocumentDirectory(fileName: fileName).path
 
-        guard let size = (try? FileManager.default.attributesOfItem(atPath: filePath)[FileAttributeKey.size]), let fileSize = size as? UInt64
-        else {
-            return ""
+        guard let attr = try? FileManager.default.attributesOfItem(atPath: filePath),
+            let fileSize = attr[FileAttributeKey.size] as? UInt64 else {
+                return ""
         }
+
         var floatSize = Float(fileSize / 1024)
         if floatSize < 1023 {
             return String(format: "%.1f KB", floatSize)
