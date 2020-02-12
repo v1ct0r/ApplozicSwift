@@ -6,7 +6,9 @@ The changelog for [ApplozicSwift](https://github.com/AppLozic/ApplozicSwift). Al
 ## [Unreleased]
 
 ### Enhancements
+
 - Added save photo button in the media viewer.
+- Migrated to Swift 5.
 
 ### Fixes
 - If the keyboard used is not English, the keyboard is changed. (.asciiCapable -> .emailAddress)
