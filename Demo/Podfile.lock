@@ -28,7 +28,7 @@ PODS:
   - SDWebImage (5.1.1):
     - SDWebImage/Core (= 5.1.1)
   - SDWebImage/Core (5.1.1)
-  - SwiftFormat/CLI (0.44.0)
+  - SwiftFormat/CLI (0.44.2)
   - SwiftLint (0.38.2)
 
 DEPENDENCIES:
@@ -66,7 +66,7 @@ SPEC CHECKSUMS:
   Nimble-Snapshots: 5058fb9b459e64371f54a0f8d9dde6f33db490a0
   Quick: 7fb19e13be07b5dfb3b90d4f9824c855a11af40e
   SDWebImage: 96d7f03415ccb28d299d765f93557ff8a617abd8
-  SwiftFormat: 180a4d17bcfa2c9f61b202dac7dddd2087ff920a
+  SwiftFormat: 53968b5cc5d466727e796f789fa9be6c38da34cb
   SwiftLint: 8f5d2f903e1c9bcbc832fd16771e80a263ac6cbb
 
 PODFILE CHECKSUM: 37b1748ae38c7d600b4859d10af77ebc84042008
