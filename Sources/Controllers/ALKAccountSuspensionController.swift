@@ -5,7 +5,6 @@
 //  Created by Mukesh Thawani on 05/06/18.
 //
 
-import Applozic
 import UIKit
 
 public class ALKAccountSuspensionController: UIViewController {
