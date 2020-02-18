@@ -18,11 +18,7 @@ public class ALKAccountSuspensionController: UIViewController {
     }
 
     @objc func closeButtonAction(_: UIButton) {
-        let topVC = ALPushAssist().topViewController
-        let vc = topVC?.presentingViewController
-        dismiss(animated: true) {
-            _ = vc?.navigationController?.popToRootViewController(animated: true)
-        }
+        closePressed?()
     }
 
     private func setupViews() {

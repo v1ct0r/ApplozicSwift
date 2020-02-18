@@ -438,7 +438,12 @@ open class ALKConversationViewController: ALKBaseViewController, Localizable {
                 print("Failed to sync the account package status")
                 return
             }
-            print("Successfuly synced the account  package status ")
+            print("Successfuly synced the account  package status")
+        }
+        accountVC.closePressed = { [weak self] in
+            accountVC.dismiss(animated: true) {
+                _ = self?.navigationController?.popToRootViewController(animated: true)
+            }
         }
     }
 

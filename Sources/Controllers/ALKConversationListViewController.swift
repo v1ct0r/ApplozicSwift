@@ -346,6 +346,12 @@ open class ALKConversationListViewController: ALKBaseViewController, Localizable
             }
             print("Successfuly synced the account package status")
         }
+        accountVC.closePressed = { [weak self] in
+            let popVC = self?.navigationController?.popViewController(animated: true)
+            if popVC == nil {
+                self?.navigationController?.dismiss(animated: true, completion: nil)
+            }
+        }
     }
 
     fileprivate func push(conversationVC: ALKConversationViewController, with viewModel: ALKConversationViewModel) {
