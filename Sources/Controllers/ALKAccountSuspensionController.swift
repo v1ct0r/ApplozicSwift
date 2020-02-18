@@ -5,6 +5,7 @@
 //  Created by Mukesh Thawani on 05/06/18.
 //
 
+import Applozic
 import UIKit
 
 public class ALKAccountSuspensionController: UIViewController {
@@ -17,7 +18,11 @@ public class ALKAccountSuspensionController: UIViewController {
     }
 
     @objc func closeButtonAction(_: UIButton) {
-        closePressed?()
+        let topVC = ALPushAssist().topViewController
+        let vc = topVC?.presentingViewController
+        dismiss(animated: true) {
+            _ = vc?.navigationController?.popToRootViewController(animated: true)
+        }
     }
 
     private func setupViews() {
