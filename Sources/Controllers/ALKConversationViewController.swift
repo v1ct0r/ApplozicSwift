@@ -433,9 +433,7 @@ open class ALKConversationViewController: ALKBaseViewController, Localizable {
     open override func showAccountSuspensionView() {
         let accountVC = ALKAccountSuspensionController()
         accountVC.closePressed = { [weak self] in
-            accountVC.dismiss(animated: true) {
-                _ = self?.navigationController?.popToRootViewController(animated: true)
-            }
+            self?.dismiss(animated: true, completion: nil)
         }
         present(accountVC, animated: false, completion: nil)
         registerUserClientService.syncAccountStatus { response, error in
