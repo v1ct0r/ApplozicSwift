@@ -338,6 +338,12 @@ open class ALKConversationListViewController: ALKBaseViewController, Localizable
 
     open override func showAccountSuspensionView() {
         let accountVC = ALKAccountSuspensionController()
+        accountVC.closePressed = { [weak self] in
+            let popVC = self?.navigationController?.popViewController(animated: true)
+            if popVC == nil {
+                self?.navigationController?.dismiss(animated: true, completion: nil)
+            }
+        }
         present(accountVC, animated: false, completion: nil)
         registerUserClientService.syncAccountStatus { response, error in
             guard error == nil, let response = response, response.isRegisteredSuccessfully() else {
@@ -345,12 +351,6 @@ open class ALKConversationListViewController: ALKBaseViewController, Localizable
                 return
             }
             print("Successfuly synced the account package status")
-        }
-        accountVC.closePressed = { [weak self] in
-            let popVC = self?.navigationController?.popViewController(animated: true)
-            if popVC == nil {
-                self?.navigationController?.dismiss(animated: true, completion: nil)
-            }
         }
     }
 
