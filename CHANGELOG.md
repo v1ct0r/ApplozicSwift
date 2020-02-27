@@ -8,6 +8,7 @@ The changelog for [ApplozicSwift](https://github.com/AppLozic/ApplozicSwift). Al
 ### Enhancements
 - Added support for syncing package details when a suspension screen is shown.
 - Added an option to change message status(read receipt) style. Now icon for message status can be changed from outside or it can be hidden.
+- Added a config to disable In-app notification banner, use ```config.isInAppNotificationBannerDisabled = true``` to disable In-app notification banner.
 
 ## [5.0.0] - 2020-02-14
 
