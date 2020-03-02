@@ -148,7 +148,7 @@ public struct ALKConfiguration {
     // If true, Then message search will be enabled
     public var isMessageSearchEnabled: Bool = false
 
-    // If true, Then in-app notification banner will be disabled
+    // If true, then in-app notification banner will be disabled
     public var isInAppNotificationBannerDisabled: Bool = false
 
     /// If true, contact share option in chatbar will be hidden.

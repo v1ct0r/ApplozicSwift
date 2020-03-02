@@ -455,12 +455,14 @@ extension ALKConversationListViewController: ALMQTTConversationDelegate {
             viewModel.syncCall(viewController: viewController, message: message, isChatOpen: true)
 
         } else if !isMessageSentByLoggedInUser(alMessage: alMessage) {
-            if !configuration.isInAppNotificationBannerDisabled {
-                let notificationView = ALNotificationView(alMessage: message, withAlertMessage: message.message)
-                notificationView?.showNativeNotificationWithcompletionHandler {
-                    _ in
-                    self.launchChat(contactId: message.contactId, groupId: message.groupId, conversationId: message.conversationId)
-                }
+
+            guard !configuration.isInAppNotificationBannerDisabled else {
+                return
+            }
+            let notificationView = ALNotificationView(alMessage: message, withAlertMessage: message.message)
+            notificationView?.showNativeNotificationWithcompletionHandler {
+                _ in
+                self.launchChat(contactId: message.contactId, groupId: message.groupId, conversationId: message.conversationId)
             }
         }
         if let visibleController = navigationController?.visibleViewController,
