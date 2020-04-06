@@ -1158,7 +1158,7 @@ open class ALKConversationViewModel: NSObject, Localizable {
             guard let message = messageList.firstObject as? ALMessage else {
                 return
             }
-            time = (message).createdAtTime
+            time = message.createdAtTime
         }
         let messageListRequest = MessageListRequest()
         messageListRequest.userId = contactId
@@ -1172,9 +1172,9 @@ open class ALKConversationViewModel: NSObject, Localizable {
             }
 
             if let list = self.alMessageWrapper.getUpdatedMessageArray(), list.count > 1 {
-                self.fetchReplyMessages(from: messages) { (result) in
+                self.fetchReplyMessages(from: messages) { result in
                     switch result {
-                    case .success(let messagesArray):
+                    case let .success(messagesArray):
                         for mesg in messagesArray as! [ALMessage] {
                             guard let msg = self.alMessages.first, let time = Double(msg.createdAtTime.stringValue) else { continue }
                             if let msgTime = Double(mesg.createdAtTime.stringValue), time <= msgTime {
@@ -1187,24 +1187,24 @@ open class ALKConversationViewModel: NSObject, Localizable {
                             self.messageModels.insert(mesg.messageModel, at: 0)
                         }
                         self.delegate?.loadingFinished(error: nil)
-                    case .failure(let error):
-                        print("Error is fetching messages:",error.localizedDescription)
+                    case let .failure(error):
+                        print("Error in fetching messages:", error.localizedDescription)
                         self.delegate?.loadingFinished(error: nil)
                     }
                 }
                 return
             }
 
-            self.fetchReplyMessages(from: messages) { (result) in
+            self.fetchReplyMessages(from: messages) { result in
                 switch result {
-                case .success(let messagesArray):
+                case let .success(messagesArray):
                     self.alMessages = messagesArray.reversed() as! [ALMessage]
                     self.alMessageWrapper.addObject(toMessageArray: messages)
                     let models = self.alMessages.map { $0.messageModel }
                     self.messageModels = models
                     self.delegate?.loadingFinished(error: nil)
-                case .failure(let error):
-                    print("Error is fetching messages:",error.localizedDescription)
+                case let .failure(error):
+                    print("Error in fetching messages:", error.localizedDescription)
                     self.delegate?.loadingFinished(error: nil)
                 }
             }
@@ -1219,30 +1219,28 @@ open class ALKConversationViewModel: NSObject, Localizable {
 
         let alUserService = ALUserService()
         if let newMessages = messages as? [ALMessage] {
-
             for msg in newMessages {
                 if let metadata = msg.metadata,
                     let replyKey = metadata.value(forKey: AL_MESSAGE_REPLY_KEY) as? String,
                     service.getMessageByKey(replyKey) == nil,
                     !replyMessageKeys.contains(replyKey) {
-                    replyMessageKeys .add(replyKey)
+                    replyMessageKeys.add(replyKey)
                 }
             }
 
-            service.fetchReplyMessages(replyMessageKeys) { (replyMessages) in
-                let userNotPresentIds = NSMutableArray()
+            service.fetchReplyMessages(replyMessageKeys) { replyMessages in
+                var userNotPresentIds = [String]()
 
                 if let newMessages = replyMessages as? [ALMessage], !newMessages.isEmpty {
                     for replyMessage in newMessages {
                         if !contactService.isContactExist(replyMessage.to) {
-                            userNotPresentIds.add(replyMessage.to)
+                            userNotPresentIds.append(replyMessage.to)
                         }
                     }
                 }
 
-                // swiftlint:disable empty_count
-                if  userNotPresentIds.count > 0 {
-                    alUserService.fetchAndupdateUserDetails(userNotPresentIds, withCompletion: { userDetailArray, theError in
+                if !userNotPresentIds.isEmpty {
+                    alUserService.fetchAndupdateUserDetails(NSMutableArray(array: userNotPresentIds), withCompletion: { userDetailArray, theError in
 
                         guard theError == nil else {
                             completion(.failure(theError!))
