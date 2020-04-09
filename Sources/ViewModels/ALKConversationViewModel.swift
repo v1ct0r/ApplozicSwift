@@ -1165,47 +1165,55 @@ open class ALKConversationViewModel: NSObject, Localizable {
         messageListRequest.channelKey = channelKey
         messageListRequest.conversationId = conversationId
         messageListRequest.endTimeStamp = time
-        ALMessageClientService().getMessageList(forUser: messageListRequest, isSearch: true) { messages, error in
-            guard error == nil, let messages = messages else {
-                self.delegate?.loadingFinished(error: error)
+        ALMessageClientService().getMessageList(forUser: messageListRequest, isSearch: true) { [weak self] messages, error in
+            guard error == nil, let messages = messages, let weakSelf = self else {
+                self?.delegate?.loadingFinished(error: error)
                 return
             }
 
-            if let list = self.alMessageWrapper.getUpdatedMessageArray(), list.count > 1 {
-                self.fetchReplyMessages(from: messages) { result in
+            if let list = weakSelf.alMessageWrapper.getUpdatedMessageArray(), list.count > 1 {
+                weakSelf.fetchReplyMessages(from: messages) { [weak self] result in
+                    guard let replyWeakSelf = self else {
+                        self?.delegate?.loadingFinished(error: nil)
+                        return
+                    }
                     switch result {
                     case let .success(messagesArray):
                         for mesg in messagesArray as! [ALMessage] {
-                            guard let msg = self.alMessages.first, let time = Double(msg.createdAtTime.stringValue) else { continue }
+                            guard let msg = self?.alMessages.first, let time = Double(msg.createdAtTime.stringValue) else { continue }
                             if let msgTime = Double(mesg.createdAtTime.stringValue), time <= msgTime {
                                 continue
                             }
-                            self.alMessageWrapper
+                            replyWeakSelf.alMessageWrapper
                                 .getUpdatedMessageArray()
                                 .insert(mesg, at: 0)
-                            self.alMessages.insert(mesg, at: 0)
-                            self.messageModels.insert(mesg.messageModel, at: 0)
+                            replyWeakSelf.alMessages.insert(mesg, at: 0)
+                            replyWeakSelf.messageModels.insert(mesg.messageModel, at: 0)
                         }
-                        self.delegate?.loadingFinished(error: nil)
+                        replyWeakSelf.delegate?.loadingFinished(error: nil)
                     case let .failure(error):
                         print("Error in fetching messages:", error.localizedDescription)
-                        self.delegate?.loadingFinished(error: nil)
+                        replyWeakSelf.delegate?.loadingFinished(error: nil)
                     }
                 }
                 return
             }
 
-            self.fetchReplyMessages(from: messages) { result in
+            weakSelf.fetchReplyMessages(from: messages) { [weak self] result in
+                guard let replyWeakSelf = self else {
+                    self?.delegate?.loadingFinished(error: nil)
+                    return
+                }
                 switch result {
                 case let .success(messagesArray):
-                    self.alMessages = messagesArray.reversed() as! [ALMessage]
-                    self.alMessageWrapper.addObject(toMessageArray: messages)
-                    let models = self.alMessages.map { $0.messageModel }
-                    self.messageModels = models
-                    self.delegate?.loadingFinished(error: nil)
+                    replyWeakSelf.alMessages = messagesArray.reversed() as! [ALMessage]
+                    replyWeakSelf.alMessageWrapper.addObject(toMessageArray: messages)
+                    let models = replyWeakSelf.alMessages.map { $0.messageModel }
+                    replyWeakSelf.messageModels = models
+                    replyWeakSelf.delegate?.loadingFinished(error: nil)
                 case let .failure(error):
                     print("Error in fetching messages:", error.localizedDescription)
-                    self.delegate?.loadingFinished(error: nil)
+                    replyWeakSelf.delegate?.loadingFinished(error: nil)
                 }
             }
         }
@@ -1213,6 +1221,7 @@ open class ALKConversationViewModel: NSObject, Localizable {
 
     func fetchReplyMessages(from messages: NSMutableArray, _ completion: @escaping (Result<NSMutableArray, Error>) -> Void) {
         let service = ALMessageService()
+        let messageDb = ALMessageDBService()
         let replyMessageKeys = NSMutableArray()
         let contactService = ALContactService()
         let contactDBService = ALContactDBService()
@@ -1222,7 +1231,7 @@ open class ALKConversationViewModel: NSObject, Localizable {
             for msg in newMessages {
                 if let metadata = msg.metadata,
                     let replyKey = metadata.value(forKey: AL_MESSAGE_REPLY_KEY) as? String,
-                    service.getMessageByKey(replyKey) == nil,
+                    messageDb.getMessageByKey("key", value: replyKey) == nil,
                     !replyMessageKeys.contains(replyKey) {
                     replyMessageKeys.add(replyKey)
                 }
@@ -1239,19 +1248,19 @@ open class ALKConversationViewModel: NSObject, Localizable {
                     }
                 }
 
-                if !userNotPresentIds.isEmpty {
-                    alUserService.fetchAndupdateUserDetails(NSMutableArray(array: userNotPresentIds), withCompletion: { userDetailArray, theError in
-
-                        guard theError == nil else {
-                            completion(.failure(theError!))
-                            return
-                        }
-                        contactDBService.addUserDetails(userDetailArray)
-                        completion(.success(messages))
-                    })
-                } else {
+                guard !userNotPresentIds.isEmpty else {
                     completion(.success(messages))
+                    return
                 }
+                alUserService.fetchAndupdateUserDetails(NSMutableArray(array: userNotPresentIds), withCompletion: { userDetailArray, theError in
+
+                    guard theError == nil else {
+                        completion(.failure(theError!))
+                        return
+                    }
+                    contactDBService.addUserDetails(userDetailArray)
+                    completion(.success(messages))
+                })
             }
         }
     }
