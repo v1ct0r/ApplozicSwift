@@ -21,6 +21,22 @@ extension ALKConversationViewController: UITableViewDelegate, UITableViewDataSou
         return viewModel.numberOfRows(section: section)
     }
 
+    private func necessarySetupForMessageCell(cell: ALKMessageCell, message: ALKMessageViewModel) {
+        cell.setLocalizedStringFileName(configuration.localizedStringFileName)
+        cell.displayNames = { [weak self] userIds in
+            self?.viewModel.displayNames(ofUserIds: userIds)
+        }
+        cell.update(viewModel: message)
+        cell.update(chatBar: chatBar)
+        cell.delegate = self
+        cell.menuAction = { [weak self] action in
+            self?.menuItemSelected(action: action, message: message)
+        }
+        cell.replyViewAction = { [weak self] in
+            self?.scrollTo(message: message)
+        }
+    }
+
     // swiftlint:disable:next cyclomatic_complexity function_body_length
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let message = viewModel.messageForRow(indexPath: indexPath) else {
@@ -30,46 +46,47 @@ extension ALKConversationViewController: UITableViewDelegate, UITableViewDataSou
 
         switch message.messageType {
         case .text, .html, .email:
-            var cell = ALKMessageCell()
             if !configuration.isLinkPreviewDisabled, message.messageType == .text, ALKLinkPreviewManager.extractURLAndAddInCache(from: message.message, identifier: message.identifier) != nil {
                 if message.isMyMessage {
-                    cell = tableView.dequeueReusableCell(forIndexPath: indexPath) as ALKMyLinkPreviewCell
+                    let cell = tableView.dequeueReusableCell(forIndexPath: indexPath) as ALKMyLinkPreviewCell
                     cell.showReport = false
+                    cell.linkView.isCellVisible = { [weak self] identifier in
+                        guard let weakSelf = self else { return false }
+                        return weakSelf.isCellVisible(identifier: identifier)
+                    }
+                    necessarySetupForMessageCell(cell: cell, message: message)
+                    return cell
                 } else {
-                    cell = tableView.dequeueReusableCell(forIndexPath: indexPath) as ALKFriendLinkPreviewCell
+                    let cell = tableView.dequeueReusableCell(forIndexPath: indexPath) as ALKFriendLinkPreviewCell
                     cell.showReport = configuration.isReportMessageEnabled
                     cell.avatarTapped = { [weak self] in
                         guard let currentModel = cell.viewModel else { return }
                         self?.messageAvatarViewDidTap(messageVM: currentModel, indexPath: indexPath)
                     }
+                    cell.linkView.isCellVisible = { [weak self] identifier in
+                        guard let weakSelf = self else { return false }
+                        return weakSelf.isCellVisible(identifier: identifier)
+                    }
+                    necessarySetupForMessageCell(cell: cell, message: message)
+                    return cell
                 }
             } else {
                 if message.isMyMessage {
-                    cell = tableView.dequeueReusableCell(forIndexPath: indexPath) as ALKMyMessageCell
+                    let cell = tableView.dequeueReusableCell(forIndexPath: indexPath) as ALKMyMessageCell
                     cell.showReport = false
+                    necessarySetupForMessageCell(cell: cell, message: message)
+                    return cell
                 } else {
-                    cell = tableView.dequeueReusableCell(forIndexPath: indexPath) as ALKFriendMessageCell
+                    let cell = tableView.dequeueReusableCell(forIndexPath: indexPath) as ALKFriendMessageCell
                     cell.showReport = configuration.isReportMessageEnabled
                     cell.avatarTapped = { [weak self] in
                         guard let currentModel = cell.viewModel else { return }
                         self?.messageAvatarViewDidTap(messageVM: currentModel, indexPath: indexPath)
                     }
+                    necessarySetupForMessageCell(cell: cell, message: message)
+                    return cell
                 }
             }
-            cell.setLocalizedStringFileName(configuration.localizedStringFileName)
-            cell.displayNames = { [weak self] userIds in
-                self?.viewModel.displayNames(ofUserIds: userIds)
-            }
-            cell.update(viewModel: message)
-            cell.update(chatBar: chatBar)
-            cell.delegate = self
-            cell.menuAction = { [weak self] action in
-                self?.menuItemSelected(action: action, message: message)
-            }
-            cell.replyViewAction = { [weak self] in
-                self?.scrollTo(message: message)
-            }
-            return cell
         case .photo:
             if message.isMyMessage {
                 // Right now ratio is fixed to 1.77

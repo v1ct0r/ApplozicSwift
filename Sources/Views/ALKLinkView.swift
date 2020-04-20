@@ -27,6 +27,8 @@ class ALKLinkView: UIView, Localizable {
         }
     }
 
+    public var isCellVisible: ((_ identifier: String) -> Bool)?
+
     var localizedStringFileName: String!
 
     func setLocalizedStringFileName(_ localizedStringFileName: String) {
@@ -119,13 +121,14 @@ class ALKLinkView: UIView, Localizable {
         }
         guard let cachelinkPreviewMeta = LinkURLCache.getLink(for: linkUrl) else {
             let linkview = ALKLinkPreviewManager()
-            linkview.makePreview(from: linkUrl, identifier: identifier) { result in
+            linkview.makePreview(from: linkUrl, identifier: identifier) { [weak self] result in
+                guard let weakSelf = self, let isCellVisible = weakSelf.isCellVisible, isCellVisible(identifier) else { return }
                 switch result {
                 case let .success(linkPreviewMeta):
-                    self.updateView(linkPreviewMeta: linkPreviewMeta)
+                    weakSelf.updateView(linkPreviewMeta: linkPreviewMeta)
                 case .failure:
-                    self.updateFailedStatusInView()
-                    self.loadingIndicator.stopLoading()
+                    weakSelf.updateFailedStatusInView()
+                    weakSelf.loadingIndicator.stopLoading()
                 }
             }
             return

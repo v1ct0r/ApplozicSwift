@@ -1076,6 +1076,12 @@ open class ALKConversationViewController: ALKBaseViewController, Localizable {
         viewModel.uploadAttachmentCompleted(responseDict: response, indexPath: indexPath)
     }
 
+    func isCellVisible(identifier: String) -> Bool {
+        guard let index = viewModel.sectionFor(identifier: identifier) else { return false }
+        let cell = tableView.cellForRow(at: IndexPath(row: 0, section: index)) as? ALKChatBaseCell<ALKMessageViewModel>
+        return cell != nil
+    }
+
     func messageAvatarViewDidTap(messageVM: ALKMessageViewModel, indexPath _: IndexPath) {
         // Open chat thread
         guard viewModel.isGroup, isProfileTapActionEnabled else { return }
