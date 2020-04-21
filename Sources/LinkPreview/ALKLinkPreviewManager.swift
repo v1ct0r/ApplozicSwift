@@ -54,7 +54,7 @@ class ALKLinkPreviewManager: NSObject, URLSessionDelegate {
                         return
                     }
                     let htmlString = String(data: data, encoding: .utf8)
-                    linkPreview = weakSelf.parseHtmlAndUpdateLinkPreviewMeta(text: htmlString, baseUrl: weakSelf.extractBaseUrl(url.absoluteString))
+                    linkPreview = weakSelf.parseHtmlAndUpdateLinkPreviewMeta(text: htmlString, baseUrl: url.absoluteString)
                 }
                 guard let linkPreviewData = linkPreview else {
                     weakSelf.responseMainQueue.async {
@@ -192,16 +192,6 @@ class ALKLinkPreviewManager: NSObject, URLSessionDelegate {
         } else {
             return url
         }
-    }
-
-    /// Returns the base url to the given url.
-    /// The following examples show how it works.
-    ///     let url = "http://www.github.com/Applozic/ApplozicSwift"
-    ///     // Returns "www.github.com"
-    private func extractBaseUrl(_ url: String) -> String {
-        let finalUrl = url.replacingOccurrences(of: "http://", with: "")
-            .replacingOccurrences(of: "https://", with: "")
-        return String(finalUrl.split(separator: "/", maxSplits: 1, omittingEmptySubsequences: true)[0])
     }
 
     /// Returns the very first url encountered in the text.

@@ -3,7 +3,7 @@ import Foundation
 
 class ALKLinkPreviewBaseCell: ALKMessageCell {
     var url: String?
-    public let linkView = ALKLinkView()
+    let linkView = ALKLinkView()
 
     override func update(
         viewModel: ALKMessageViewModel,
@@ -38,5 +38,9 @@ class ALKLinkPreviewBaseCell: ALKMessageCell {
     @objc private func openUrl() {
         guard let stringURL = url, let openURL = URL(string: stringURL) else { return }
         UIApplication.shared.open(openURL)
+    }
+
+    func isCellVisible(_ closure: @escaping ((_ identifier: String) -> Bool)) {
+        linkView.isViewCellVisible = closure
     }
 }

@@ -47,29 +47,26 @@ extension ALKConversationViewController: UITableViewDelegate, UITableViewDataSou
         switch message.messageType {
         case .text, .html, .email:
             if !configuration.isLinkPreviewDisabled, message.messageType == .text, ALKLinkPreviewManager.extractURLAndAddInCache(from: message.message, identifier: message.identifier) != nil {
+                var cell = ALKLinkPreviewBaseCell()
                 if message.isMyMessage {
-                    let cell = tableView.dequeueReusableCell(forIndexPath: indexPath) as ALKMyLinkPreviewCell
+                    cell = tableView.dequeueReusableCell(forIndexPath: indexPath) as ALKMyLinkPreviewCell
                     cell.showReport = false
-                    cell.linkView.isCellVisible = { [weak self] identifier in
-                        guard let weakSelf = self else { return false }
-                        return weakSelf.isCellVisible(identifier: identifier)
-                    }
                     necessarySetupForMessageCell(cell: cell, message: message)
-                    return cell
                 } else {
-                    let cell = tableView.dequeueReusableCell(forIndexPath: indexPath) as ALKFriendLinkPreviewCell
+                    cell = tableView.dequeueReusableCell(forIndexPath: indexPath) as ALKFriendLinkPreviewCell
                     cell.showReport = configuration.isReportMessageEnabled
                     cell.avatarTapped = { [weak self] in
                         guard let currentModel = cell.viewModel else { return }
                         self?.messageAvatarViewDidTap(messageVM: currentModel, indexPath: indexPath)
                     }
-                    cell.linkView.isCellVisible = { [weak self] identifier in
-                        guard let weakSelf = self else { return false }
-                        return weakSelf.isCellVisible(identifier: identifier)
-                    }
                     necessarySetupForMessageCell(cell: cell, message: message)
-                    return cell
                 }
+                cell.isCellVisible { [weak self] identifier in
+                    guard let weakSelf = self else { return false }
+                    return weakSelf.isCellVisible(identifier: identifier)
+                }
+                return cell
+
             } else {
                 if message.isMyMessage {
                     let cell = tableView.dequeueReusableCell(forIndexPath: indexPath) as ALKMyMessageCell
