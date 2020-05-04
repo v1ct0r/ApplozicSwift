@@ -266,7 +266,7 @@ class ALKFriendLinkPreviewCell: ALKLinkPreviewBaseCell {
 
         nameLabel.setStyle(ALKMessageStyle.displayName)
         messageView.setStyle(ALKMessageStyle.receivedMessage)
-        bubbleView.setStyle(ALKMessageStyle.receivedBubble, isReceiverSide: true)
+        bubbleView.setStyle(ALKMessageStyle.receivedBubble, isReceiverSide: true, bgColor: ALKMessageStyle.receivedBubble.color ?? ALKMessageStyle.Bubble.DefaultColor.receivedBubbleColor)
     }
 
     override func update(viewModel: ALKMessageViewModel) {

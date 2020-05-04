@@ -8,6 +8,7 @@
 import Applozic
 
 class ALKMyContactMessageCell: ALKContactMessageBaseCell {
+    let appSettings = ALKAppThemeSettings()
     struct Padding {
         struct StateView {
             static let width: CGFloat = 17.0

@@ -91,7 +91,7 @@ public enum ALKMessageStyle {
         }
 
         /// Message bubble's background color.
-        public var color: UIColor
+        public var color: UIColor?
 
         /// Message bubble corner Radius
         public var cornerRadius: CGFloat
@@ -112,6 +112,19 @@ public enum ALKMessageStyle {
             self.style = style
             widthPadding = 10.0
             cornerRadius = 12
+        }
+
+        public init() {
+            widthPadding = 10.0
+            cornerRadius = 12
+            style = .edge
+        }
+    }
+
+    public static var sentBubble = Bubble() {
+        didSet {
+            let appSettings = ALKAppThemeSettings()
+            appSettings.updateSentMessageBackgroundColor(color: sentBubble.color)
         }
     }
 

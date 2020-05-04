@@ -51,6 +51,8 @@ class ALKMyMessageView: UIView {
         return bv
     }()
 
+    let appSettings = ALKAppThemeSettings()
+
     init() {
         super.init(frame: .zero)
         setupConstraints()

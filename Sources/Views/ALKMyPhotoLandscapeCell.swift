@@ -20,6 +20,8 @@ final class ALKMyPhotoLandscapeCell: ALKPhotoCell {
         return sv
     }()
 
+    let appSettings = ALKAppThemeSettings()
+
     override func setupViews() {
         super.setupViews()
 

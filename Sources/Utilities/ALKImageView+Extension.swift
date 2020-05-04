@@ -10,7 +10,7 @@ import Kingfisher
 import UIKit
 
 extension ALKImageView {
-    func setStyle(_ bubbleStyle: ALKMessageStyle.Bubble, isReceiverSide: Bool) {
+    func setStyle(_ bubbleStyle: ALKMessageStyle.Bubble, isReceiverSide: Bool, bgColor: UIColor) {
         if bubbleStyle.style == .edge {
             let appSettingsUserDefaults = ALKAppSettingsUserDefaults()
             tintColor = isReceiverSide ? appSettingsUserDefaults.getReceivedMessageBackgroundColor() : appSettingsUserDefaults.getSentMessageBackgroundColor()

@@ -20,6 +20,8 @@ class ALKMyVoiceCell: ALKVoiceCell {
         return sv
     }()
 
+    let appSettings = ALKAppThemeSettings()
+
     override func setupViews() {
         super.setupViews()
 
