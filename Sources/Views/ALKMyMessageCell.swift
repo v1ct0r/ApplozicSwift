@@ -14,6 +14,8 @@ import UIKit
 // MARK: - ALKMyMessageCell
 
 open class ALKMyMessageCell: ALKMessageCell {
+    let appSettings = ALKAppThemeSettings()
+
     fileprivate var stateView: UIImageView = {
         let sv = UIImageView()
         sv.isUserInteractionEnabled = false
@@ -214,7 +216,7 @@ open class ALKMyMessageCell: ALKMessageCell {
     open override func setupStyle() {
         super.setupStyle()
         messageView.setStyle(ALKMessageStyle.sentMessage)
-        bubbleView.setStyle(ALKMessageStyle.sentBubble, isReceiverSide: false)
+        bubbleView.setStyle(ALKMessageStyle.sentBubble, isReceiverSide: false, bgColor: appSettings.getSentMessageBackgroundColor())
         setStatusStyle(statusView: stateView, ALKMessageStyle.messageStatus)
     }
 

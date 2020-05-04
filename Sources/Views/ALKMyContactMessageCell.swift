@@ -8,6 +8,7 @@
 import Applozic
 
 class ALKMyContactMessageCell: ALKContactMessageBaseCell {
+    let appSettings = ALKAppThemeSettings()
     struct Padding {
         struct StateView {
             static let width: CGFloat = 17.0
@@ -57,7 +58,7 @@ class ALKMyContactMessageCell: ALKContactMessageBaseCell {
         super.setupStyle()
         contactView.setStyle(
             itemColor: ALKMessageStyle.sentMessage.text,
-            bubbleStyle: ALKMessageStyle.sentBubble
+            bubbleStyle: ALKMessageStyle.sentBubble, bgColor: appSettings.getSentMessageBackgroundColor()
         )
         setStatusStyle(statusView: stateView, ALKMessageStyle.messageStatus)
     }

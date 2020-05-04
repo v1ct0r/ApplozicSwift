@@ -18,6 +18,8 @@ final class ALKMyPhotoLandscapeCell: ALKPhotoCell {
         return sv
     }()
 
+    let appSettings = ALKAppThemeSettings()
+
     override func setupViews() {
         super.setupViews()
 
@@ -54,7 +56,7 @@ final class ALKMyPhotoLandscapeCell: ALKPhotoCell {
         super.setupStyle()
         if ALKMessageStyle.sentBubble.style == .edge {
             bubbleView.layer.cornerRadius = ALKMessageStyle.sentBubble.cornerRadius
-            bubbleView.backgroundColor = ALKMessageStyle.sentBubble.color
+            bubbleView.backgroundColor = appSettings.getSentMessageBackgroundColor()
             photoView.layer.cornerRadius = ALKMessageStyle.sentBubble.cornerRadius
         } else {
             photoView.layer.cornerRadius = ALKMessageStyle.sentBubble.cornerRadius

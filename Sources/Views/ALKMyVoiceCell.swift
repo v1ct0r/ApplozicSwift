@@ -20,6 +20,8 @@ class ALKMyVoiceCell: ALKVoiceCell {
         return sv
     }()
 
+    let appSettings = ALKAppThemeSettings()
+
     override func setupViews() {
         super.setupViews()
 
@@ -52,12 +54,13 @@ class ALKMyVoiceCell: ALKVoiceCell {
 
     override func setupStyle() {
         super.setupStyle()
+        let bgColor = appSettings.getSentMessageBackgroundColor()
         if ALKMessageStyle.sentBubble.style == .edge {
-            bubbleView.backgroundColor = ALKMessageStyle.sentBubble.color
+            bubbleView.backgroundColor = bgColor
             bubbleView.layer.cornerRadius = ALKMessageStyle.sentBubble.cornerRadius
         } else {
-            bubbleView.setBubbleStyle(ALKMessageStyle.sentBubble)
-            soundPlayerView.setBubbleStyle(ALKMessageStyle.sentBubble)
+            bubbleView.setBubbleStyle(ALKMessageStyle.sentBubble, bgColor: bgColor)
+            soundPlayerView.setBubbleStyle(ALKMessageStyle.sentBubble, bgColor: bgColor)
         }
         setStatusStyle(statusView: stateView, ALKMessageStyle.messageStatus)
     }

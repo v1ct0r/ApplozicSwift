@@ -2,6 +2,7 @@ import Applozic
 import Foundation
 
 class ALKMyLinkPreviewCell: ALKLinkPreviewBaseCell {
+    let appSettings = ALKAppThemeSettings()
     fileprivate var stateView: UIImageView = {
         let sv = UIImageView()
         sv.isUserInteractionEnabled = false
@@ -226,7 +227,7 @@ class ALKMyLinkPreviewCell: ALKLinkPreviewBaseCell {
     open override func setupStyle() {
         super.setupStyle()
         messageView.setStyle(ALKMessageStyle.sentMessage)
-        bubbleView.setStyle(ALKMessageStyle.sentBubble, isReceiverSide: false)
+        bubbleView.setStyle(ALKMessageStyle.sentBubble, isReceiverSide: false, bgColor: appSettings.getSentMessageBackgroundColor())
         setStatusStyle(statusView: stateView, ALKMessageStyle.messageStatus)
     }
 

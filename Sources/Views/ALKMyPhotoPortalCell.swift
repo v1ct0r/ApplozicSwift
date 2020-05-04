@@ -24,6 +24,8 @@ final class ALKMyPhotoPortalCell: ALKPhotoCell {
         return sv
     }()
 
+    let appSettings = ALKAppThemeSettings()
+
     struct Padding {
         struct PhotoView {
             static let right: CGFloat = 14
@@ -80,7 +82,7 @@ final class ALKMyPhotoPortalCell: ALKPhotoCell {
         captionLabel.textColor = ALKMessageStyle.sentMessage.text
         if ALKMessageStyle.sentBubble.style == .edge {
             bubbleView.layer.cornerRadius = ALKMessageStyle.sentBubble.cornerRadius
-            bubbleView.backgroundColor = ALKMessageStyle.sentBubble.color
+            bubbleView.backgroundColor = appSettings.getSentMessageBackgroundColor()
             photoView.layer.cornerRadius = ALKMessageStyle.sentBubble.cornerRadius
         } else {
             photoView.layer.cornerRadius = ALKMessageStyle.sentBubble.cornerRadius

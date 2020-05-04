@@ -81,15 +81,15 @@ class ContactView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func setStyle(itemColor: UIColor, bubbleStyle: ALKMessageStyle.Bubble) {
+    func setStyle(itemColor: UIColor, bubbleStyle: ALKMessageStyle.Bubble, bgColor: UIColor) {
         contactName.textColor = itemColor
         contactSaveIcon.tintColor = itemColor
         guard bubbleStyle.style == .round else {
-            backgroundColor = bubbleStyle.color
+            backgroundColor = bgColor
             layer.cornerRadius = bubbleStyle.cornerRadius
             return
         }
-        setBubbleStyle(bubbleStyle)
+        setBubbleStyle(bubbleStyle, bgColor: bgColor)
     }
 
     func update(contactModel: ContactModel) {

@@ -80,13 +80,18 @@ public enum ALKMessageStyle {
     }
 
     public struct Bubble {
+        enum DefaultColor {
+            static let sentBubbleColor = UIColor(netHex: 0xF1F0F0)
+            static let receivedBubbleColor = UIColor(netHex: 0xF1F0F0)
+        }
+
         public struct Border {
             public var color: UIColor = UIColor.clear
             public var width: CGFloat = 0
         }
 
         /// Message bubble's background color.
-        public var color: UIColor
+        public var color: UIColor?
 
         /// Message bubble corner Radius
         public var cornerRadius: CGFloat
@@ -108,10 +113,22 @@ public enum ALKMessageStyle {
             widthPadding = 10.0
             cornerRadius = 12
         }
+
+        public init() {
+            widthPadding = 10.0
+            cornerRadius = 12
+            style = .edge
+        }
     }
 
-    public static var sentBubble = Bubble(color: UIColor(netHex: 0xF1F0F0), style: .edge)
-    public static var receivedBubble = Bubble(color: UIColor(netHex: 0xF1F0F0), style: .edge)
+    public static var sentBubble = Bubble() {
+        didSet {
+            let appSettings = ALKAppThemeSettings()
+            appSettings.updateSentMessageBackgroundColor(color: sentBubble.color)
+        }
+    }
+
+    public static var receivedBubble = Bubble(color: Bubble.DefaultColor.receivedBubbleColor, style: .edge)
 
     /// Style for sent message status icon like read, delivered etc.
     public static var messageStatus = SentMessageStatus()
