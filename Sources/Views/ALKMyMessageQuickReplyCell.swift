@@ -8,6 +8,38 @@
 import Foundation
 
 public class ALKMyMessageQuickReplyCell: ALKChatBaseCell<ALKMessageViewModel> {
+    enum Padding {
+        enum StateView {
+            static let bottom: CGFloat = 3
+            static let right: CGFloat = 2
+            static let height: CGFloat = 9
+            static let width: CGFloat = 17
+        }
+
+        enum TimeLabel {
+            static let right: CGFloat = 2
+            static let left: CGFloat = 2
+            static let bottom: CGFloat = 2
+            static let maxWidth: CGFloat = 200
+        }
+    }
+
+    fileprivate var timeLabel: UILabel = {
+        let lb = UILabel()
+        lb.isOpaque = true
+        return lb
+    }()
+
+    fileprivate var stateView: UIImageView = {
+        let sv = UIImageView()
+        sv.isUserInteractionEnabled = false
+        sv.contentMode = .center
+        return sv
+    }()
+
+    fileprivate lazy var timeLabelWidth = timeLabel.widthAnchor.constraint(equalToConstant: 0)
+    fileprivate lazy var timeLabelHeight = timeLabel.heightAnchor.constraint(equalToConstant: 0)
+
     var messageView = ALKMyMessageView()
     var quickReplyView = SuggestedReplyView()
     lazy var messageViewHeight = self.messageView.heightAnchor.constraint(equalToConstant: 0)
@@ -22,11 +54,22 @@ public class ALKMyMessageQuickReplyCell: ALKChatBaseCell<ALKMessageViewModel> {
     }
 
     public func update(viewModel: ALKMessageViewModel, maxWidth: CGFloat) {
-        let messageWidth = maxWidth -
-            (ChatCellPadding.SentMessage.Message.left + ChatCellPadding.SentMessage.Message.right)
-        let height = ALKMyMessageView.rowHeight(viewModel: viewModel, width: messageWidth)
-        messageViewHeight.constant = height
-        messageView.update(viewModel: viewModel)
+        super.update(viewModel: viewModel)
+
+        let isMessageEmpty = viewModel.isMessageEmpty
+
+        if isMessageEmpty {
+            messageViewHeight.constant = 0
+            messageView.updateHeightOfView(hideView: isMessageEmpty, viewModel: viewModel, maxWidth: maxWidth)
+        } else {
+            let messageWidth = maxWidth -
+                (ChatCellPadding.SentMessage.Message.left + ChatCellPadding.SentMessage.Message.right)
+            let height = ALKMyMessageView.rowHeight(viewModel: viewModel, width: messageWidth)
+            messageViewHeight.constant = height
+            messageView.update(viewModel: viewModel)
+            messageView.updateHeightOfView(hideView: isMessageEmpty, viewModel: viewModel, maxWidth: maxWidth)
+        }
+
         guard let suggestedReply = viewModel.suggestedReply() else {
             quickReplyView.isHidden = true
             return
@@ -34,15 +77,45 @@ public class ALKMyMessageQuickReplyCell: ALKChatBaseCell<ALKMessageViewModel> {
         let quickReplyViewWidth = maxWidth -
             (ChatCellPadding.SentMessage.QuickReply.left + ChatCellPadding.SentMessage.QuickReply.right)
         quickReplyView.update(model: suggestedReply, maxWidth: quickReplyViewWidth)
+
+        // Set time
+        timeLabel.text = viewModel.time
+        timeLabel.setStyle(ALKMessageStyle.time)
+
+        let timeLabelSize = viewModel.time!.rectWithConstrainedWidth(
+            ReceivedMessageView.Config.TimeLabel.maxWidth,
+            font: MessageTheme.receivedMessage.time.font
+        )
+
+        timeLabelHeight.constant = timeLabelSize.height.rounded(.up)
+        timeLabelWidth.constant = timeLabelSize.width.rounded(.up)
+
+        setStatusStyle(statusView: stateView, ALKMessageStyle.messageStatus)
     }
 
     public class func rowHeight(viewModel: ALKMessageViewModel, maxWidth: CGFloat) -> CGFloat {
-        let messageWidth = maxWidth -
-            (ChatCellPadding.SentMessage.Message.left + ChatCellPadding.SentMessage.Message.right)
-        let height = ALKMyMessageView.rowHeight(viewModel: viewModel, width: messageWidth)
+        let isMessageEmpty = viewModel.isMessageEmpty
+        var height: CGFloat = 0
+
+        if isMessageEmpty {
+            let timeLabelSize = viewModel.time!.rectWithConstrainedWidth(
+                SentMessageView.Config.TimeLabel.maxWidth,
+                font: MessageTheme.receivedMessage.time.font
+            )
+
+            height = timeLabelSize.height.rounded(.up) + Padding.TimeLabel.bottom
+
+        } else {
+            let messageWidth = maxWidth -
+                (ChatCellPadding.SentMessage.Message.left + ChatCellPadding.SentMessage.Message.right)
+
+            height = ALKMyMessageView.rowHeight(viewModel: viewModel, width: messageWidth)
+        }
+
         guard let suggestedReplies = viewModel.suggestedReply() else {
             return height
         }
+
         let quickReplyViewWidth = maxWidth -
             (ChatCellPadding.SentMessage.QuickReply.left + ChatCellPadding.SentMessage.QuickReply.right)
 
@@ -54,7 +127,7 @@ public class ALKMyMessageQuickReplyCell: ALKChatBaseCell<ALKMessageViewModel> {
 
     private func setupConstraints() {
         contentView.addSubview(messageView)
-        contentView.addViewsForAutolayout(views: [messageView, quickReplyView])
+        contentView.addViewsForAutolayout(views: [messageView, quickReplyView, stateView, timeLabel])
         NSLayoutConstraint.activate([
             messageView.topAnchor.constraint(equalTo: contentView.topAnchor),
             messageView.leadingAnchor.constraint(
@@ -77,9 +150,18 @@ public class ALKMyMessageQuickReplyCell: ALKChatBaseCell<ALKMessageViewModel> {
             ),
             quickReplyView.leadingAnchor.constraint(greaterThanOrEqualTo: contentView.leadingAnchor, constant: ChatCellPadding.SentMessage.QuickReply.left),
             quickReplyView.bottomAnchor.constraint(
-                equalTo: contentView.bottomAnchor,
+                equalTo: timeLabel.topAnchor,
                 constant: -ChatCellPadding.SentMessage.QuickReply.bottom
             ),
+            stateView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -1 * Padding.StateView.bottom),
+            stateView.trailingAnchor.constraint(equalTo: quickReplyView.trailingAnchor, constant: -1 * Padding.StateView.right),
+            stateView.heightAnchor.constraint(equalToConstant: Padding.StateView.height),
+            stateView.widthAnchor.constraint(equalToConstant: Padding.StateView.width),
+            timeLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -1 * Padding.TimeLabel.bottom),
+            timeLabel.leadingAnchor.constraint(greaterThanOrEqualTo: contentView.leadingAnchor, constant: Padding.TimeLabel.left),
+            timeLabelWidth,
+            timeLabelHeight,
+            timeLabel.trailingAnchor.constraint(equalTo: stateView.leadingAnchor, constant: -1 * Padding.TimeLabel.right),
         ])
     }
 }

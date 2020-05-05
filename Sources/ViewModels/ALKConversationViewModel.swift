@@ -370,24 +370,11 @@ open class ALKConversationViewModel: NSObject, Localizable {
             }
         case .quickReply:
             if messageModel.isMyMessage {
-                guard let message = messageModel.message, !message.trim().isEmpty else {
-                    return
-                        ALKMyQuickReplyButtonCell
-                            .rowHeight(viewModel: messageModel, maxWidth: UIScreen.main.bounds.width)
-                            .cached(with: cacheIdentifier)
-                }
                 return
                     ALKMyMessageQuickReplyCell
                         .rowHeight(viewModel: messageModel, maxWidth: UIScreen.main.bounds.width)
                         .cached(with: cacheIdentifier)
             } else {
-                guard let message = messageModel.message, !message.trim().isEmpty else {
-                    return
-                        ALKFriendQuickReplyButtonCell
-                            .rowHeight(viewModel: messageModel, maxWidth: UIScreen.main.bounds.width)
-                            .cached(with: cacheIdentifier)
-                }
-
                 return
                     ALKFriendMessageQuickReplyCell
                         .rowHeight(viewModel: messageModel, maxWidth: UIScreen.main.bounds.width)
@@ -419,23 +406,11 @@ open class ALKConversationViewModel: NSObject, Localizable {
             }
         case .listTemplate:
             if messageModel.isMyMessage {
-                guard let message = messageModel.message, !message.trim().isEmpty else {
-                    return ALKMyListTemplateCell
-                        .rowHeight(viewModel: messageModel, maxWidth: UIScreen.main.bounds.width)
-                        .cached(with: cacheIdentifier)
-                }
-
                 return
                     ALKMyMessageListTemplateCell
                         .rowHeight(viewModel: messageModel, maxWidth: UIScreen.main.bounds.width)
                         .cached(with: cacheIdentifier)
             } else {
-                guard let message = messageModel.message, !message.trim().isEmpty else {
-                    return ALKFriendListTemplateCell
-                        .rowHeight(viewModel: messageModel, maxWidth: UIScreen.main.bounds.width)
-                        .cached(with: cacheIdentifier)
-                }
-
                 return
                     ALKFriendMessageListTemplateCell
                         .rowHeight(viewModel: messageModel, maxWidth: UIScreen.main.bounds.width)

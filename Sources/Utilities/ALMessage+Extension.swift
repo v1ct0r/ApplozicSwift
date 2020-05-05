@@ -101,13 +101,13 @@ extension ALMessage: ALKChatViewModelProtocol {
         case .faqTemplate:
             return isMessageEmpty ? "FAQ" : message
         case .quickReply:
-            return isMessageEmpty ? "Quick reply" : message
+            return isMessageEmpty ? "Message" : message
         case .button:
-            return isMessageEmpty ? "Button" : message
+            return isMessageEmpty ? "Message" : message
         case .listTemplate:
-            return isMessageEmpty ? "List" : message
+            return isMessageEmpty ? "Message" : message
         case .cardTemplate:
-            return isMessageEmpty ? "Card" : message
+            return isMessageEmpty ? "Message" : message
         case .imageMessage:
             return isMessageEmpty ? "Photo" : message
         case .email:

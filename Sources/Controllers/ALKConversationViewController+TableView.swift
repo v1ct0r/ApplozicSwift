@@ -330,63 +330,32 @@ extension ALKConversationViewController: UITableViewDelegate, UITableViewDataSou
                 }
             }
         case .quickReply:
-            if message.isMessageEmpty {
-                if message.isMyMessage {
-                    let cell: ALKMyQuickReplyButtonCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
-                    cell.setLocalizedStringFileName(configuration.localizedStringFileName)
-                    cell.update(viewModel: message)
-                    cell.update(viewModel: message, maxWidth: UIScreen.main.bounds.width)
-                    cell.update(chatBar: chatBar)
-                    return cell
-                } else {
-                    let cell: ALKFriendQuickReplyButtonCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
-                    cell.setLocalizedStringFileName(configuration.localizedStringFileName)
-                    cell.update(viewModel: message)
-                    cell.update(viewModel: message, maxWidth: UIScreen.main.bounds.width)
-                    cell.update(chatBar: chatBar)
-                    guard let template = message.payloadFromMetadata() else {
-                        return cell
-                    }
-                    cell.quickReplySelected = { [weak self] index, title in
-                        guard let weakSelf = self else { return }
-                        weakSelf.quickReplySelected(
-                            index: index,
-                            title: title,
-                            template: template,
-                            message: message,
-                            isButtonClickDisabled: weakSelf.configuration.disableRichMessageButtonAction
-                        )
-                    }
-                    return cell
-                }
+            if message.isMyMessage {
+                let cell: ALKMyMessageQuickReplyCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
+                cell.setLocalizedStringFileName(configuration.localizedStringFileName)
+                cell.update(viewModel: message, maxWidth: UIScreen.main.bounds.width)
+                cell.update(chatBar: chatBar)
+                return cell
             } else {
-                if message.isMyMessage {
-                    let cell: ALKMyMessageQuickReplyCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
-                    cell.setLocalizedStringFileName(configuration.localizedStringFileName)
-                    cell.update(viewModel: message, maxWidth: UIScreen.main.bounds.width)
-                    cell.update(chatBar: chatBar)
-                    return cell
-                } else {
-                    let cell: ALKFriendMessageQuickReplyCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
-                    cell.setLocalizedStringFileName(configuration.localizedStringFileName)
-                    cell.update(viewModel: message)
-                    cell.update(viewModel: message, maxWidth: UIScreen.main.bounds.width)
-                    cell.update(chatBar: chatBar)
-                    guard let template = message.payloadFromMetadata() else {
-                        return cell
-                    }
-                    cell.quickReplySelected = { [weak self] index, title in
-                        guard let weakSelf = self else { return }
-                        weakSelf.quickReplySelected(
-                            index: index,
-                            title: title,
-                            template: template,
-                            message: message,
-                            isButtonClickDisabled: weakSelf.configuration.disableRichMessageButtonAction
-                        )
-                    }
+                let cell: ALKFriendMessageQuickReplyCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
+                cell.setLocalizedStringFileName(configuration.localizedStringFileName)
+                cell.update(viewModel: message)
+                cell.update(viewModel: message, maxWidth: UIScreen.main.bounds.width)
+                cell.update(chatBar: chatBar)
+                guard let template = message.payloadFromMetadata() else {
                     return cell
                 }
+                cell.quickReplySelected = { [weak self] index, title in
+                    guard let weakSelf = self else { return }
+                    weakSelf.quickReplySelected(
+                        index: index,
+                        title: title,
+                        template: template,
+                        message: message,
+                        isButtonClickDisabled: weakSelf.configuration.disableRichMessageButtonAction
+                    )
+                }
+                return cell
             }
         case .button:
             if message.isMessageEmpty {
@@ -440,44 +409,23 @@ extension ALKConversationViewController: UITableViewDelegate, UITableViewDataSou
                 }
             }
         case .listTemplate:
-            if message.isMessageEmpty {
-                if message.isMyMessage {
-                    let cell = tableView.dequeueReusableCell(forIndexPath: indexPath) as ALKMyListTemplateCell
-                    cell.setLocalizedStringFileName(configuration.localizedStringFileName)
-                    cell.update(viewModel: message, maxWidth: UIScreen.main.bounds.width)
-                    cell.update(chatBar: chatBar)
-                    return cell
-                } else {
-                    let cell = tableView.dequeueReusableCell(forIndexPath: indexPath) as ALKFriendListTemplateCell
-                    cell.setLocalizedStringFileName(configuration.localizedStringFileName)
-                    cell.update(viewModel: message, maxWidth: UIScreen.main.bounds.width)
-                    cell.update(chatBar: chatBar)
-                    cell.templateSelected = { [weak self] defaultText, action in
-                        guard let weakSelf = self else { return }
-                        weakSelf.listTemplateSelected(defaultText: defaultText, action: action)
-                    }
-                    return cell
-                }
+            if message.isMyMessage {
+                let cell = tableView.dequeueReusableCell(forIndexPath: indexPath) as ALKMyMessageListTemplateCell
+                cell.setLocalizedStringFileName(configuration.localizedStringFileName)
+                cell.update(viewModel: message, maxWidth: UIScreen.main.bounds.width)
+                cell.update(chatBar: chatBar)
+                return cell
             } else {
-                if message.isMyMessage {
-                    let cell = tableView.dequeueReusableCell(forIndexPath: indexPath) as ALKMyMessageListTemplateCell
-                    cell.setLocalizedStringFileName(configuration.localizedStringFileName)
-                    cell.update(viewModel: message, maxWidth: UIScreen.main.bounds.width)
-                    cell.update(chatBar: chatBar)
-                    return cell
-                } else {
-                    let cell = tableView.dequeueReusableCell(forIndexPath: indexPath) as ALKFriendMessageListTemplateCell
-                    cell.setLocalizedStringFileName(configuration.localizedStringFileName)
-                    cell.update(viewModel: message, maxWidth: UIScreen.main.bounds.width)
-                    cell.update(chatBar: chatBar)
-                    cell.templateSelected = { [weak self] defaultText, action in
-                        guard let weakSelf = self else { return }
-                        weakSelf.listTemplateSelected(defaultText: defaultText, action: action)
-                    }
-                    return cell
+                let cell = tableView.dequeueReusableCell(forIndexPath: indexPath) as ALKFriendMessageListTemplateCell
+                cell.setLocalizedStringFileName(configuration.localizedStringFileName)
+                cell.update(viewModel: message, maxWidth: UIScreen.main.bounds.width)
+                cell.update(chatBar: chatBar)
+                cell.templateSelected = { [weak self] defaultText, action in
+                    guard let weakSelf = self else { return }
+                    weakSelf.listTemplateSelected(defaultText: defaultText, action: action)
                 }
+                return cell
             }
-
         case .document:
             if message.isMyMessage {
                 let cell: ALKMyDocumentCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
