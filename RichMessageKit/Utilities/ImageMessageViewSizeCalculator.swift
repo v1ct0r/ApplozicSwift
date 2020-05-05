@@ -10,26 +10,38 @@ import Foundation
 class ImageMessageViewSizeCalculator {
     func rowHeight(model: ImageMessage, maxWidth: CGFloat, padding: Padding) -> CGFloat {
         var messageViewPadding: Padding!
-        var messageViewHeight: CGFloat = 0
-        if model.message.isMyMessage {
-            messageViewPadding = Padding(
-                left: padding.left,
-                right: padding.right,
-                top: padding.top,
-                bottom: SentImageMessageCell.Config.imageBubbleTopPadding
-            )
-            messageViewHeight = SentMessageViewSizeCalculator().rowHeight(messageModel: model.message, maxWidth: maxWidth, padding: messageViewPadding)
+        var viewHeight: CGFloat = 0
+        if model.message.isMessageEmpty() {
+            if model.message.isMyMessage {
+                viewHeight = model.message.time.rectWithConstrainedWidth(SentImageMessageCell.Config.TimeLabel.maxWidth, font: MessageTheme.sentMessage.time.font).height.rounded(.up) + padding.bottom + padding.top
+
+            } else {
+                viewHeight += model.message.time.rectWithConstrainedWidth(ReceivedMessageView.Config.TimeLabel.maxWidth, font: MessageTheme.sentMessage.time.font).height.rounded(.up) + padding.bottom
+
+                viewHeight += viewHeight + padding.top
+                    + ReceivedMessageView.Config.DisplayName.height
+            }
         } else {
-            messageViewPadding = Padding(
-                left: padding.left,
-                right: padding.right,
-                top: padding.top,
-                bottom: ReceivedImageMessageCell.Config.imageBubbleTopPadding
-            )
-            messageViewHeight = ReceivedMessageViewSizeCalculator().rowHeight(messageModel: model.message, maxWidth: maxWidth, padding: messageViewPadding)
+            if model.message.isMyMessage {
+                messageViewPadding = Padding(
+                    left: padding.left,
+                    right: padding.right,
+                    top: padding.top,
+                    bottom: SentImageMessageCell.Config.imageBubbleTopPadding
+                )
+                viewHeight = SentMessageViewSizeCalculator().rowHeight(messageModel: model.message, maxWidth: maxWidth, padding: messageViewPadding)
+            } else {
+                messageViewPadding = Padding(
+                    left: padding.left,
+                    right: padding.right,
+                    top: padding.top,
+                    bottom: ReceivedImageMessageCell.Config.imageBubbleTopPadding
+                )
+                viewHeight = ReceivedMessageViewSizeCalculator().rowHeight(messageModel: model.message, maxWidth: maxWidth, padding: messageViewPadding)
+            }
         }
 
         let imageBubbleHeight = ImageBubbleSizeCalculator().rowHeight(model: model, maxWidth: maxWidth)
-        return messageViewHeight + imageBubbleHeight + padding.bottom // top will be already added in messageView
+        return viewHeight + imageBubbleHeight + padding.bottom // top will be already added in messageView
     }
 }

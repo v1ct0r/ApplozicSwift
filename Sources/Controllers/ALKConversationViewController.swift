@@ -659,19 +659,9 @@ open class ALKConversationViewController: ALKBaseViewController, Localizable {
         tableView.register(ALKMyLinkPreviewCell.self)
         tableView.register(ALKFriendLinkPreviewCell.self)
 
-        // Quick reply and button cell
-        tableView.register(ALKFriendQuickReplyButtonCell.self)
-        tableView.register(ALKMyQuickReplyButtonCell.self)
-        // Image cell
-        tableView.register(SentImageCell.self)
-        tableView.register(ReceivedImageCell.self)
         // Generic card cell
         tableView.register(ALKMyGenericCardCell.self)
         tableView.register(ALKFriendGenericCardCell.self)
-
-        // FAQ cell
-        tableView.register(SentFAQCell.self)
-        tableView.register(ReceivedFAQCell.self)
     }
 
     private func prepareMoreBar() {

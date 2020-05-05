@@ -81,7 +81,7 @@ public class ALKMyMessageListTemplateCell: ALKListTemplateCell {
 
         if viewModel.isMessageEmpty {
             let timeLabelSize = viewModel.time!.rectWithConstrainedWidth(
-                SentMessageView.Config.TimeLabel.maxWidth,
+                Padding.TimeLabel.maxWidth,
                 font: MessageTheme.receivedMessage.time.font
             )
             height = timeLabelSize.height.rounded(.up) + Padding.TimeLabel.top

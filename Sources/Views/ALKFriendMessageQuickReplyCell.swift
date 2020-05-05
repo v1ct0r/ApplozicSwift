@@ -198,7 +198,7 @@ public class ALKFriendMessageQuickReplyCell: ALKChatBaseCell<ALKMessageViewModel
         ])
     }
 
-    func showNameAndAvatarImageView(isMessageEmpty: Bool, viewModel: ALKMessageViewModel) {
+    private func showNameAndAvatarImageView(isMessageEmpty: Bool, viewModel: ALKMessageViewModel) {
         nameLabel
             .constraint(withIdentifier: ConstraintIdentifier.NameLabel.height)?
             .constant = isMessageEmpty ? Padding.NameLabel.height : 0

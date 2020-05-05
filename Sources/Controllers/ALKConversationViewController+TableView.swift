@@ -294,40 +294,22 @@ extension ALKConversationViewController: UITableViewDelegate, UITableViewDataSou
             }
             return cell
         case .faqTemplate:
-            if message.isMessageEmpty {
-                if message.isMyMessage {
-                    let cell: SentFAQCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
-                    guard let faqMessage = message.faqMessage() else { return UITableViewCell() }
-                    cell.update(model: faqMessage)
-                    return cell
-                } else {
-                    let cell: ReceivedFAQCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
-                    guard let faqMessage = message.faqMessage() else { return UITableViewCell() }
-                    cell.update(model: faqMessage)
-                    cell.faqSelected = {
-                        [weak self] _, title in
-                        guard let weakSelf = self, let viewModel = weakSelf.viewModel else { return }
-                        viewModel.send(message: title, metadata: weakSelf.configuration.messageMetadata)
-                    }
-                    return cell
-                }
+
+            if message.isMyMessage {
+                let cell: SentFAQMessageCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
+                guard let faqMessage = message.faqMessage() else { return UITableViewCell() }
+                cell.update(model: faqMessage)
+                return cell
             } else {
-                if message.isMyMessage {
-                    let cell: SentFAQMessageCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
-                    guard let faqMessage = message.faqMessage() else { return UITableViewCell() }
-                    cell.update(model: faqMessage)
-                    return cell
-                } else {
-                    let cell: ReceivedFAQMessageCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
-                    guard let faqMessage = message.faqMessage() else { return UITableViewCell() }
-                    cell.update(model: faqMessage)
-                    cell.faqSelected = {
-                        [weak self] _, title in
-                        guard let weakSelf = self, let viewModel = weakSelf.viewModel else { return }
-                        viewModel.send(message: title, metadata: weakSelf.configuration.messageMetadata)
-                    }
-                    return cell
+                let cell: ReceivedFAQMessageCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
+                guard let faqMessage = message.faqMessage() else { return UITableViewCell() }
+                cell.update(model: faqMessage)
+                cell.faqSelected = {
+                    [weak self] _, title in
+                    guard let weakSelf = self, let viewModel = weakSelf.viewModel else { return }
+                    viewModel.send(message: title, metadata: weakSelf.configuration.messageMetadata)
                 }
+                return cell
             }
         case .quickReply:
             if message.isMyMessage {
@@ -358,55 +340,27 @@ extension ALKConversationViewController: UITableViewDelegate, UITableViewDataSou
                 return cell
             }
         case .button:
-            if message.isMessageEmpty {
-                if message.isMyMessage {
-                    /// No button action if message sent by same user.
-                    let cell: ALKMyQuickReplyButtonCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
-                    cell.setLocalizedStringFileName(configuration.localizedStringFileName)
-                    cell.update(viewModel: message)
-                    cell.update(viewModel: message, maxWidth: UIScreen.main.bounds.width)
-                    cell.update(chatBar: chatBar)
-                    return cell
-                } else {
-                    let cell: ALKFriendQuickReplyButtonCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
-                    cell.setLocalizedStringFileName(configuration.localizedStringFileName)
-                    cell.update(viewModel: message)
-                    cell.update(viewModel: message, maxWidth: UIScreen.main.bounds.width)
-                    cell.update(chatBar: chatBar)
-                    cell.quickReplySelected = { [weak self] index, title in
-                        guard let weakSelf = self else { return }
-                        weakSelf.messageButtonSelected(
-                            index: index,
-                            title: title,
-                            message: message,
-                            isButtonClickDisabled: weakSelf.configuration.disableRichMessageButtonAction
-                        )
-                    }
-                    return cell
-                }
+            if message.isMyMessage {
+                let cell: ALKMyMessageButtonCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
+                cell.setLocalizedStringFileName(configuration.localizedStringFileName)
+                cell.update(viewModel: message, maxWidth: UIScreen.main.bounds.width)
+                cell.update(chatBar: chatBar)
+                return cell
             } else {
-                if message.isMyMessage {
-                    let cell: ALKMyMessageButtonCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
-                    cell.setLocalizedStringFileName(configuration.localizedStringFileName)
-                    cell.update(viewModel: message, maxWidth: UIScreen.main.bounds.width)
-                    cell.update(chatBar: chatBar)
-                    return cell
-                } else {
-                    let cell: ALKFriendMessageButtonCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
-                    cell.setLocalizedStringFileName(configuration.localizedStringFileName)
-                    cell.update(viewModel: message, maxWidth: UIScreen.main.bounds.width)
-                    cell.update(chatBar: chatBar)
-                    cell.buttonSelected = { [weak self] index, title in
-                        guard let weakSelf = self else { return }
-                        weakSelf.messageButtonSelected(
-                            index: index,
-                            title: title,
-                            message: message,
-                            isButtonClickDisabled: weakSelf.configuration.disableRichMessageButtonAction
-                        )
-                    }
-                    return cell
+                let cell: ALKFriendMessageButtonCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
+                cell.setLocalizedStringFileName(configuration.localizedStringFileName)
+                cell.update(viewModel: message, maxWidth: UIScreen.main.bounds.width)
+                cell.update(chatBar: chatBar)
+                cell.buttonSelected = { [weak self] index, title in
+                    guard let weakSelf = self else { return }
+                    weakSelf.messageButtonSelected(
+                        index: index,
+                        title: title,
+                        message: message,
+                        isButtonClickDisabled: weakSelf.configuration.disableRichMessageButtonAction
+                    )
                 }
+                return cell
             }
         case .listTemplate:
             if message.isMyMessage {
@@ -504,27 +458,16 @@ extension ALKConversationViewController: UITableViewDelegate, UITableViewDataSou
             }
         case .imageMessage:
             guard let imageMessage = message.imageMessage() else { return UITableViewCell() }
-            if message.isMessageEmpty {
-                if message.isMyMessage {
-                    let cell: SentImageCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
-                    cell.update(model: imageMessage)
-                    return cell
-                } else {
-                    let cell: ReceivedImageCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
-                    cell.update(model: imageMessage)
-                    return cell
-                }
+            if message.isMyMessage {
+                let cell: SentImageMessageCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
+                cell.update(model: imageMessage)
+                return cell
             } else {
-                if message.isMyMessage {
-                    let cell: SentImageMessageCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
-                    cell.update(model: imageMessage)
-                    return cell
-                } else {
-                    let cell: ReceivedImageMessageCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
-                    cell.update(model: imageMessage)
-                    return cell
-                }
+                let cell: ReceivedImageMessageCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
+                cell.update(model: imageMessage)
+                return cell
             }
+
         case .allButtons:
             guard let allButtons = message.allButtons() else { return UITableViewCell() }
             if message.isMyMessage {

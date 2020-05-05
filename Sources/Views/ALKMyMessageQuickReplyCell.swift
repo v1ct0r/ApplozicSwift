@@ -84,7 +84,7 @@ public class ALKMyMessageQuickReplyCell: ALKChatBaseCell<ALKMessageViewModel> {
 
         let timeLabelSize = viewModel.time!.rectWithConstrainedWidth(
             ReceivedMessageView.Config.TimeLabel.maxWidth,
-            font: MessageTheme.receivedMessage.time.font
+            font: ALKMessageStyle.time.font
         )
 
         timeLabelHeight.constant = timeLabelSize.height.rounded(.up)
@@ -94,13 +94,12 @@ public class ALKMyMessageQuickReplyCell: ALKChatBaseCell<ALKMessageViewModel> {
     }
 
     public class func rowHeight(viewModel: ALKMessageViewModel, maxWidth: CGFloat) -> CGFloat {
-        let isMessageEmpty = viewModel.isMessageEmpty
         var height: CGFloat = 0
 
-        if isMessageEmpty {
+        if viewModel.isMessageEmpty {
             let timeLabelSize = viewModel.time!.rectWithConstrainedWidth(
-                SentMessageView.Config.TimeLabel.maxWidth,
-                font: MessageTheme.receivedMessage.time.font
+                Padding.TimeLabel.maxWidth,
+                font: ALKMessageStyle.time.font
             )
 
             height = timeLabelSize.height.rounded(.up) + Padding.TimeLabel.bottom

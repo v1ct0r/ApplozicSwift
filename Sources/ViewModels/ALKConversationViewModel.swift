@@ -355,19 +355,12 @@ open class ALKConversationViewModel: NSObject, Localizable {
             }
         case .faqTemplate:
             guard let faqMessage = messageModel.faqMessage() else { return 0 }
-            if let messasgeString = messageModel.message, !messasgeString.isEmpty {
-                if messageModel.isMyMessage {
-                    return SentFAQMessageCell.rowHeight(model: faqMessage).cached(with: cacheIdentifier)
-                } else {
-                    return ReceivedFAQMessageCell.rowHeight(model: faqMessage).cached(with: cacheIdentifier)
-                }
+            if messageModel.isMyMessage {
+                return SentFAQMessageCell.rowHeight(model: faqMessage).cached(with: cacheIdentifier)
             } else {
-                if messageModel.isMyMessage {
-                    return SentFAQCell.rowHeight(model: faqMessage).cached(with: cacheIdentifier)
-                } else {
-                    return ReceivedFAQCell.rowHeight(model: faqMessage).cached(with: cacheIdentifier)
-                }
+                return ReceivedFAQMessageCell.rowHeight(model: faqMessage).cached(with: cacheIdentifier)
             }
+
         case .quickReply:
             if messageModel.isMyMessage {
                 return
@@ -382,23 +375,11 @@ open class ALKConversationViewModel: NSObject, Localizable {
             }
         case .button:
             if messageModel.isMyMessage {
-                guard let message = messageModel.message, !message.trim().isEmpty else {
-                    return
-                        ALKMyQuickReplyButtonCell
-                            .rowHeight(viewModel: messageModel, maxWidth: UIScreen.main.bounds.width)
-                            .cached(with: cacheIdentifier)
-                }
                 return
                     ALKMyMessageButtonCell
                         .rowHeigh(viewModel: messageModel, width: UIScreen.main.bounds.width)
                         .cached(with: cacheIdentifier)
             } else {
-                guard let message = messageModel.message, !message.trim().isEmpty else {
-                    return
-                        ALKFriendQuickReplyButtonCell
-                            .rowHeight(viewModel: messageModel, maxWidth: UIScreen.main.bounds.width)
-                            .cached(with: cacheIdentifier)
-                }
                 return
                     ALKFriendMessageButtonCell
                         .rowHeigh(viewModel: messageModel, width: UIScreen.main.bounds.width)
@@ -443,22 +424,11 @@ open class ALKConversationViewModel: NSObject, Localizable {
         case .imageMessage:
             guard let imageMessage = messageModel.imageMessage() else { return 0 }
             if messageModel.isMyMessage {
-                guard let message = messageModel.message, !message.trim().isEmpty else {
-                    return SentImageCell
-                        .rowHeight(model: imageMessage)
-                        .cached(with: cacheIdentifier)
-                }
-
                 return
                     SentImageMessageCell
                         .rowHeight(model: imageMessage)
                         .cached(with: cacheIdentifier)
             } else {
-                guard let message = messageModel.message, !message.trim().isEmpty else {
-                    return ReceivedImageCell
-                        .rowHeight(model: imageMessage)
-                        .cached(with: cacheIdentifier)
-                }
                 return
                     ReceivedImageMessageCell
                         .rowHeight(model: imageMessage)
