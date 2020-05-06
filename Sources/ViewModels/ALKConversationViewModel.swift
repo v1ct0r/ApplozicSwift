@@ -329,19 +329,6 @@ open class ALKConversationViewModel: NSObject, Localizable {
             }
             return height.cached(with: cacheIdentifier)
         case .cardTemplate:
-            guard let message = messageModel.message, !message.trim().isEmpty else {
-                if messageModel.isMyMessage {
-                    return
-                        ALKMyGenericCardCell
-                            .rowHeigh(viewModel: messageModel, width: maxWidth)
-                            .cached(with: cacheIdentifier)
-                } else {
-                    return
-                        ALKFriendGenericCardCell
-                            .rowHeigh(viewModel: messageModel, width: maxWidth)
-                            .cached(with: cacheIdentifier)
-                }
-            }
             if messageModel.isMyMessage {
                 return
                     ALKMyGenericCardMessageCell

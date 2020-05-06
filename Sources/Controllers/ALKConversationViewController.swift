@@ -658,10 +658,6 @@ open class ALKConversationViewController: ALKBaseViewController, Localizable {
 
         tableView.register(ALKMyLinkPreviewCell.self)
         tableView.register(ALKFriendLinkPreviewCell.self)
-
-        // Generic card cell
-        tableView.register(ALKMyGenericCardCell.self)
-        tableView.register(ALKFriendGenericCardCell.self)
     }
 
     private func prepareMoreBar() {

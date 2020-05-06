@@ -106,7 +106,7 @@ public class ALKFriendMessageQuickReplyCell: ALKChatBaseCell<ALKMessageViewModel
         timeLabel.text = viewModel.time
         let timeLabelSize = viewModel.time!.rectWithConstrainedWidth(
             ReceivedMessageView.Config.TimeLabel.maxWidth,
-            font: MessageTheme.receivedMessage.time.font
+            font: ALKMessageStyle.time.font
         )
 
         timeLabelHeight.constant = timeLabelSize.height.rounded(.up)
