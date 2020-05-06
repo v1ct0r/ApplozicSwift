@@ -23,6 +23,22 @@ public struct ThemeSettings {
         UserDefaults.standard.set(settingsDictionary, forKey: appSettings)
     }
 
+    public func updateAppSettingsIfRequired(settingsDictionary: [String: Any]) {
+        var updatedSettingsDictionary = settingsDictionary
+
+        let extstingAppSettings = getAppSettings()
+
+        if extstingAppSettings == nil {
+            setAppSettings(settingsDictionary: settingsDictionary)
+        } else {
+            // Keep the sent message background color
+            if let settings = extstingAppSettings, settings.keys.contains(SettingsKey.sentMessageBackgroundColor), let existingSentMessageBackgroundColor = settings[SettingsKey.sentMessageBackgroundColor] {
+                updatedSettingsDictionary[SettingsKey.sentMessageBackgroundColor] = existingSentMessageBackgroundColor
+            }
+            setAppSettings(settingsDictionary: updatedSettingsDictionary)
+        }
+    }
+
     public func getAppSettings() -> [String: Any]? {
         return UserDefaults.standard.value(forKey: appSettings) as? [String: Any]
     }
