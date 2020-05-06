@@ -133,7 +133,7 @@ public class ALKFriendMessageQuickReplyCell: ALKChatBaseCell<ALKMessageViewModel
         } else {
             let messageWidth = maxWidth -
                 (ChatCellPadding.ReceivedMessage.Message.left + ChatCellPadding.ReceivedMessage.Message.right)
-            height = ALKFriendMessageView.rowHeight(viewModel: viewModel, width: messageWidth)
+            height = ALKFriendMessageView.rowHeight(viewModel: viewModel, width: messageWidth) + ChatCellPadding.ReceivedMessage.Message.top
         }
 
         guard let suggestedReplies = viewModel.suggestedReply() else {

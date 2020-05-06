@@ -41,7 +41,7 @@ public class ReceivedImageMessageCell: UITableViewCell {
         }
 
         public struct ImageBubbleView {
-            public static var top: CGFloat = 10.0
+            public static var top: CGFloat = 5.0
         }
     }
 
@@ -183,7 +183,7 @@ public class ReceivedImageMessageCell: UITableViewCell {
             nameLabel.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -1 * nameRightPadding),
 
             messageView.topAnchor.constraint(equalTo: nameLabel.bottomAnchor),
-            messageView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            messageView.leadingAnchor.constraint(equalTo: avatarImageView.trailingAnchor),
             messageView.trailingAnchor.constraint(equalTo: trailingAnchor),
             messageViewHeight,
 
