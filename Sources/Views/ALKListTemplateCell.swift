@@ -79,21 +79,19 @@ public class ALKMyMessageListTemplateCell: ALKListTemplateCell {
     public override class func rowHeight(viewModel: ALKMessageViewModel, maxWidth: CGFloat) -> CGFloat {
         var height: CGFloat = 0
 
-        if viewModel.isMessageEmpty {
-            let timeLabelSize = viewModel.time!.rectWithConstrainedWidth(
-                Padding.TimeLabel.maxWidth,
-                font: ALKMessageStyle.time.font
-            )
-            height = timeLabelSize.height.rounded(.up) + Padding.TimeLabel.top
+        let timeLabelSize = viewModel.time!.rectWithConstrainedWidth(
+            Padding.TimeLabel.maxWidth,
+            font: ALKMessageStyle.time.font
+        )
 
-        } else {
+        if !viewModel.isMessageEmpty {
             let messageWidth = maxWidth -
                 (ChatCellPadding.SentMessage.Message.left + ChatCellPadding.SentMessage.Message.right)
             height = ALKMyMessageView.rowHeight(viewModel: viewModel, width: messageWidth)
         }
 
         let templateHeight = super.rowHeight(viewModel: viewModel, maxWidth: maxWidth)
-        return height + templateHeight + paddingBelowCell
+        return height + templateHeight + paddingBelowCell + timeLabelSize.height.rounded(.up) + Padding.TimeLabel.top
     }
 
     override func setupConstraints() {
@@ -233,7 +231,7 @@ public class ALKFriendMessageListTemplateCell: ALKListTemplateCell {
         )
 
         if isMessageEmpty {
-            height += 26 + timeLabelSize.height.rounded(.up)
+            height += Padding.NameLabel.height + Padding.NameLabel.top
         } else {
             let messageWidth = maxWidth -
                 (ChatCellPadding.ReceivedMessage.Message.left + ChatCellPadding.ReceivedMessage.Message.right)
@@ -242,7 +240,7 @@ public class ALKFriendMessageListTemplateCell: ALKListTemplateCell {
         }
 
         let templateHeight = super.rowHeight(viewModel: viewModel, maxWidth: maxWidth)
-        return height + templateHeight + paddingBelowCell + 5 // Padding between messages
+        return height + templateHeight + paddingBelowCell + 5 + Padding.TimeLabel.top + Padding.TimeLabel.bottom + timeLabelSize.height.rounded(.up) // Padding between messages
     }
 
     override func setupConstraints() {

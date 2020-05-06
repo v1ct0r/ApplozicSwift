@@ -163,7 +163,7 @@ public class ReceivedFAQMessageCell: UITableViewCell {
 
         let faqHeight = FAQMessageView.rowHeight(model: model, maxWidth: ReceivedFAQMessageCell.faqWidth, style: FAQMessageTheme.receivedMessage)
 
-        return calculatedHeight + faqHeight + timeLabelSize.height.rounded(.up)
+        return calculatedHeight + faqHeight + timeLabelSize.height.rounded(.up) + Config.faqTopPadding
     }
 
     // MARK: - Private helper methods

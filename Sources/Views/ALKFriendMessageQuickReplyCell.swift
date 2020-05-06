@@ -111,11 +111,10 @@ public class ALKFriendMessageQuickReplyCell: ALKChatBaseCell<ALKMessageViewModel
 
         timeLabelHeight.constant = timeLabelSize.height.rounded(.up)
         timeLabelWidth.constant = timeLabelSize.width.rounded(.up)
-
+        timeLabel.setStyle(ALKMessageStyle.time)
         let quickReplyViewWidth = maxWidth -
             (ChatCellPadding.ReceivedMessage.QuickReply.left + ChatCellPadding.ReceivedMessage.Message.right)
         quickReplyView.update(model: suggestedReplies, maxWidth: quickReplyViewWidth)
-        timeLabel.setStyle(ALKMessageStyle.time)
     }
 
     public class func rowHeight(viewModel: ALKMessageViewModel, maxWidth: CGFloat) -> CGFloat {
@@ -130,8 +129,7 @@ public class ALKFriendMessageQuickReplyCell: ALKChatBaseCell<ALKMessageViewModel
         let minimumHeight: CGFloat = 60 // 55 is avatar image... + padding
 
         if isMessageEmpty {
-            height += 24 + timeLabelSize.height.rounded(.up) // 6 + 16 + 2
-
+            height += Padding.NameLabel.height + Padding.NameLabel.top
         } else {
             let messageWidth = maxWidth -
                 (ChatCellPadding.ReceivedMessage.Message.left + ChatCellPadding.ReceivedMessage.Message.right)
@@ -147,7 +145,8 @@ public class ALKFriendMessageQuickReplyCell: ALKChatBaseCell<ALKMessageViewModel
         return height
             + SuggestedReplyView.rowHeight(model: suggestedReplies, maxWidth: quickReplyViewWidth)
             + ChatCellPadding.ReceivedMessage.QuickReply.top
-            + ChatCellPadding.ReceivedMessage.QuickReply.bottom
+            + ChatCellPadding.ReceivedMessage.QuickReply.bottom + timeLabelSize.height.rounded(.up)
+            + Padding.TimeLabel.bottom
     }
 
     private func setupConstraints() {
@@ -184,7 +183,7 @@ public class ALKFriendMessageQuickReplyCell: ALKChatBaseCell<ALKMessageViewModel
             ),
             quickReplyView.trailingAnchor.constraint(
                 lessThanOrEqualTo: contentView.trailingAnchor,
-                constant: -ChatCellPadding.ReceivedMessage.QuickReply.right
+                constant: -ChatCellPadding.ReceivedMessage.Message.right
             ),
             quickReplyView.bottomAnchor.constraint(
                 equalTo: timeLabel.topAnchor,

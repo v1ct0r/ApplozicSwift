@@ -158,7 +158,7 @@ open class ALKFriendGenericCardMessageCell: ALKGenericCardBaseCell {
         )
 
         if isMessageEmpty {
-            height += 24 + timeLabelSize.height.rounded(.up) // 6 + 16 + 2
+            height += Padding.NameLabel.top + Padding.NameLabel.height
         } else {
             let messageWidth = width - (ChatCellPadding.ReceivedMessage.Message.left +
                 ChatCellPadding.ReceivedMessage.Message.right)
@@ -166,7 +166,7 @@ open class ALKFriendGenericCardMessageCell: ALKGenericCardBaseCell {
         }
 
         let cardHeight = super.cardHeightFor(message: viewModel, width: width)
-        return cardHeight + height + 10 // Extra 10 below complete view. Modify this for club/unclub.
+        return cardHeight + height + 10 + timeLabelSize.height.rounded(.up) + Padding.TimeLabel.top // Extra 10 below complete view. Modify this for club/unclub.
     }
 
     private func setupCollectionView() {

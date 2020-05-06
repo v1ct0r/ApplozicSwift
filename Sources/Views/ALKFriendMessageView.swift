@@ -32,8 +32,8 @@ class ALKFriendMessageView: UIView {
         return label
     }()
 
-    public var bubbleView: UIImageView = {
-        let bv = UIImageView()
+    public var bubbleView: ALKImageView = {
+        let bv = ALKImageView()
         bv.clipsToBounds = true
         bv.isUserInteractionEnabled = false
         bv.isOpaque = true
@@ -97,15 +97,7 @@ class ALKFriendMessageView: UIView {
     }
 
     func setupStyle() {
-        if ALKMessageStyle.receivedBubble.style == .edge {
-            let image = UIImage(named: "chat_bubble_rounded", in: Bundle.applozic, compatibleWith: nil)
-            bubbleView.tintColor = ALKMessageStyle.receivedBubble.color
-            bubbleView.image = image?.imageFlippedForRightToLeftLayoutDirection()
-        } else {
-            bubbleView.layer.cornerRadius = ALKMessageStyle.receivedBubble.cornerRadius
-            bubbleView.tintColor = ALKMessageStyle.receivedBubble.color
-            bubbleView.backgroundColor = ALKMessageStyle.receivedBubble.color
-        }
+        bubbleView.setStyle(ALKMessageStyle.receivedBubble, isReceiverSide: true)
     }
 
     func setupViews() {
@@ -135,8 +127,8 @@ class ALKFriendMessageView: UIView {
 
         messageView.heightAnchor.constraintEqualToAnchor(constant: 0, identifier: ConstraintIdentifier.MessageView.height).isActive = true
 
-        bubbleView.topAnchor.constraint(equalTo: messageView.topAnchor, constant: -Padding.BubbleView.top).isActive = true
-        bubbleView.bottomAnchor.constraint(equalTo: messageView.bottomAnchor, constant: -Padding.BubbleView.bottom).isActive = true
+        bubbleView.topAnchor.constraint(equalTo: messageView.topAnchor, constant: Padding.BubbleView.top).isActive = true
+        bubbleView.bottomAnchor.constraint(equalTo: messageView.bottomAnchor, constant: Padding.BubbleView.bottom).isActive = true
 
         bubbleView.leadingAnchor.constraint(equalTo: messageView.leadingAnchor, constant: -widthPadding).isActive = true
         bubbleView.trailingAnchor.constraint(equalTo: messageView.trailingAnchor, constant: widthPadding).isActive = true
@@ -166,15 +158,15 @@ class ALKFriendMessageView: UIView {
         let font = ALKMessageStyle.receivedMessage.font
         let messageWidth = width - 64 // left padding 9 + 18 + 37
         var messageHeight = message.heightWithConstrainedWidth(messageWidth, font: font)
-        messageHeight += 28 // 6 + 16 + 4 + 2
+        messageHeight += 32 // 6 + 16 + 4 + 2
         return max(messageHeight, minimumHeight)
     }
 
     func updateHeightOfViews(hideView: Bool, viewModel: ALKMessageViewModel, maxWidth: CGFloat) {
-        let messageHeight = hideView ? 0 : viewModel.message?.heightWithConstrainedWidth(maxWidth - 64, font: ALKMessageStyle.receivedMessage.font)
+        let messageHeight = hideView ? 0 : ALKFriendMessageView.rowHeight(viewModel: viewModel, width: maxWidth)
         messageView
             .constraint(withIdentifier: ConstraintIdentifier.MessageView.height)?
-            .constant = messageHeight ?? 0
+            .constant = messageHeight
         nameLabel
             .constraint(withIdentifier: ConstraintIdentifier.NameLabel.height)?
             .constant = hideView ? 0 : Padding.NameLabel.height

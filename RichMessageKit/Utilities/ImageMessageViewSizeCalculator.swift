@@ -13,12 +13,9 @@ class ImageMessageViewSizeCalculator {
         var viewHeight: CGFloat = 0
         if model.message.isMessageEmpty() {
             if model.message.isMyMessage {
-                viewHeight = model.message.time.rectWithConstrainedWidth(SentImageMessageCell.Config.TimeLabel.maxWidth, font: MessageTheme.sentMessage.time.font).height.rounded(.up) + padding.bottom + padding.top
-
+                viewHeight = padding.bottom + padding.top
             } else {
-                viewHeight += model.message.time.rectWithConstrainedWidth(ReceivedImageMessageCell.Config.TimeLabel.maxWidth, font: MessageTheme.sentMessage.time.font).height.rounded(.up) + padding.bottom
-
-                viewHeight += padding.top
+                viewHeight = padding.bottom + padding.top
                     + ReceivedImageMessageCell.Config.DisplayName.height
             }
         } else {
@@ -39,6 +36,12 @@ class ImageMessageViewSizeCalculator {
                 )
                 viewHeight = ReceivedMessageViewSizeCalculator().rowHeight(messageModel: model.message, maxWidth: maxWidth, padding: messageViewPadding)
             }
+        }
+
+        if model.message.isMyMessage {
+            viewHeight += model.message.time.rectWithConstrainedWidth(SentImageMessageCell.Config.TimeLabel.maxWidth, font: MessageTheme.sentMessage.time.font).height.rounded(.up)
+        } else {
+            viewHeight += model.message.time.rectWithConstrainedWidth(SentImageMessageCell.Config.TimeLabel.maxWidth, font: MessageTheme.receivedMessage.time.font).height.rounded(.up)
         }
 
         let imageBubbleHeight = ImageBubbleSizeCalculator().rowHeight(model: model, maxWidth: maxWidth)

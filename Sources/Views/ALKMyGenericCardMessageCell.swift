@@ -120,22 +120,19 @@ open class ALKMyGenericCardMessageCell: ALKGenericCardBaseCell {
 
     public override class func rowHeigh(viewModel: ALKMessageViewModel, width: CGFloat) -> CGFloat {
         var height: CGFloat = 0
-        if viewModel.isMessageEmpty {
-            let timeLabelSize = viewModel.time!.rectWithConstrainedWidth(
-                Padding.TimeLabel.maxWidth,
-                font: ALKMessageStyle.time.font
-            )
+        let timeLabelSize = viewModel.time!.rectWithConstrainedWidth(
+            Padding.TimeLabel.maxWidth,
+            font: ALKMessageStyle.time.font
+        )
 
-            height = timeLabelSize.height.rounded(.up) + Padding.TimeLabel.top
-
-        } else {
+        if !viewModel.isMessageEmpty {
             let messageWidth = width -
                 (ChatCellPadding.SentMessage.Message.left + ChatCellPadding.SentMessage.Message.right)
             height = ALKMyMessageView.rowHeight(viewModel: viewModel, width: messageWidth)
         }
 
         let cardHeight = super.cardHeightFor(message: viewModel, width: width)
-        return cardHeight + height + 10 // Extra padding below view. Change this for club/unclub
+        return cardHeight + height + 10 + timeLabelSize.height.rounded(.up) + Padding.TimeLabel.top // Extra padding below view. Change this for club/unclub
     }
 
     private func setupCollectionView() {

@@ -88,16 +88,12 @@ open class ALKMyMessageButtonCell: ALKChatBaseCell<ALKMessageViewModel> {
 
     open override class func rowHeigh(viewModel: ALKMessageViewModel, width: CGFloat) -> CGFloat {
         var height: CGFloat = 0
+        let timeLabelSize = viewModel.time!.rectWithConstrainedWidth(
+            Padding.TimeLabel.maxWidth,
+            font: ALKMessageStyle.time.font
+        )
 
-        if viewModel.isMessageEmpty {
-            let timeLabelSize = viewModel.time!.rectWithConstrainedWidth(
-                Padding.TimeLabel.maxWidth,
-                font: ALKMessageStyle.time.font
-            )
-
-            height = timeLabelSize.height.rounded(.up) + Padding.TimeLabel.bottom
-
-        } else {
+        if !viewModel.isMessageEmpty {
             let messageWidth = width -
                 (ChatCellPadding.SentMessage.Message.left + ChatCellPadding.SentMessage.Message.right)
             height = ALKMyMessageView.rowHeight(viewModel: viewModel, width: messageWidth)
@@ -111,7 +107,7 @@ open class ALKMyMessageButtonCell: ALKChatBaseCell<ALKMessageViewModel> {
         return height
             + buttonHeight
             + ChatCellPadding.SentMessage.MessageButton.top
-            + ChatCellPadding.SentMessage.MessageButton.bottom
+            + ChatCellPadding.SentMessage.MessageButton.bottom + timeLabelSize.height.rounded(.up) + Padding.TimeLabel.bottom
     }
 
     private func setupConstraints() {
@@ -274,7 +270,7 @@ class ALKFriendMessageButtonCell: ALKChatBaseCell<ALKMessageViewModel> {
         let minimumHeight: CGFloat = 60 // 55 is avatar image... + padding
 
         if isMessageEmpty {
-            height += 24 + timeLabelSize.height.rounded(.up) // 6 + 16 + 2
+            height = Padding.NameLabel.height + Padding.NameLabel.top
         } else {
             let messageWidth = width -
                 (ChatCellPadding.ReceivedMessage.Message.left + ChatCellPadding.ReceivedMessage.Message.right)
@@ -290,7 +286,8 @@ class ALKFriendMessageButtonCell: ALKChatBaseCell<ALKMessageViewModel> {
         return height
             + buttonHeight
             + ChatCellPadding.ReceivedMessage.MessageButton.top
-            + ChatCellPadding.ReceivedMessage.MessageButton.bottom
+            + ChatCellPadding.ReceivedMessage.MessageButton.bottom + timeLabelSize.height.rounded(.up)
+            + Padding.TimeLabel.bottom
     }
 
     private func setupConstraints() {

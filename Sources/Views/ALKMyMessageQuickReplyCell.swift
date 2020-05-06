@@ -96,18 +96,14 @@ public class ALKMyMessageQuickReplyCell: ALKChatBaseCell<ALKMessageViewModel> {
     public class func rowHeight(viewModel: ALKMessageViewModel, maxWidth: CGFloat) -> CGFloat {
         var height: CGFloat = 0
 
-        if viewModel.isMessageEmpty {
-            let timeLabelSize = viewModel.time!.rectWithConstrainedWidth(
-                Padding.TimeLabel.maxWidth,
-                font: ALKMessageStyle.time.font
-            )
+        let timeLabelSize = viewModel.time!.rectWithConstrainedWidth(
+            Padding.TimeLabel.maxWidth,
+            font: ALKMessageStyle.time.font
+        )
 
-            height = timeLabelSize.height.rounded(.up) + Padding.TimeLabel.bottom
-
-        } else {
+        if !viewModel.isMessageEmpty {
             let messageWidth = maxWidth -
                 (ChatCellPadding.SentMessage.Message.left + ChatCellPadding.SentMessage.Message.right)
-
             height = ALKMyMessageView.rowHeight(viewModel: viewModel, width: messageWidth)
         }
 
@@ -121,7 +117,7 @@ public class ALKMyMessageQuickReplyCell: ALKChatBaseCell<ALKMessageViewModel> {
         return height
             + SuggestedReplyView.rowHeight(model: suggestedReplies, maxWidth: quickReplyViewWidth)
             + ChatCellPadding.SentMessage.QuickReply.top
-            + ChatCellPadding.SentMessage.QuickReply.bottom
+            + ChatCellPadding.SentMessage.QuickReply.bottom + timeLabelSize.height.rounded(.up) + Padding.TimeLabel.bottom
     }
 
     private func setupConstraints() {
