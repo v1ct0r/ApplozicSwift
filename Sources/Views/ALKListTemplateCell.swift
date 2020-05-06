@@ -67,7 +67,7 @@ public class ALKMyMessageListTemplateCell: ALKListTemplateCell {
         timeLabel.setStyle(ALKMessageStyle.time)
 
         let timeLabelSize = viewModel.time!.rectWithConstrainedWidth(
-            ReceivedMessageView.Config.TimeLabel.maxWidth,
+            Padding.TimeLabel.maxWidth,
             font: ALKMessageStyle.time.font
         )
         timeLabelHeight.constant = timeLabelSize.height.rounded(.up)
@@ -211,7 +211,7 @@ public class ALKFriendMessageListTemplateCell: ALKListTemplateCell {
 
         timeLabel.text = viewModel.time
         let timeLabelSize = viewModel.time!.rectWithConstrainedWidth(
-            ReceivedMessageView.Config.TimeLabel.maxWidth,
+            Padding.TimeLabel.maxWidth,
             font: ALKMessageStyle.time.font
         )
 

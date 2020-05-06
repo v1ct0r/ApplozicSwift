@@ -16,10 +16,10 @@ class ImageMessageViewSizeCalculator {
                 viewHeight = model.message.time.rectWithConstrainedWidth(SentImageMessageCell.Config.TimeLabel.maxWidth, font: MessageTheme.sentMessage.time.font).height.rounded(.up) + padding.bottom + padding.top
 
             } else {
-                viewHeight += model.message.time.rectWithConstrainedWidth(ReceivedMessageView.Config.TimeLabel.maxWidth, font: MessageTheme.sentMessage.time.font).height.rounded(.up) + padding.bottom
+                viewHeight += model.message.time.rectWithConstrainedWidth(ReceivedImageMessageCell.Config.TimeLabel.maxWidth, font: MessageTheme.sentMessage.time.font).height.rounded(.up) + padding.bottom
 
-                viewHeight += viewHeight + padding.top
-                    + ReceivedMessageView.Config.DisplayName.height
+                viewHeight += padding.top
+                    + ReceivedImageMessageCell.Config.DisplayName.height
             }
         } else {
             if model.message.isMyMessage {
