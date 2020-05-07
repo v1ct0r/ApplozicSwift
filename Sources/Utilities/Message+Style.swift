@@ -107,23 +107,17 @@ public enum ALKMessageStyle {
         /// right and left padding.
         public let widthPadding: CGFloat
 
-        public init(color: UIColor, style: BubbleStyle) {
+        public init(color: UIColor?, style: BubbleStyle) {
             self.color = color
             self.style = style
             widthPadding = 10.0
             cornerRadius = 12
         }
-
-        public init() {
-            widthPadding = 10.0
-            cornerRadius = 12
-            style = .edge
-        }
     }
 
-    public static var sentBubble = Bubble() {
+    public static var sentBubble = Bubble(color: nil, style: .edge) {
         didSet {
-            let appSettings = ALKAppThemeSettings()
+            let appSettings = ALKAppSettingsHelper()
             appSettings.updateSentMessageBackgroundColor(color: sentBubble.color)
         }
     }

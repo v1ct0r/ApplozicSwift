@@ -292,7 +292,7 @@ open class ALKChatBar: UIView, Localizable {
         galleryButton.addTarget(self, action: #selector(tapped(button:)), for: .touchUpInside)
         locationButton.addTarget(self, action: #selector(tapped(button:)), for: .touchUpInside)
         contactButton.addTarget(self, action: #selector(tapped(button:)), for: .touchUpInside)
-        let appSettings = ALKAppThemeSettings()
+        let appSettings = ALKAppSettingsHelper()
         let sendButtonTintColor = appSettings.getAttachmentIconsTintColor()
         setupAttachment(buttonIcons: chatBarConfiguration.attachmentIcons, tintColor: sendButtonTintColor)
         setupConstraints()

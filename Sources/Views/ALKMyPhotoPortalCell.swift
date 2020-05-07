@@ -24,7 +24,7 @@ final class ALKMyPhotoPortalCell: ALKPhotoCell {
         return sv
     }()
 
-    let appSettings = ALKAppThemeSettings()
+    let appSettings = ALKAppSettingsHelper()
 
     struct Padding {
         struct PhotoView {

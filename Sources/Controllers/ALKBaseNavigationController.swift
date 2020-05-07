@@ -10,7 +10,7 @@ import Foundation
 
 public class ALKBaseNavigationViewController: UINavigationController {
     static var statusBarStyle: UIStatusBarStyle = .lightContent
-    let appSettings = ALKAppThemeSettings()
+    let appSettings = ALKAppSettingsHelper()
 
     public override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,7 +31,7 @@ public class ALKBaseNavigationViewController: UINavigationController {
             navigationBarProxy.titleTextAttributes ?? [NSAttributedString.Key.foregroundColor: UIColor.black]
 
         if navigationBarProxy.backgroundImage(for: .default) == nil {
-            navigationBarProxy.barTintColor = appSettings.getAppPrimaryColor()
+            navigationBarProxy.barTintColor = appSettings.getAppBarTintColor()
         }
     }
 }

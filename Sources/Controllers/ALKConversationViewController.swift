@@ -1466,7 +1466,7 @@ open class ALKConversationViewController: ALKBaseViewController, Localizable {
     }
 
     func setRichMessageKitTheme() {
-        let appSettings = ALKAppThemeSettings()
+        let appSettings = ALKAppSettingsHelper()
         let sentBackgroundColor = appSettings.getSentMessageBackgroundColor()
         ImageBubbleTheme.sentMessage.bubble.color = sentBackgroundColor
         ImageBubbleTheme.sentMessage.bubble.cornerRadius = ALKMessageStyle.sentBubble.cornerRadius

@@ -11,7 +11,7 @@ import Kingfisher
 import UIKit
 
 class ALKMyDocumentCell: ALKDocumentCell {
-    let appSettings = ALKAppThemeSettings()
+    let appSettings = ALKAppSettingsHelper()
     struct Padding {
         struct StateView {
             static let trailing: CGFloat = 2

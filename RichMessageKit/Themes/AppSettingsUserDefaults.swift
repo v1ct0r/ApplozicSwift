@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct ThemeSettings {
+internal struct AppSettingsUserDefaults {
     enum SettingsKey {
         static let primaryColor = "primaryColor"
         static let secondaryColor = "secondaryColor"
@@ -17,19 +17,17 @@ public struct ThemeSettings {
 
     var appSettings = "ALK_APP_SETTINGS"
 
-    public init() {}
-
-    public func setAppSettings(settingsDictionary: [String: Any]) {
+    internal func setAppSettings(settingsDictionary: [String: Any]) {
         UserDefaults.standard.set(settingsDictionary, forKey: appSettings)
     }
 
-    public func updateAppSettingsIfRequired(settingsDictionary: [String: Any]) {
+    internal func updateOrSetAppSettings(settingsDictionary: [String: Any]) {
         var updatedSettingsDictionary = settingsDictionary
 
         let extstingAppSettings = getAppSettings()
 
         if extstingAppSettings == nil {
-            setAppSettings(settingsDictionary: settingsDictionary)
+            setAppSettings(settingsDictionary: updatedSettingsDictionary)
         } else {
             // Keep the sent message background color
             if let settings = extstingAppSettings, settings.keys.contains(SettingsKey.sentMessageBackgroundColor), let existingSentMessageBackgroundColor = settings[SettingsKey.sentMessageBackgroundColor] {
@@ -39,11 +37,11 @@ public struct ThemeSettings {
         }
     }
 
-    public func getAppSettings() -> [String: Any]? {
+    internal func getAppSettings() -> [String: Any]? {
         return UserDefaults.standard.value(forKey: appSettings) as? [String: Any]
     }
 
-    public func clear() {
+    internal func clear() {
         let dictionary = UserDefaults.standard.dictionaryRepresentation()
         let keyArray = dictionary.keys
         for key in keyArray {

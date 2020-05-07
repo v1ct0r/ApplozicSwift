@@ -10,12 +10,17 @@ import Kingfisher
 import UIKit
 
 extension ALKImageView {
-    func setStyle(_ bubbleStyle: ALKMessageStyle.Bubble, isReceiverSide: Bool, bgColor: UIColor) {
+    func setStyle(_ bubbleStyle: ALKMessageStyle.Bubble, isReceiverSide: Bool) {
         if bubbleStyle.style == .edge {
-            tintColor = bgColor
+            if isReceiverSide {
+                tintColor = bubbleStyle.color
+            } else {
+                let appSettings = ALKAppSettingsHelper()
+                tintColor = appSettings.getSentMessageBackgroundColor()
+            }
             image = imageBubble(for: bubbleStyle.style, isReceiverSide: isReceiverSide, showHangOverImage: false)
         } else {
-            super.setBubbleStyle(bubbleStyle, bgColor: bgColor)
+            super.setBubbleStyle(bubbleStyle, isReceiverSide: isReceiverSide)
         }
     }
 
