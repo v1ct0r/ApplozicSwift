@@ -11,7 +11,7 @@ import Foundation
 final class ALKMyLocationCell: ALKLocationCell {
     // MARK: - Declare Variables or Types
 
-    let appSettings = ALKAppThemeSettings()
+    let appSettings = ALKAppSettingsHelper()
 
     // MARK: Environment in chat
 

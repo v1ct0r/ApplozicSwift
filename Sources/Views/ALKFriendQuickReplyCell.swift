@@ -8,8 +8,6 @@
 public class ALKFriendQuickReplyCell: ALKChatBaseCell<ALKMessageViewModel> {
     var messageView = ALKFriendMessageView()
     var quickReplyView = SuggestedReplyView()
-    let themeSettings = ThemeSettings()
-
     var quickReplySelected: ((_ index: Int, _ title: String) -> Void)?
 
     lazy var messageViewHeight = self.messageView.heightAnchor.constraint(equalToConstant: 0)
