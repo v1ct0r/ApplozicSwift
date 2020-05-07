@@ -10,12 +10,12 @@ import Foundation
 public struct ALKAppSettingsHelper {
     public init() {}
 
-    let themeSettings = AppSettingsUserDefaults()
+    let appSettingsUserDefaults = AppSettingsUserDefaults()
 
     let navigationBarProxy = UINavigationBar.appearance(whenContainedInInstancesOf: [ALKBaseNavigationViewController.self])
 
     public func getAppPrimaryColor() -> UIColor {
-        if let appDic = themeSettings.getAppSettings(), let primaryColor = appDic[AppSettingsUserDefaults.SettingsKey.primaryColor] as? String {
+        if let appDic = appSettingsUserDefaults.getAppSettings(), let primaryColor = appDic[AppSettingsUserDefaults.SettingsKey.primaryColor] as? String {
             return UIColor(hexString: primaryColor)
         }
         return UIColor.navigationOceanBlue()
@@ -32,7 +32,7 @@ public struct ALKAppSettingsHelper {
         let sentMessageBubbleColor = ALKMessageStyle.sentBubble.color
         if let sentBubbleColor = sentMessageBubbleColor {
             return sentBubbleColor
-        } else if let appDic = themeSettings.getAppSettings(), let sentMessageBackgroundColor = appDic[AppSettingsUserDefaults.SettingsKey.sentMessageBackgroundColor] as? String {
+        } else if let appDic = appSettingsUserDefaults.getAppSettings(), let sentMessageBackgroundColor = appDic[AppSettingsUserDefaults.SettingsKey.sentMessageBackgroundColor] as? String {
             return UIColor(hexString: sentMessageBackgroundColor)
         }
 
@@ -40,7 +40,7 @@ public struct ALKAppSettingsHelper {
     }
 
     public func getAttachmentIconsTintColor() -> UIColor {
-        if let appDic = themeSettings.getAppSettings(), let primaryColor = appDic[AppSettingsUserDefaults.SettingsKey.primaryColor] as? String {
+        if let appDic = appSettingsUserDefaults.getAppSettings(), let primaryColor = appDic[AppSettingsUserDefaults.SettingsKey.primaryColor] as? String {
             return UIColor(hexString: primaryColor)
         }
         return UIColor.gray
@@ -50,7 +50,7 @@ public struct ALKAppSettingsHelper {
         guard let sentMessageBackgroundColor = color else {
             return
         }
-        var appSettingsDictionary = themeSettings.getAppSettings()
+        var appSettingsDictionary = appSettingsUserDefaults.getAppSettings()
 
         if appSettingsDictionary == nil {
             appSettingsDictionary = [String: Any]()
@@ -59,15 +59,15 @@ public struct ALKAppSettingsHelper {
             return
         }
         settingsDictionary[AppSettingsUserDefaults.SettingsKey.sentMessageBackgroundColor] = UIColor.hexStringFromColor(color: sentMessageBackgroundColor)
-        themeSettings.setAppSettings(settingsDictionary: settingsDictionary)
+        appSettingsUserDefaults.setAppSettings(settingsDictionary: settingsDictionary)
     }
 
     /// Will be used for updating or set the app settings
     public func updateOrSetAppSettings(settingsDictionary: [String: Any]) {
-        themeSettings.updateOrSetAppSettings(settingsDictionary: settingsDictionary)
+        appSettingsUserDefaults.updateOrSetAppSettings(settingsDictionary: settingsDictionary)
     }
 
     public func clearAppSettingsUserDefaults() {
-        themeSettings.clear()
+        appSettingsUserDefaults.clear()
     }
 }
