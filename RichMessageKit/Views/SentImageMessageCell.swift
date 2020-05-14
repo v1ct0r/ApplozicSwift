@@ -14,13 +14,22 @@ public class SentImageMessageCell: UITableViewCell {
     public var delegate: Tappable?
 
     public enum Config {
-        public static var imageBubbleTopPadding: CGFloat = 4
-        public static var padding = Padding(left: 60, right: 10, top: 10, bottom: 10)
         public static var maxWidth = UIScreen.main.bounds.width
+
+        public struct MessageView {
+            /// Left padding of `MessageView`
+            public static var leftPadding: CGFloat = 60.0
+            /// Bottom padding of `MessageView`
+            public static var rightPadding: CGFloat = 10.0
+            public static var topPadding: CGFloat = 10.0
+        }
 
         public enum StateView {
             public static var width: CGFloat = 17.0
             public static var height: CGFloat = 9.0
+            public static var leftPadding: CGFloat = 2.0
+            public static var rightPadding: CGFloat = 2.0
+            public static var topPadding: CGFloat = 5
         }
 
         public enum TimeLabel {
@@ -28,6 +37,13 @@ public class SentImageMessageCell: UITableViewCell {
             public static var leftPadding: CGFloat = 2.0
             public static var maxWidth: CGFloat = 200.0
             public static var rightPadding: CGFloat = 2.0
+            public static var topPadding: CGFloat = 2.0
+        }
+
+        public enum ImageBubbleView {
+            public static var topPadding: CGFloat = 2.0
+            public static var rightPadding: CGFloat = 10
+            public static var bottomPadding: CGFloat = 10
         }
     }
 
@@ -50,24 +66,27 @@ public class SentImageMessageCell: UITableViewCell {
     fileprivate lazy var timeLabelWidth = timeLabel.widthAnchor.constraint(equalToConstant: 0)
     fileprivate lazy var timeLabelHeight = timeLabel.heightAnchor.constraint(equalToConstant: 0)
 
-    fileprivate lazy var messageView = SentMessageView(
-        frame: .zero,
-        padding: messageViewPadding,
+    fileprivate lazy var messageView = MessageView(
+        bubbleStyle: MessageTheme.sentMessage.bubble,
+        messageStyle: MessageTheme.sentMessage.message,
         maxWidth: Config.maxWidth
     )
     fileprivate var messageViewPadding: Padding
     fileprivate var imageBubble: ImageContainer
     fileprivate var imageBubbleWidth: CGFloat
     fileprivate lazy var messageViewHeight = messageView.heightAnchor.constraint(equalToConstant: 0)
+
+    fileprivate lazy var imageBubbleHeight = imageBubble.heightAnchor.constraint(equalToConstant: 0)
+
     fileprivate var imageUrl: String?
 
     // MARK: - Initializer
 
     public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        messageViewPadding = Padding(left: Config.padding.left,
-                                     right: Config.padding.right,
-                                     top: Config.padding.top,
-                                     bottom: Config.imageBubbleTopPadding)
+        messageViewPadding = Padding(left: Config.MessageView.leftPadding,
+                                     right: Config.MessageView.rightPadding,
+                                     top: Config.MessageView.topPadding,
+                                     bottom: Config.ImageBubbleView.topPadding)
         imageBubble = ImageContainer(frame: .zero, maxWidth: Config.maxWidth, isMyMessage: true)
         imageBubbleWidth = Config.maxWidth * ImageBubbleTheme.sentMessage.widthRatio
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -89,19 +108,17 @@ public class SentImageMessageCell: UITableViewCell {
             print("For SentMessage value of isMyMessage should be true")
             return
         }
+        let isMessageEmpty = model.message.isMessageEmpty()
 
-        if model.message.isMessageEmpty() {
-            messageViewHeight.constant = 0
-            messageView.updateHeightOfView(hideView: true, model: model.message.text)
-        } else {
-            messageView.update(model: model.message)
-            messageViewHeight.constant = SentMessageView.rowHeight(
-                model: model.message,
-                maxWidth: Config.maxWidth,
-                padding: messageViewPadding
-            )
-            messageView.updateHeightOfView(hideView: true, model: model.message.text)
+        messageViewHeight.constant = isMessageEmpty ? 0 : SentMessageViewSizeCalculator().rowHeight(messageModel: model.message, maxWidth: Config.maxWidth, padding: messageViewPadding)
+
+        if !isMessageEmpty {
+            messageView.update(model: model.message.text ?? "")
         }
+
+        messageView.updateHeighOfView(hideView: isMessageEmpty, model: model.message.text ?? "")
+
+        imageBubbleHeight.constant = ImageBubbleSizeCalculator().rowHeight(model: model, maxWidth: Config.maxWidth)
 
         // Set time and update timeLabel constraint.
         timeLabel.text = model.message.time
@@ -144,30 +161,30 @@ public class SentImageMessageCell: UITableViewCell {
     ///   - model: object that conforms to `ImageMessage`
     /// - Returns: exact height of the view.
     public static func rowHeight(model: ImageMessage) -> CGFloat {
-        return ImageMessageViewSizeCalculator().rowHeight(model: model, maxWidth: Config.maxWidth, padding: Config.padding)
+        return ImageMessageViewSizeCalculator().rowHeight(model: model, maxWidth: Config.maxWidth)
     }
 
     private func setupConstraints() {
         addViewsForAutolayout(views: [messageView, imageBubble, timeLabel, stateView])
 
         NSLayoutConstraint.activate([
-            messageView.topAnchor.constraint(equalTo: topAnchor),
-            messageView.leadingAnchor.constraint(equalTo: leadingAnchor),
-            messageView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            messageView.topAnchor.constraint(equalTo: topAnchor, constant: Config.MessageView.topPadding),
+            messageView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -1 * Config.MessageView.rightPadding),
+            messageView.leadingAnchor.constraint(greaterThanOrEqualTo: leadingAnchor, constant: Config.MessageView.leftPadding),
             messageViewHeight,
 
-            imageBubble.topAnchor.constraint(equalTo: messageView.bottomAnchor, constant: 0),
-            imageBubble.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -1 * Config.padding.right),
+            imageBubble.topAnchor.constraint(equalTo: messageView.bottomAnchor, constant: Config.ImageBubbleView.topPadding),
+            imageBubble.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -1 * Config.ImageBubbleView.rightPadding),
             imageBubble.widthAnchor.constraint(equalToConstant: imageBubbleWidth),
-            imageBubble.bottomAnchor.constraint(equalTo: timeLabel.topAnchor, constant: -1 * Config.padding.bottom),
 
+            imageBubbleHeight,
             stateView.widthAnchor.constraint(equalToConstant: Config.StateView.width),
             stateView.heightAnchor.constraint(equalToConstant: Config.StateView.height),
-            stateView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -1 * Config.padding.bottom),
-            stateView.leadingAnchor.constraint(greaterThanOrEqualTo: imageBubble.leadingAnchor, constant: Config.padding.left),
-            stateView.trailingAnchor.constraint(equalTo: imageBubble.trailingAnchor, constant: -1 * Config.TimeLabel.leftPadding),
+            stateView.topAnchor.constraint(equalTo: imageBubble.bottomAnchor, constant: Config.StateView.topPadding),
+            stateView.leadingAnchor.constraint(greaterThanOrEqualTo: imageBubble.leadingAnchor, constant: Config.StateView.leftPadding),
+            stateView.trailingAnchor.constraint(equalTo: imageBubble.trailingAnchor, constant: -1 * Config.StateView.rightPadding),
 
-            timeLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -1 * Config.padding.bottom),
+            timeLabel.topAnchor.constraint(equalTo: imageBubble.bottomAnchor, constant: Config.TimeLabel.topPadding),
             timeLabel.leadingAnchor.constraint(greaterThanOrEqualTo: stateView.leadingAnchor, constant: Config.TimeLabel.leftPadding),
             timeLabelWidth,
             timeLabelHeight,

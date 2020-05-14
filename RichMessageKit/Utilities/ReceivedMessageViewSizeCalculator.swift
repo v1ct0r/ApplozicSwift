@@ -22,7 +22,7 @@ class ReceivedMessageViewSizeCalculator {
             padding: MessageTheme.receivedMessage.bubble.padding
         )
 
-        let totalHeightPadding = padding.top + padding.bottom + config.MessageView.topPadding + config.MessageView.bottomPadding
+        let totalHeightPadding = padding.top + padding.bottom
         let calculatedHeight = messageHeight + totalHeightPadding
         return calculatedHeight
     }

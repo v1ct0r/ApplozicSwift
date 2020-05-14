@@ -14,24 +14,41 @@ public class ReceivedImageMessageCell: UITableViewCell {
     public var delegate: Tappable?
 
     public struct Config {
-        public static var imageBubbleTopPadding: CGFloat = 4
-        public static var padding = Padding(left: 10, right: 60, top: 10, bottom: 10)
         public static var maxWidth = UIScreen.main.bounds.width
+
+        public struct MessageView {
+            /// Left padding of `MessageView` from `ProfileImage`
+            public static var leftPadding: CGFloat = 10.0
+
+            /// Top padding of `MessageView` from `DisplayName`
+            public static var topPadding: CGFloat = 2.0
+
+            /// Bottom padding of `MessageView`
+            public static var bottomPadding: CGFloat = 2.0
+
+            /// Right padding of `MessageView`
+            public static var rightPadding: CGFloat = 60.0
+        }
+
         public struct ProfileImage {
             public static var width: CGFloat = 37.0
             public static var height: CGFloat = 37.0
             /// Top padding of `ProfileImage` from `DisplayName`
             public static var topPadding: CGFloat = 2.0
+            public static var leftPadding: CGFloat = 10.0
         }
 
         public struct TimeLabel {
             /// Left padding of `TimeLabel` from `MessageView`
             public static var leftPadding: CGFloat = 2.0
             public static var maxWidth: CGFloat = 200.0
+            public static var rightPadding: CGFloat = 60.0
+            public static var topPadding: CGFloat = 2.0
         }
 
         public struct DisplayName {
             public static var height: CGFloat = 16.0
+            public static var topPadding: CGFloat = 10.0
 
             /// Left padding of `DisplayName` from `ProfileImage`
             public static var leftPadding: CGFloat = 10.0
@@ -41,7 +58,9 @@ public class ReceivedImageMessageCell: UITableViewCell {
         }
 
         public struct ImageBubbleView {
-            public static var top: CGFloat = 5.0
+            public static var topPadding: CGFloat = 5.0
+            public static var leftPadding: CGFloat = 10.0
+            public static var bottomPadding: CGFloat = 10.0
         }
     }
 
@@ -73,9 +92,9 @@ public class ReceivedImageMessageCell: UITableViewCell {
         return label
     }()
 
-    fileprivate lazy var messageView = ReceivedMessageView(
-        frame: .zero,
-        padding: messageViewPadding,
+    fileprivate lazy var messageView = MessageView(
+        bubbleStyle: MessageTheme.receivedMessage.bubble,
+        messageStyle: MessageTheme.receivedMessage.message,
         maxWidth: Config.maxWidth
     )
 
@@ -86,13 +105,15 @@ public class ReceivedImageMessageCell: UITableViewCell {
     fileprivate var imageBubble: ImageContainer
     fileprivate var imageBubbleWidth: CGFloat
     fileprivate lazy var messageViewHeight = messageView.heightAnchor.constraint(equalToConstant: 0)
+    fileprivate lazy var imageBubbleHeight = imageBubble.heightAnchor.constraint(equalToConstant: 0)
+
     fileprivate var imageUrl: String?
 
     public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        messageViewPadding = Padding(left: Config.padding.left,
-                                     right: Config.padding.right,
-                                     top: Config.padding.top,
-                                     bottom: Config.imageBubbleTopPadding)
+        messageViewPadding = Padding(left: Config.MessageView.leftPadding,
+                                     right: Config.MessageView.rightPadding,
+                                     top: Config.MessageView.topPadding,
+                                     bottom: Config.ImageBubbleView.topPadding)
         imageBubble = ImageContainer(frame: .zero, maxWidth: Config.maxWidth, isMyMessage: false)
         imageBubbleWidth = Config.maxWidth * ImageBubbleTheme.receivedMessage.widthRatio
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -117,15 +138,16 @@ public class ReceivedImageMessageCell: UITableViewCell {
         }
         let isMessageEmpty = model.message.isMessageEmpty()
 
-        if isMessageEmpty {
-            messageViewHeight.constant = 0
-            messageView.updateHeightOfView(hideView: isMessageEmpty, model: model.message.text)
-        } else {
-            messageView.update(model: model.message)
-            messageViewHeight.constant = ReceivedMessageView.rowHeight(model: model.message, maxWidth: Config.maxWidth, padding: messageViewPadding)
-            messageView.updateHeightOfView(hideView: isMessageEmpty, model: model.message.text)
+        let messageHeight = isMessageEmpty ? 0 : ReceivedMessageViewSizeCalculator().rowHeight(messageModel: model.message, maxWidth: Config.maxWidth, padding: messageViewPadding)
+        messageViewHeight.constant = messageHeight
+
+        imageBubbleHeight.constant = ImageBubbleSizeCalculator().rowHeight(model: model, maxWidth: Config.maxWidth)
+
+        if !isMessageEmpty {
+            messageView.update(model: model.message.text ?? "")
         }
 
+        messageView.updateHeighOfView(hideView: isMessageEmpty, model: model.message.text ?? "")
         /// Set frame
         let height = ReceivedImageMessageCell.rowHeight(model: model)
         frame.size = CGSize(width: Config.maxWidth, height: height)
@@ -161,41 +183,37 @@ public class ReceivedImageMessageCell: UITableViewCell {
     ///   - model: object that conforms to `ImageMessage`
     /// - Returns: exact height of the view.
     public static func rowHeight(model: ImageMessage) -> CGFloat {
-        return ImageMessageViewSizeCalculator().rowHeight(model: model, maxWidth: Config.maxWidth, padding: Config.padding)
+        return ImageMessageViewSizeCalculator().rowHeight(model: model, maxWidth: Config.maxWidth)
     }
 
     private func setupConstraints() {
         addViewsForAutolayout(views: [avatarImageView, nameLabel, messageView, imageBubble, timeLabel])
-        let leadingMargin =
-            Config.padding.left
-                + Config.ProfileImage.width
-                + ReceivedMessageView.Config.MessageView.leftPadding
-        let nameRightPadding = max(Config.padding.right, Config.DisplayName.rightPadding)
+        let nameRightPadding = max(Config.MessageView.rightPadding, Config.DisplayName.rightPadding)
         NSLayoutConstraint.activate([
             avatarImageView.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: Config.ProfileImage.topPadding),
-            avatarImageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Config.padding.left),
+            avatarImageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Config.ProfileImage.leftPadding),
             avatarImageView.widthAnchor.constraint(equalToConstant: Config.ProfileImage.width),
             avatarImageView.heightAnchor.constraint(equalToConstant: Config.ProfileImage.height),
 
-            nameLabel.topAnchor.constraint(equalTo: topAnchor, constant: Config.padding.top),
+            nameLabel.topAnchor.constraint(equalTo: topAnchor, constant: Config.DisplayName.topPadding),
             nameLabel.leadingAnchor.constraint(equalTo: avatarImageView.trailingAnchor, constant: Config.DisplayName.leftPadding),
             nameLabel.heightAnchor.constraint(equalToConstant: Config.DisplayName.height),
             nameLabel.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -1 * nameRightPadding),
 
-            messageView.topAnchor.constraint(equalTo: nameLabel.bottomAnchor),
-            messageView.leadingAnchor.constraint(equalTo: avatarImageView.trailingAnchor),
-            messageView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            messageView.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: Config.MessageView.topPadding),
+            messageView.leadingAnchor.constraint(equalTo: avatarImageView.trailingAnchor, constant: Config.MessageView.leftPadding),
             messageViewHeight,
+            messageView.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -1 * Config.MessageView.rightPadding),
 
-            imageBubble.topAnchor.constraint(equalTo: messageView.bottomAnchor, constant: Config.ImageBubbleView.top),
-            imageBubble.leadingAnchor.constraint(equalTo: leadingAnchor, constant: leadingMargin),
+            imageBubble.topAnchor.constraint(equalTo: messageView.bottomAnchor, constant: Config.ImageBubbleView.topPadding),
+            imageBubble.leadingAnchor.constraint(equalTo: avatarImageView.trailingAnchor, constant: Config.ImageBubbleView.leftPadding),
             imageBubble.widthAnchor.constraint(equalToConstant: imageBubbleWidth),
-            imageBubble.bottomAnchor.constraint(equalTo: timeLabel.topAnchor, constant: -1 * Config.padding.bottom),
+            imageBubbleHeight,
             timeLabel.leadingAnchor.constraint(equalTo: imageBubble.leadingAnchor, constant: Config.TimeLabel.leftPadding),
-            timeLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -1 * Config.padding.bottom),
+            timeLabel.topAnchor.constraint(equalTo: imageBubble.bottomAnchor, constant: Config.TimeLabel.topPadding),
             timeLabelWidth,
             timeLabelHeight,
-            timeLabel.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -1 * Config.padding.right),
+            timeLabel.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -1 * Config.TimeLabel.rightPadding),
         ])
     }
 

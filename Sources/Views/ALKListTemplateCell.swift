@@ -194,18 +194,17 @@ public class ALKFriendMessageListTemplateCell: ALKListTemplateCell {
     public override func update(viewModel: ALKMessageViewModel, maxWidth: CGFloat) {
         let isMessageEmpty = viewModel.isMessageEmpty
 
-        if isMessageEmpty {
-            messageViewHeight.constant = 0
-            messageView.updateHeightOfViews(hideView: isMessageEmpty, viewModel: viewModel, maxWidth: maxWidth)
-            showNameAndAvatarImageView(isMessageEmpty: isMessageEmpty, viewModel: viewModel)
-        } else {
-            let messageWidth = maxWidth -
-                (ChatCellPadding.ReceivedMessage.Message.left + ChatCellPadding.ReceivedMessage.Message.right)
-            let height = ALKFriendMessageView.rowHeight(viewModel: viewModel, width: messageWidth)
-            messageViewHeight.constant = height
+        let messageWidth = maxWidth -
+            (ChatCellPadding.ReceivedMessage.Message.left + ChatCellPadding.ReceivedMessage.Message.right)
+
+        messageViewHeight.constant = isMessageEmpty ? 0 : ALKFriendMessageView.rowHeight(viewModel: viewModel, width: messageWidth)
+
+        if !isMessageEmpty {
             messageView.update(viewModel: viewModel)
-            messageView.updateHeightOfViews(hideView: isMessageEmpty, viewModel: viewModel, maxWidth: maxWidth)
         }
+
+        messageView.updateHeightOfViews(hideView: isMessageEmpty, viewModel: viewModel, maxWidth: maxWidth)
+        showNameAndAvatarImageView(isMessageEmpty: isMessageEmpty, viewModel: viewModel)
 
         timeLabel.text = viewModel.time
         let timeLabelSize = viewModel.time!.rectWithConstrainedWidth(
@@ -288,16 +287,18 @@ public class ALKFriendMessageListTemplateCell: ALKListTemplateCell {
             .constraint(withIdentifier: ConstraintIdentifier.AvatarImageView.height)?
             .constant = isMessageEmpty ? Padding.AvatarImageView.height : 0
 
-        let placeHolder = UIImage(named: "placeholder", in: Bundle.applozic, compatibleWith: nil)
-        if let url = viewModel.avatarURL {
-            let resource = ImageResource(downloadURL: url, cacheKey: url.absoluteString)
-            avatarImageView.kf.setImage(with: resource, placeholder: placeHolder)
-        } else {
-            avatarImageView.image = placeHolder
-        }
+        if isMessageEmpty {
+            let placeHolder = UIImage(named: "placeholder", in: Bundle.applozic, compatibleWith: nil)
+            if let url = viewModel.avatarURL {
+                let resource = ImageResource(downloadURL: url, cacheKey: url.absoluteString)
+                avatarImageView.kf.setImage(with: resource, placeholder: placeHolder)
+            } else {
+                avatarImageView.image = placeHolder
+            }
 
-        nameLabel.text = viewModel.displayName
-        nameLabel.setStyle(ALKMessageStyle.displayName)
+            nameLabel.text = viewModel.displayName
+            nameLabel.setStyle(ALKMessageStyle.displayName)
+        }
     }
 }
 

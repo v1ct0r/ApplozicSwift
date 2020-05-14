@@ -225,18 +225,16 @@ class ALKFriendMessageButtonCell: ALKChatBaseCell<ALKMessageViewModel> {
         self.viewModel = viewModel
         let isMessageEmpty = viewModel.isMessageEmpty
 
-        if isMessageEmpty {
-            messageViewHeight.constant = 0
-            messageView.updateHeightOfViews(hideView: isMessageEmpty, viewModel: viewModel, maxWidth: maxWidth)
-            showNameAndAvatarImageView(isMessageEmpty: isMessageEmpty, viewModel: viewModel)
-        } else {
-            let messageWidth = maxWidth -
-                (ChatCellPadding.ReceivedMessage.Message.left + ChatCellPadding.ReceivedMessage.Message.right)
+        let messageWidth = maxWidth -
+            (ChatCellPadding.ReceivedMessage.Message.left + ChatCellPadding.ReceivedMessage.Message.right)
 
-            let height = ALKFriendMessageView.rowHeight(viewModel: viewModel, width: messageWidth)
-            messageViewHeight.constant = height
+        messageViewHeight.constant = isMessageEmpty ? 0 : ALKFriendMessageView.rowHeight(viewModel: viewModel, width: messageWidth)
+
+        messageView.updateHeightOfViews(hideView: isMessageEmpty, viewModel: viewModel, maxWidth: maxWidth)
+        showNameAndAvatarImageView(isMessageEmpty: isMessageEmpty, viewModel: viewModel)
+
+        if !isMessageEmpty {
             messageView.update(viewModel: viewModel)
-            messageView.updateHeightOfViews(hideView: isMessageEmpty, viewModel: viewModel, maxWidth: maxWidth)
         }
 
         guard let dict = viewModel.linkOrSubmitButton() else {
@@ -344,17 +342,19 @@ class ALKFriendMessageButtonCell: ALKChatBaseCell<ALKMessageViewModel> {
             .constraint(withIdentifier: ConstraintIdentifier.AvatarImageView.height)?
             .constant = isMessageEmpty ? Padding.AvatarImageView.height : 0
 
-        let placeHolder = UIImage(named: "placeholder", in: Bundle.applozic, compatibleWith: nil)
+        if isMessageEmpty {
+            let placeHolder = UIImage(named: "placeholder", in: Bundle.applozic, compatibleWith: nil)
 
-        if let url = viewModel.avatarURL {
-            let resource = ImageResource(downloadURL: url, cacheKey: url.absoluteString)
-            avatarImageView.kf.setImage(with: resource, placeholder: placeHolder)
-        } else {
-            avatarImageView.image = placeHolder
+            if let url = viewModel.avatarURL {
+                let resource = ImageResource(downloadURL: url, cacheKey: url.absoluteString)
+                avatarImageView.kf.setImage(with: resource, placeholder: placeHolder)
+            } else {
+                avatarImageView.image = placeHolder
+            }
+
+            nameLabel.text = viewModel.displayName
+            nameLabel.setStyle(ALKMessageStyle.displayName)
         }
-
-        nameLabel.text = viewModel.displayName
-        nameLabel.setStyle(ALKMessageStyle.displayName)
     }
 }
 

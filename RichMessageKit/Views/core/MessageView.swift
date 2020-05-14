@@ -130,7 +130,7 @@ public class MessageView: UIView {
         ])
     }
 
-    func updateHeighOfView(hideView: Bool, model: String) {
+    public func updateHeighOfView(hideView: Bool, model: String) {
         let messageHeight = hideView ? 0 :
             MessageViewSizeCalculator().rowHeight(text: model,
                                                   font: messageStyle.font,

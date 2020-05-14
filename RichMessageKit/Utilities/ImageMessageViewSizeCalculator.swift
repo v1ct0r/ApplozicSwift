@@ -8,43 +8,39 @@
 import Foundation
 
 class ImageMessageViewSizeCalculator {
-    func rowHeight(model: ImageMessage, maxWidth: CGFloat, padding: Padding) -> CGFloat {
+    func rowHeight(model: ImageMessage, maxWidth: CGFloat) -> CGFloat {
         var messageViewPadding: Padding!
         var viewHeight: CGFloat = 0
-        if model.message.isMessageEmpty() {
-            if model.message.isMyMessage {
-                viewHeight = padding.bottom + padding.top
-            } else {
-                viewHeight = padding.bottom + padding.top
-                    + ReceivedImageMessageCell.Config.DisplayName.height
-            }
-        } else {
-            if model.message.isMyMessage {
-                messageViewPadding = Padding(
-                    left: padding.left,
-                    right: padding.right,
-                    top: padding.top,
-                    bottom: SentImageMessageCell.Config.imageBubbleTopPadding
-                )
-                viewHeight = SentMessageViewSizeCalculator().rowHeight(messageModel: model.message, maxWidth: maxWidth, padding: messageViewPadding)
-            } else {
-                messageViewPadding = Padding(
-                    left: padding.left,
-                    right: padding.right,
-                    top: padding.top,
-                    bottom: ReceivedImageMessageCell.Config.imageBubbleTopPadding
-                )
-                viewHeight = ReceivedMessageViewSizeCalculator().rowHeight(messageModel: model.message, maxWidth: maxWidth, padding: messageViewPadding)
-            }
-        }
-
         if model.message.isMyMessage {
+            if model.message.isMessageEmpty() {
+                viewHeight = SentImageMessageCell.Config.TimeLabel.topPadding + SentImageMessageCell.Config.ImageBubbleView.topPadding + SentImageMessageCell.Config.MessageView.topPadding
+            } else {
+                messageViewPadding = Padding(
+                    left: SentImageMessageCell.Config.MessageView.leftPadding,
+                    right: SentImageMessageCell.Config.MessageView.rightPadding,
+                    top: SentImageMessageCell.Config.MessageView.topPadding,
+                    bottom: SentImageMessageCell.Config.ImageBubbleView.topPadding
+                )
+                viewHeight = SentMessageViewSizeCalculator().rowHeight(messageModel: model.message, maxWidth: maxWidth, padding: messageViewPadding) + SentImageMessageCell.Config.TimeLabel.topPadding
+            }
             viewHeight += model.message.time.rectWithConstrainedWidth(SentImageMessageCell.Config.TimeLabel.maxWidth, font: MessageTheme.sentMessage.time.font).height.rounded(.up)
         } else {
-            viewHeight += model.message.time.rectWithConstrainedWidth(SentImageMessageCell.Config.TimeLabel.maxWidth, font: MessageTheme.receivedMessage.time.font).height.rounded(.up)
+            viewHeight = ReceivedImageMessageCell.Config.DisplayName.topPadding + ReceivedImageMessageCell.Config.DisplayName.height
+            if model.message.isMessageEmpty() {
+                viewHeight += ReceivedImageMessageCell.Config.ImageBubbleView.topPadding + ReceivedImageMessageCell.Config.TimeLabel.topPadding + ReceivedImageMessageCell.Config.MessageView.topPadding
+            } else {
+                messageViewPadding = Padding(
+                    left: ReceivedImageMessageCell.Config.MessageView.leftPadding,
+                    right: ReceivedImageMessageCell.Config.MessageView.rightPadding,
+                    top: ReceivedImageMessageCell.Config.MessageView.topPadding,
+                    bottom: ReceivedImageMessageCell.Config.ImageBubbleView.topPadding
+                )
+                viewHeight += ReceivedMessageViewSizeCalculator().rowHeight(messageModel: model.message, maxWidth: maxWidth, padding: messageViewPadding) + ReceivedImageMessageCell.Config.TimeLabel.topPadding + ReceivedImageMessageCell.Config.ImageBubbleView.bottomPadding
+            }
+            viewHeight += model.message.time.rectWithConstrainedWidth(ReceivedImageMessageCell.Config.TimeLabel.maxWidth, font: MessageTheme.receivedMessage.time.font).height.rounded(.up)
         }
 
         let imageBubbleHeight = ImageBubbleSizeCalculator().rowHeight(model: model, maxWidth: maxWidth)
-        return viewHeight + imageBubbleHeight + padding.bottom // top will be already added in messageView
+        return viewHeight + imageBubbleHeight
     }
 }
