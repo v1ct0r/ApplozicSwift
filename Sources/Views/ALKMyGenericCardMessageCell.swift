@@ -53,18 +53,14 @@ open class ALKMyGenericCardMessageCell: ALKGenericCardBaseCell {
         self.viewModel = viewModel
 
         let isMessageEmpty = viewModel.isMessageEmpty
+        let messageWidth = width -
+            (ChatCellPadding.SentMessage.Message.left + ChatCellPadding.SentMessage.Message.right)
 
-        if isMessageEmpty {
-            messageViewHeight.constant = 0
-            messageView.updateHeightOfView(hideView: isMessageEmpty, viewModel: viewModel, maxWidth: width)
-        } else {
-            let messageWidth = width -
-                (ChatCellPadding.SentMessage.Message.left + ChatCellPadding.SentMessage.Message.right)
-            let height = ALKMyMessageView.rowHeight(viewModel: viewModel, width: messageWidth)
-            messageViewHeight.constant = height
+        messageViewHeight.constant = isMessageEmpty ? 0 : ALKMyMessageView.rowHeight(viewModel: viewModel, width: messageWidth)
+        if !isMessageEmpty {
             messageView.update(viewModel: viewModel)
-            messageView.updateHeightOfView(hideView: isMessageEmpty, viewModel: viewModel, maxWidth: messageWidth)
         }
+        messageView.updateHeightOfView(hideView: isMessageEmpty, viewModel: viewModel, maxWidth: width)
 
         super.update(viewModel: viewModel, width: width)
 

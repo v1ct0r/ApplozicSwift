@@ -16,13 +16,22 @@ public class SentFAQMessageCell: UITableViewCell {
 
     /// Configuration to adjust padding and maxWidth for the view.
     public struct Config {
-        public static var padding = Padding(left: 60, right: 10, top: 10, bottom: 10)
         public static var maxWidth = UIScreen.main.bounds.width
-        public static var faqTopPadding: CGFloat = 4
-        public static var faqLeftPadding: CGFloat = 20
+
+        public struct MessageView {
+            /// Left padding of `MessageView`
+            public static var leftPadding: CGFloat = 60.0
+            /// Bottom padding of `MessageView`
+            public static var rightPadding: CGFloat = 10.0
+            public static var topPadding: CGFloat = 10.0
+        }
+
         public enum StateView {
             public static var width: CGFloat = 17.0
             public static var height: CGFloat = 9.0
+            public static var leftPadding: CGFloat = 2.0
+            public static var rightPadding: CGFloat = 2.0
+            public static var bottomPadding: CGFloat = 5
         }
 
         public enum TimeLabel {
@@ -30,6 +39,14 @@ public class SentFAQMessageCell: UITableViewCell {
             public static var leftPadding: CGFloat = 2.0
             public static var maxWidth: CGFloat = 200.0
             public static var rightPadding: CGFloat = 2.0
+            public static var bottomPadding: CGFloat = 2.0
+        }
+
+        public enum FaqView {
+            public static var topPadding: CGFloat = 4.0
+            public static var rightPadding: CGFloat = 10.0
+            public static var bottomPadding: CGFloat = 10.0
+            public static var leftPadding: CGFloat = 20.0
         }
     }
 
@@ -52,9 +69,9 @@ public class SentFAQMessageCell: UITableViewCell {
     fileprivate lazy var timeLabelWidth = timeLabel.widthAnchor.constraint(equalToConstant: 0)
     fileprivate lazy var timeLabelHeight = timeLabel.heightAnchor.constraint(equalToConstant: 0)
 
-    fileprivate lazy var messageView = SentMessageView(
-        frame: .zero,
-        padding: messageViewPadding,
+    fileprivate lazy var messageView = MessageView(
+        bubbleStyle: MessageTheme.sentMessage.bubble,
+        messageStyle: MessageTheme.sentMessage.message,
         maxWidth: Config.maxWidth
     )
 
@@ -68,15 +85,15 @@ public class SentFAQMessageCell: UITableViewCell {
 
     fileprivate lazy var messageViewHeight = messageView.heightAnchor.constraint(equalToConstant: 0)
 
-    static let faqWidth = Config.maxWidth - Config.faqLeftPadding - Config.padding.right
+    static let faqWidth = Config.maxWidth - Config.FaqView.leftPadding - Config.FaqView.rightPadding
 
     // MARK: Initializer
 
     public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        messageViewPadding = Padding(left: Config.padding.left,
-                                     right: Config.padding.right,
-                                     top: Config.padding.top,
-                                     bottom: Config.faqTopPadding)
+        messageViewPadding = Padding(left: Config.MessageView.leftPadding,
+                                     right: Config.MessageView.rightPadding,
+                                     top: Config.MessageView.topPadding,
+                                     bottom: Config.FaqView.topPadding)
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         backgroundColor = .clear
         setupConstraints()
@@ -97,15 +114,14 @@ public class SentFAQMessageCell: UITableViewCell {
             print("For Sender view isMyMessage should be true")
             return
         }
-        if model.message.isMessageEmpty() {
-            messageViewHeight.constant = 0
-            messageView.updateHeightOfView(hideView: true, model: model.message.text)
+        let isMessageEmpty = model.message.isMessageEmpty()
 
-        } else {
-            messageView.update(model: model.message)
-            messageViewHeight.constant = SentMessageView.rowHeight(model: model.message, maxWidth: Config.maxWidth, padding: messageViewPadding)
-            messageView.updateHeightOfView(hideView: false, model: model.message.text)
+        messageViewHeight.constant = isMessageEmpty ? 0 : SentMessageViewSizeCalculator().rowHeight(messageModel: model.message, maxWidth: Config.maxWidth, padding: messageViewPadding)
+        if !isMessageEmpty {
+            messageView.update(model: model.message.text ?? "")
         }
+
+        messageView.updateHeighOfView(hideView: isMessageEmpty, model: model.message.text ?? "")
 
         // Set time and update timeLabel constraint.
         timeLabel.text = model.message.time
@@ -144,7 +160,7 @@ public class SentFAQMessageCell: UITableViewCell {
     /// - Parameter model: `FAQMessage` used for updating the cell.
     /// - Returns: Exact height of cell.
     public class func rowHeight(model: FAQMessage) -> CGFloat {
-        return FAQMessageSizeCalculator().rowHeight(model: model, maxWidth: Config.maxWidth, padding: Config.padding)
+        return FAQMessageSizeCalculator().rowHeight(model: model, maxWidth: Config.maxWidth)
     }
 
     // MARK: - Private helper methods
@@ -153,22 +169,22 @@ public class SentFAQMessageCell: UITableViewCell {
         addViewsForAutolayout(views: [messageView, faqView, stateView, timeLabel])
 
         NSLayoutConstraint.activate([
-            messageView.topAnchor.constraint(equalTo: topAnchor),
-            messageView.leadingAnchor.constraint(equalTo: leadingAnchor),
-            messageView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            messageView.topAnchor.constraint(equalTo: topAnchor, constant: Config.MessageView.topPadding),
+            messageView.leadingAnchor.constraint(greaterThanOrEqualTo: leadingAnchor, constant: Config.MessageView.leftPadding),
+            messageView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -1 * Config.MessageView.rightPadding),
             messageViewHeight,
 
-            faqView.topAnchor.constraint(equalTo: messageView.bottomAnchor, constant: Config.faqTopPadding),
-            faqView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Config.faqLeftPadding),
-            faqView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Config.padding.right),
-            faqView.bottomAnchor.constraint(equalTo: timeLabel.topAnchor, constant: -1 * Config.padding.bottom),
+            faqView.topAnchor.constraint(equalTo: messageView.bottomAnchor, constant: Config.FaqView.topPadding),
+            faqView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Config.FaqView.leftPadding),
+            faqView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Config.FaqView.rightPadding),
+            faqView.bottomAnchor.constraint(equalTo: timeLabel.topAnchor, constant: -1 * Config.FaqView.bottomPadding),
             stateView.widthAnchor.constraint(equalToConstant: Config.StateView.width),
             stateView.heightAnchor.constraint(equalToConstant: Config.StateView.height),
-            stateView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -1 * Config.padding.bottom),
-            stateView.leadingAnchor.constraint(greaterThanOrEqualTo: faqView.leadingAnchor, constant: Config.padding.left),
-            stateView.trailingAnchor.constraint(equalTo: faqView.trailingAnchor, constant: -1 * Config.TimeLabel.leftPadding),
+            stateView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -1 * Config.StateView.bottomPadding),
+            stateView.leadingAnchor.constraint(greaterThanOrEqualTo: faqView.leadingAnchor, constant: Config.StateView.leftPadding),
+            stateView.trailingAnchor.constraint(equalTo: faqView.trailingAnchor, constant: -1 * Config.StateView.rightPadding),
 
-            timeLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -1 * Config.padding.bottom),
+            timeLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -1 * Config.TimeLabel.bottomPadding),
             timeLabel.leadingAnchor.constraint(greaterThanOrEqualTo: stateView.leadingAnchor, constant: Config.TimeLabel.leftPadding),
             timeLabelWidth,
             timeLabelHeight,

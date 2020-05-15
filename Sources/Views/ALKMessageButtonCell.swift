@@ -52,17 +52,16 @@ open class ALKMyMessageButtonCell: ALKChatBaseCell<ALKMessageViewModel> {
         self.viewModel = viewModel
         let isMessageEmpty = viewModel.isMessageEmpty
 
-        if isMessageEmpty {
-            messageViewHeight.constant = 0
-            messageView.updateHeightOfView(hideView: isMessageEmpty, viewModel: viewModel, maxWidth: maxWidth)
-        } else {
-            let messageWidth = maxWidth -
-                (ChatCellPadding.SentMessage.Message.left + ChatCellPadding.SentMessage.Message.right)
-            let height = ALKMyMessageView.rowHeight(viewModel: viewModel, width: messageWidth)
-            messageViewHeight.constant = height
+        let messageWidth = maxWidth -
+            (ChatCellPadding.SentMessage.Message.left + ChatCellPadding.SentMessage.Message.right)
+
+        messageViewHeight.constant = isMessageEmpty ? 0 : ALKMyMessageView.rowHeight(viewModel: viewModel, width: messageWidth)
+
+        if !isMessageEmpty {
             messageView.update(viewModel: viewModel)
-            messageView.updateHeightOfView(hideView: isMessageEmpty, viewModel: viewModel, maxWidth: maxWidth)
         }
+
+        messageView.updateHeightOfView(hideView: isMessageEmpty, viewModel: viewModel, maxWidth: maxWidth)
 
         guard let dict = viewModel.linkOrSubmitButton() else {
             buttonView.isHidden = true

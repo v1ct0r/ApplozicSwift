@@ -17,21 +17,35 @@ public class ReceivedFAQMessageCell: UITableViewCell {
 
     /// Configuration to adjust padding and maxWidth for the view.
     public struct Config {
-        public static var padding = Padding(left: 10, right: 60, top: 10, bottom: 10)
         public static var maxWidth = UIScreen.main.bounds.width
-        public static var faqTopPadding: CGFloat = 4
-        public static var faqRightPadding: CGFloat = 20
+
+        public struct MessageView {
+            /// Left padding of `MessageView` from `ProfileImage`
+            public static var leftPadding: CGFloat = 10.0
+
+            /// Top padding of `MessageView` from `DisplayName`
+            public static var topPadding: CGFloat = 2.0
+
+            /// Bottom padding of `MessageView`
+            public static var bottomPadding: CGFloat = 2.0
+
+            /// Right padding of `MessageView`
+            public static var rightPadding: CGFloat = 60.0
+        }
+
         public struct ProfileImage {
             public static var width: CGFloat = 37.0
             public static var height: CGFloat = 37.0
             /// Top padding of `ProfileImage` from `DisplayName`
             public static var topPadding: CGFloat = 2.0
+            public static var leftPadding: CGFloat = 10.0
         }
 
         public struct TimeLabel {
             /// Left padding of `TimeLabel` from `MessageView`
             public static var leftPadding: CGFloat = 2.0
             public static var maxWidth: CGFloat = 200.0
+            public static var bottomPadding: CGFloat = 2.0
         }
 
         public struct DisplayName {
@@ -42,6 +56,15 @@ public class ReceivedFAQMessageCell: UITableViewCell {
 
             /// Right padding of `DisplayName` from `ReceivedMessageView`. Used as lessThanOrEqualTo
             public static var rightPadding: CGFloat = 20.0
+            /// Top padding of `DisplayName`
+            public static var topPadding: CGFloat = 2.0
+        }
+
+        public struct FAQView {
+            public static var topPadding: CGFloat = 5.0
+            public static var leftPadding: CGFloat = 10.0
+            public static var bottomPadding: CGFloat = 10.0
+            public static var rightPadding: CGFloat = 20
         }
     }
 
@@ -58,6 +81,12 @@ public class ReceivedFAQMessageCell: UITableViewCell {
         frame: .zero,
         faqStyle: FAQMessageTheme.receivedMessage,
         alignLeft: true
+    )
+
+    fileprivate lazy var messageView = MessageView(
+        bubbleStyle: MessageTheme.receivedMessage.bubble,
+        messageStyle: MessageTheme.receivedMessage.message,
+        maxWidth: Config.maxWidth
     )
 
     fileprivate var timeLabel: UILabel = {
@@ -86,17 +115,24 @@ public class ReceivedFAQMessageCell: UITableViewCell {
         return label
     }()
 
+    fileprivate lazy var messageViewHeight = messageView.heightAnchor.constraint(equalToConstant: 0)
+
     fileprivate lazy var timeLabelWidth = timeLabel.widthAnchor.constraint(equalToConstant: 0)
     fileprivate lazy var timeLabelHeight = timeLabel.heightAnchor.constraint(equalToConstant: 0)
 
-    static var faqWidth = Config.maxWidth - Config.faqRightPadding
-        - (Config.padding.left
-            + Config.ProfileImage.width
-            + ReceivedMessageView.Config.MessageView.leftPadding)
+    fileprivate var messageViewPadding: Padding
+
+    static var faqWidth = Config.maxWidth - Config.FAQView.rightPadding
+        - (Config.ProfileImage.width
+            + Config.FAQView.leftPadding)
 
     // MARK: Initializer
 
     public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        messageViewPadding = Padding(left: Config.MessageView.leftPadding,
+                                     right: Config.MessageView.rightPadding,
+                                     top: Config.MessageView.topPadding,
+                                     bottom: Config.FAQView.topPadding)
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         backgroundColor = .clear
         setupConstraints()
@@ -117,6 +153,14 @@ public class ReceivedFAQMessageCell: UITableViewCell {
             print("😱😱😱Inconsistent information passed to the view.😱😱😱")
             print("For Received view isMyMessage should be false")
             return
+        }
+
+        let isMessageEmpty = model.message.isMessageEmpty()
+
+        messageViewHeight.constant = isMessageEmpty ? 0 : ReceivedMessageViewSizeCalculator().rowHeight(messageModel: model.message, maxWidth: Config.maxWidth, padding: messageViewPadding)
+
+        if !isMessageEmpty {
+            messageView.update(model: model.message.text ?? "")
         }
 
         faqView.update(model: model, maxWidth: ReceivedFAQMessageCell.faqWidth)
@@ -151,51 +195,39 @@ public class ReceivedFAQMessageCell: UITableViewCell {
     /// - Parameter model: `FAQMessage` used for updating the cell.
     /// - Returns: Exact height of cell.
     public class func rowHeight(model: FAQMessage) -> CGFloat {
-        let config = Config.self
-
-        let totalHeightPadding = Config.padding.top + Config.padding.bottom
-        let calculatedHeight = totalHeightPadding + config.DisplayName.height
-
-        let timeLabelSize = model.message.time.rectWithConstrainedWidth(
-            Config.TimeLabel.maxWidth,
-            font: MessageTheme.receivedMessage.time.font
-        )
-
-        let faqHeight = FAQMessageView.rowHeight(model: model, maxWidth: ReceivedFAQMessageCell.faqWidth, style: FAQMessageTheme.receivedMessage)
-
-        return calculatedHeight + faqHeight + timeLabelSize.height.rounded(.up) + Config.faqTopPadding
+        return FAQMessageSizeCalculator().rowHeight(model: model, maxWidth: Config.maxWidth)
     }
 
     // MARK: - Private helper methods
 
     private func setupConstraints() {
-        let nameRightPadding = max(Config.padding.right, Config.DisplayName.rightPadding)
-        addViewsForAutolayout(views: [avatarImageView, nameLabel, faqView, timeLabel])
-        let leadingMargin =
-            Config.padding.left
-                + Config.ProfileImage.width
-                + ReceivedMessageView.Config.MessageView.leftPadding
+        let nameRightPadding = max(Config.MessageView.rightPadding, Config.DisplayName.rightPadding)
+        addViewsForAutolayout(views: [avatarImageView, nameLabel, faqView, timeLabel, messageView])
         NSLayoutConstraint.activate([
             avatarImageView.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: Config.ProfileImage.topPadding),
-            avatarImageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Config.padding.left),
+            avatarImageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Config.ProfileImage.leftPadding),
             avatarImageView.widthAnchor.constraint(equalToConstant: Config.ProfileImage.width),
             avatarImageView.heightAnchor.constraint(equalToConstant: Config.ProfileImage.height),
 
-            nameLabel.topAnchor.constraint(equalTo: topAnchor, constant: Config.padding.top),
+            nameLabel.topAnchor.constraint(equalTo: topAnchor, constant: Config.DisplayName.topPadding),
             nameLabel.leadingAnchor.constraint(equalTo: avatarImageView.trailingAnchor, constant: Config.DisplayName.leftPadding),
             nameLabel.heightAnchor.constraint(equalToConstant: Config.DisplayName.height),
             nameLabel.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -1 * nameRightPadding),
 
-            faqView.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: Config.faqTopPadding),
-            faqView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: leadingMargin),
-            faqView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Config.faqRightPadding),
-            faqView.bottomAnchor.constraint(equalTo: timeLabel.topAnchor, constant: -1 * Config.padding.bottom),
+            messageView.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: Config.MessageView.topPadding),
+            messageView.leadingAnchor.constraint(equalTo: avatarImageView.trailingAnchor, constant: Config.MessageView.leftPadding),
+            messageViewHeight,
+            messageView.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -1 * Config.MessageView.rightPadding),
+
+            faqView.topAnchor.constraint(equalTo: messageView.bottomAnchor, constant: Config.FAQView.topPadding),
+            faqView.leadingAnchor.constraint(equalTo: avatarImageView.trailingAnchor, constant: Config.FAQView.leftPadding),
+            faqView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Config.FAQView.rightPadding),
+            faqView.bottomAnchor.constraint(equalTo: timeLabel.topAnchor, constant: -1 * Config.FAQView.bottomPadding),
 
             timeLabel.leadingAnchor.constraint(equalTo: faqView.leadingAnchor, constant: Config.TimeLabel.leftPadding),
-            timeLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -1 * Config.padding.bottom),
+            timeLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -1 * Config.TimeLabel.bottomPadding),
             timeLabelWidth,
             timeLabelHeight,
-            timeLabel.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -1 * Config.padding.right),
         ])
     }
 }

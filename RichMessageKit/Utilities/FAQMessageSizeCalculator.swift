@@ -8,48 +8,48 @@
 import Foundation
 
 class FAQMessageSizeCalculator {
-    func rowHeight(model: FAQMessage, maxWidth: CGFloat, padding: Padding) -> CGFloat {
+    func rowHeight(model: FAQMessage, maxWidth: CGFloat) -> CGFloat {
         var faqHeight: CGFloat = 0
-
         var viewHeight: CGFloat = 0
-        if model.message.isMessageEmpty() {
-            if model.message.isMyMessage {
-                viewHeight += padding.top + SentFAQMessageCell.Config.faqTopPadding
-            } else {
-                viewHeight += padding.top
-                    + ReceivedFAQMessageCell.Config.DisplayName.height + ReceivedFAQMessageCell.Config.faqTopPadding
-            }
-        } else {
-            if model.message.isMyMessage {
-                let messageViewPadding = Padding(
-                    left: padding.left,
-                    right: padding.right,
-                    top: padding.top,
-                    bottom: SentFAQMessageCell.Config.faqTopPadding
-                )
-                viewHeight = SentMessageViewSizeCalculator().rowHeight(messageModel: model.message, maxWidth: maxWidth, padding: messageViewPadding)
-
-            } else {
-                let messageViewPadding = Padding(
-                    left: padding.left,
-                    right: padding.right,
-                    top: padding.top,
-                    bottom: ReceivedFAQMessageCell.Config.faqTopPadding
-                )
-                viewHeight = ReceivedMessageViewSizeCalculator().rowHeight(messageModel: model.message, maxWidth: maxWidth, padding: messageViewPadding)
-            }
-        }
 
         if model.message.isMyMessage {
+            viewHeight += SentFAQMessageCell.Config.FaqView.bottomPadding + SentFAQMessageCell.Config.TimeLabel.bottomPadding
+            if model.message.isMessageEmpty() {
+                viewHeight += SentFAQMessageCell.Config.FaqView.topPadding +
+                    SentFAQMessageCell.Config.MessageView.topPadding
+            } else {
+                let messageViewPadding = Padding(
+                    left: SentFAQMessageCell.Config.MessageView.leftPadding,
+                    right: SentFAQMessageCell.Config.MessageView.rightPadding,
+                    top: SentFAQMessageCell.Config.MessageView.topPadding,
+                    bottom: SentFAQMessageCell.Config.FaqView.topPadding
+                )
+                viewHeight += SentMessageViewSizeCalculator().rowHeight(messageModel: model.message, maxWidth: maxWidth, padding: messageViewPadding)
+            }
+
             faqHeight = FAQMessageView.rowHeight(model: model, maxWidth: SentFAQMessageCell.faqWidth, style: FAQMessageTheme.sentMessage)
-            viewHeight += model.message.time.rectWithConstrainedWidth(SentFAQMessageCell.Config.TimeLabel.maxWidth, font: MessageTheme.sentMessage.time.font).height.rounded(.up) + padding.bottom
+            viewHeight += model.message.time.rectWithConstrainedWidth(SentFAQMessageCell.Config.TimeLabel.maxWidth, font: MessageTheme.sentMessage.time.font).height.rounded(.up)
 
         } else {
-            viewHeight += model.message.time.rectWithConstrainedWidth(ReceivedFAQMessageCell.Config.TimeLabel.maxWidth, font: MessageTheme.receivedMessage.time.font).height.rounded(.up) + padding.bottom
+            viewHeight += ReceivedFAQMessageCell.Config.DisplayName.height + ReceivedFAQMessageCell.Config.DisplayName.topPadding + ReceivedFAQMessageCell.Config.FAQView.bottomPadding +
+                ReceivedFAQMessageCell.Config.TimeLabel.bottomPadding
+            if model.message.isMessageEmpty() {
+                viewHeight += ReceivedFAQMessageCell.Config.FAQView.topPadding +
+                    ReceivedFAQMessageCell.Config.MessageView.topPadding
+            } else {
+                let messageViewPadding = Padding(
+                    left: ReceivedFAQMessageCell.Config.MessageView.leftPadding,
+                    right: ReceivedFAQMessageCell.Config.MessageView.rightPadding,
+                    top: ReceivedFAQMessageCell.Config.MessageView.topPadding,
+                    bottom: ReceivedFAQMessageCell.Config.FAQView.topPadding
+                )
+                viewHeight += ReceivedMessageViewSizeCalculator().rowHeight(messageModel: model.message, maxWidth: maxWidth, padding: messageViewPadding)
+            }
+            viewHeight += model.message.time.rectWithConstrainedWidth(ReceivedFAQMessageCell.Config.TimeLabel.maxWidth, font: MessageTheme.receivedMessage.time.font).height.rounded(.up)
 
             faqHeight = FAQMessageView.rowHeight(model: model, maxWidth: ReceivedFAQMessageCell.faqWidth, style: FAQMessageTheme.receivedMessage)
         }
 
-        return viewHeight + faqHeight + padding.bottom // top will be already added in messageView
+        return viewHeight + faqHeight
     }
 }

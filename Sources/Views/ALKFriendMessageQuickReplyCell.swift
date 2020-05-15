@@ -98,7 +98,6 @@ public class ALKFriendMessageQuickReplyCell: ALKChatBaseCell<ALKMessageViewModel
         showNameAndAvatarImageView(isMessageEmpty: isMessageEmpty, viewModel: viewModel)
 
         messageView.updateHeightOfViews(hideView: isMessageEmpty, viewModel: viewModel, maxWidth: maxWidth)
-
         guard let suggestedReplies = viewModel.suggestedReply() else {
             quickReplyView.isHidden = true
             return
