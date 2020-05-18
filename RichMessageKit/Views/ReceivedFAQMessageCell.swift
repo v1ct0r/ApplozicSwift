@@ -63,7 +63,6 @@ public class ReceivedFAQMessageCell: UITableViewCell {
         public struct FAQView {
             public static var topPadding: CGFloat = 5.0
             public static var leftPadding: CGFloat = 10.0
-            public static var bottomPadding: CGFloat = 10.0
             public static var rightPadding: CGFloat = 20
         }
     }
@@ -222,7 +221,7 @@ public class ReceivedFAQMessageCell: UITableViewCell {
             faqView.topAnchor.constraint(equalTo: messageView.bottomAnchor, constant: Config.FAQView.topPadding),
             faqView.leadingAnchor.constraint(equalTo: avatarImageView.trailingAnchor, constant: Config.FAQView.leftPadding),
             faqView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Config.FAQView.rightPadding),
-            faqView.bottomAnchor.constraint(equalTo: timeLabel.topAnchor, constant: -1 * Config.FAQView.bottomPadding),
+            faqView.bottomAnchor.constraint(equalTo: timeLabel.topAnchor),
 
             timeLabel.leadingAnchor.constraint(equalTo: faqView.leadingAnchor, constant: Config.TimeLabel.leftPadding),
             timeLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -1 * Config.TimeLabel.bottomPadding),

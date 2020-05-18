@@ -13,7 +13,7 @@ class FAQMessageSizeCalculator {
         var viewHeight: CGFloat = 0
 
         if model.message.isMyMessage {
-            viewHeight += SentFAQMessageCell.Config.FaqView.bottomPadding + SentFAQMessageCell.Config.TimeLabel.bottomPadding
+            viewHeight +=  SentFAQMessageCell.Config.TimeLabel.bottomPadding
             if model.message.isMessageEmpty() {
                 viewHeight += SentFAQMessageCell.Config.FaqView.topPadding +
                     SentFAQMessageCell.Config.MessageView.topPadding
@@ -31,7 +31,7 @@ class FAQMessageSizeCalculator {
             viewHeight += model.message.time.rectWithConstrainedWidth(SentFAQMessageCell.Config.TimeLabel.maxWidth, font: MessageTheme.sentMessage.time.font).height.rounded(.up)
 
         } else {
-            viewHeight += ReceivedFAQMessageCell.Config.DisplayName.height + ReceivedFAQMessageCell.Config.DisplayName.topPadding + ReceivedFAQMessageCell.Config.FAQView.bottomPadding +
+            viewHeight += ReceivedFAQMessageCell.Config.DisplayName.height + ReceivedFAQMessageCell.Config.DisplayName.topPadding +
                 ReceivedFAQMessageCell.Config.TimeLabel.bottomPadding
             if model.message.isMessageEmpty() {
                 viewHeight += ReceivedFAQMessageCell.Config.FAQView.topPadding +

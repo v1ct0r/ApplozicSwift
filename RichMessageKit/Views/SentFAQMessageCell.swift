@@ -32,17 +32,14 @@ public class SentFAQMessageCell: UITableViewCell {
         }
 
         public enum TimeLabel {
-            /// Left padding of `TimeLabel` from `StateView`
-            public static var leftPadding: CGFloat = 2.0
             public static var maxWidth: CGFloat = 200.0
             public static var rightPadding: CGFloat = 2.0
             public static var bottomPadding: CGFloat = 2.0
         }
 
         public enum FaqView {
-            public static var topPadding: CGFloat = 4.0
+            public static var topPadding: CGFloat = 5.0
             public static var rightPadding: CGFloat = 10.0
-            public static var bottomPadding: CGFloat = 10.0
             public static var leftPadding: CGFloat = 20.0
         }
     }
@@ -161,14 +158,13 @@ public class SentFAQMessageCell: UITableViewCell {
             faqView.topAnchor.constraint(equalTo: messageView.bottomAnchor, constant: Config.FaqView.topPadding),
             faqView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Config.FaqView.leftPadding),
             faqView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Config.FaqView.rightPadding),
-            faqView.bottomAnchor.constraint(equalTo: timeLabel.topAnchor, constant: -1 * Config.FaqView.bottomPadding),
+            faqView.bottomAnchor.constraint(equalTo: timeLabel.topAnchor),
             stateViewWidth,
             stateViewHeight,
             stateView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -1 * Config.StateView.bottomPadding),
             stateView.trailingAnchor.constraint(equalTo: faqView.trailingAnchor, constant: -1 * Config.StateView.rightPadding),
 
             timeLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -1 * Config.TimeLabel.bottomPadding),
-            timeLabel.leadingAnchor.constraint(greaterThanOrEqualTo: stateView.leadingAnchor, constant: Config.TimeLabel.leftPadding),
             timeLabelWidth,
             timeLabelHeight,
             timeLabel.trailingAnchor.constraint(equalTo: stateView.leadingAnchor, constant: -1 * Config.TimeLabel.rightPadding),

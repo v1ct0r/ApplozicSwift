@@ -229,7 +229,7 @@ public class ALKFriendMessageListTemplateCell: ALKListTemplateCell {
         )
 
         if isMessageEmpty {
-            height += Padding.NameLabel.height + Padding.NameLabel.top
+            height += Padding.NameLabel.height + Padding.NameLabel.top + ChatCellPadding.ReceivedMessage.Message.top
         } else {
             let messageWidth = maxWidth -
                 (ChatCellPadding.ReceivedMessage.Message.left + ChatCellPadding.ReceivedMessage.Message.right)
