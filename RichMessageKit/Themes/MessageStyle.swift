@@ -7,19 +7,6 @@
 
 import Foundation
 
-/// Image for all cases of `MessageStatus`
-public struct StatusImage {
-    public var pending = UIImage(named: "pending", in: Bundle.richMessageKit, compatibleWith: nil)
-
-    public var sent = UIImage(named: "sent", in: Bundle.richMessageKit, compatibleWith: nil)
-
-    public var delivered = UIImage(named: "delivered", in: Bundle.richMessageKit, compatibleWith: nil)
-
-    public var read = UIImage(named: "read", in: Bundle.richMessageKit, compatibleWith: nil)
-
-    public init() {}
-}
-
 public struct MessageStyle {
     /// Style for display name
     public var displayName = Style(

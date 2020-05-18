@@ -1481,6 +1481,25 @@ open class ALKConversationViewController: ALKBaseViewController, Localizable {
         MessageTheme.receivedMessage.displayName = ALKMessageStyle.displayName
         MessageTheme.receivedMessage.time = ALKMessageStyle.time
         MessageTheme.sentMessage.time = ALKMessageStyle.time
+        setSentMessageStatus()
+    }
+
+    func setSentMessageStatus() {
+        let messageStatus = ALKMessageStyle.messageStatus
+        for (status, icon) in messageStatus.statusIcons {
+            setStatus(statusIcon: icon, status: status)
+        }
+    }
+
+    func setStatus(statusIcon: ALKMessageStyle.StatusIcon, status: MessageStatus) {
+        switch statusIcon {
+        case let .templateImageWithTint(image, tintColor):
+            MessageTheme.messageStatus.set(icon: .templateImageWithTint(image: image, tintColor: tintColor), for: status)
+        case let .normalImage(image):
+            MessageTheme.messageStatus.set(icon: .normalImage(image: image), for: status)
+        case .none:
+            MessageTheme.messageStatus.set(icon: .none, for: status)
+        }
     }
 }
 
