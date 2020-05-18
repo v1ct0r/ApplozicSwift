@@ -25,9 +25,6 @@ public class SentImageMessageCell: UITableViewCell {
         }
 
         public enum StateView {
-            public static var width: CGFloat = 17.0
-            public static var height: CGFloat = 9.0
-            public static var leftPadding: CGFloat = 2.0
             public static var rightPadding: CGFloat = 2.0
             public static var topPadding: CGFloat = 5
         }
@@ -65,6 +62,9 @@ public class SentImageMessageCell: UITableViewCell {
 
     fileprivate lazy var timeLabelWidth = timeLabel.widthAnchor.constraint(equalToConstant: 0)
     fileprivate lazy var timeLabelHeight = timeLabel.heightAnchor.constraint(equalToConstant: 0)
+
+    fileprivate lazy var stateViewWidth = stateView.widthAnchor.constraint(equalToConstant: 0)
+    fileprivate lazy var stateViewHeight = stateView.heightAnchor.constraint(equalToConstant: 0)
 
     fileprivate lazy var messageView = MessageView(
         bubbleStyle: MessageTheme.sentMessage.bubble,
@@ -120,6 +120,8 @@ public class SentImageMessageCell: UITableViewCell {
 
         imageBubbleHeight.constant = ImageBubbleSizeCalculator().rowHeight(model: model, maxWidth: Config.maxWidth)
 
+        setStatusStyle(statusView: stateView, MessageTheme.messageStatus, model: model.message)
+
         // Set time and update timeLabel constraint.
         timeLabel.text = model.message.time
         let timeLabelSize = model.message.time.rectWithConstrainedWidth(Config.TimeLabel.maxWidth,
@@ -134,24 +136,6 @@ public class SentImageMessageCell: UITableViewCell {
 
         imageUrl = model.url
         imageBubble.update(model: model)
-
-        guard let status = model.message.status else { return }
-        // Set status
-        var statusImage = MessageTheme.sentMessage.status
-        switch status {
-        case .pending:
-            statusImage.pending = statusImage.pending?.withRenderingMode(.alwaysTemplate)
-            stateView.image = statusImage.pending
-            stateView.tintColor = UIColor.red
-        case .sent:
-            stateView.image = statusImage.sent
-        case .delivered:
-            stateView.image = statusImage.delivered
-        case .read:
-            statusImage.read = statusImage.read?.withRenderingMode(.alwaysTemplate)
-            stateView.image = statusImage.read
-            stateView.tintColor = UIColor(netHex: 0x0578FF)
-        }
     }
 
     /// It is used to get exact height of `ImageMessageView` using messageModel, width and padding
@@ -178,10 +162,9 @@ public class SentImageMessageCell: UITableViewCell {
             imageBubble.widthAnchor.constraint(equalToConstant: imageBubbleWidth),
 
             imageBubbleHeight,
-            stateView.widthAnchor.constraint(equalToConstant: Config.StateView.width),
-            stateView.heightAnchor.constraint(equalToConstant: Config.StateView.height),
             stateView.topAnchor.constraint(equalTo: imageBubble.bottomAnchor, constant: Config.StateView.topPadding),
-            stateView.leadingAnchor.constraint(greaterThanOrEqualTo: imageBubble.leadingAnchor, constant: Config.StateView.leftPadding),
+            stateViewWidth,
+            stateViewHeight,
             stateView.trailingAnchor.constraint(equalTo: imageBubble.trailingAnchor, constant: -1 * Config.StateView.rightPadding),
 
             timeLabel.topAnchor.constraint(equalTo: imageBubble.bottomAnchor, constant: Config.TimeLabel.topPadding),
@@ -208,5 +191,35 @@ public class SentImageMessageCell: UITableViewCell {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(imageTapped))
         tapGesture.numberOfTapsRequired = 1
         imageBubble.addGestureRecognizer(tapGesture)
+    }
+
+    func setStatusStyle(
+        statusView: UIImageView,
+        _ style: MessageTheme.SentMessageStatus,
+        _ size: CGSize = CGSize(width: 17, height: 9), model: Message
+    ) {
+        guard let status = model.status, let statusIcon = style.statusIcons[status] else { return }
+
+        switch statusIcon {
+        case let .templateImageWithTint(image, tintColor):
+            statusView.image = image
+                .imageFlippedForRightToLeftLayoutDirection()
+                .scale(with: size)?
+                .withRenderingMode(.alwaysTemplate)
+            statusView.tintColor = tintColor
+            stateViewWidth.constant = size.width
+            stateViewHeight.constant = size.height
+        case let .normalImage(image):
+            statusView.image = image
+                .imageFlippedForRightToLeftLayoutDirection()
+                .scale(with: size)?
+                .withRenderingMode(.alwaysOriginal)
+            stateViewWidth.constant = size.width
+            stateViewHeight.constant = size.height
+        case .none:
+            statusView.image = nil
+            stateViewWidth.constant = 0
+            stateViewHeight.constant = 0
+        }
     }
 }
