@@ -24,6 +24,7 @@ public class SentFAQMessageCell: UITableViewCell {
             /// Bottom padding of `MessageView`
             public static var rightPadding: CGFloat = 10.0
             public static var topPadding: CGFloat = 10.0
+            public static var bottomPadding: CGFloat = 0.0
         }
 
         public enum StateView {
@@ -90,7 +91,7 @@ public class SentFAQMessageCell: UITableViewCell {
         messageViewPadding = Padding(left: Config.MessageView.leftPadding,
                                      right: Config.MessageView.rightPadding,
                                      top: Config.MessageView.topPadding,
-                                     bottom: Config.FaqView.topPadding)
+                                     bottom: Config.MessageView.bottomPadding)
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         backgroundColor = .clear
         setupConstraints()
@@ -154,7 +155,6 @@ public class SentFAQMessageCell: UITableViewCell {
             messageView.leadingAnchor.constraint(greaterThanOrEqualTo: leadingAnchor, constant: Config.MessageView.leftPadding),
             messageView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -1 * Config.MessageView.rightPadding),
             messageViewHeight,
-
             faqView.topAnchor.constraint(equalTo: messageView.bottomAnchor, constant: Config.FaqView.topPadding),
             faqView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Config.FaqView.leftPadding),
             faqView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Config.FaqView.rightPadding),

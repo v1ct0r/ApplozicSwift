@@ -27,7 +27,7 @@ public class ReceivedFAQMessageCell: UITableViewCell {
             public static var topPadding: CGFloat = 2.0
 
             /// Bottom padding of `MessageView`
-            public static var bottomPadding: CGFloat = 2.0
+            public static var bottomPadding: CGFloat = 0.0
 
             /// Right padding of `MessageView`
             public static var rightPadding: CGFloat = 60.0
@@ -131,7 +131,7 @@ public class ReceivedFAQMessageCell: UITableViewCell {
         messageViewPadding = Padding(left: Config.MessageView.leftPadding,
                                      right: Config.MessageView.rightPadding,
                                      top: Config.MessageView.topPadding,
-                                     bottom: Config.FAQView.topPadding)
+                                     bottom: Config.MessageView.bottomPadding)
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         backgroundColor = .clear
         setupConstraints()

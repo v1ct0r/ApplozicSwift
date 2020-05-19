@@ -10,9 +10,8 @@ import Foundation
 class ReceivedMessageViewSizeCalculator {
     func rowHeight(messageModel: Message, maxWidth: CGFloat, padding: Padding) -> CGFloat {
         let message = messageModel.text ?? ""
-        let config = ReceivedMessageView.Config.self
 
-        let totalWidthPadding = padding.left + padding.right + config.MessageView.leftPadding
+        let totalWidthPadding = padding.left + padding.right
 
         let messageWidth = maxWidth - totalWidthPadding
         let messageHeight = MessageViewSizeCalculator().rowHeight(
