@@ -11,8 +11,6 @@ import Foundation
 final class ALKMyLocationCell: ALKLocationCell {
     // MARK: - Declare Variables or Types
 
-    let appSettings = ALKAppSettingsHelper()
-
     // MARK: Environment in chat
 
     fileprivate var stateView: UIImageView = {

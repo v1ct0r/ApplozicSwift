@@ -1466,18 +1466,20 @@ open class ALKConversationViewController: ALKBaseViewController, Localizable {
     }
 
     func setRichMessageKitTheme() {
-        let appSettings = ALKAppSettingsHelper()
-        let sentBackgroundColor = appSettings.getSentMessageBackgroundColor()
-        ImageBubbleTheme.sentMessage.bubble.color = sentBackgroundColor
+        let appSettingsUserDefaults = ALKAppSettingsUserDefaults()
+        let sentMessageBackgroundColor = appSettingsUserDefaults.getSentMessageBackgroundColor()
+        let receivedMessageBackgroundColor = appSettingsUserDefaults.getReceivedMessageBackgroundColor()
+
+        ImageBubbleTheme.sentMessage.bubble.color = sentMessageBackgroundColor
         ImageBubbleTheme.sentMessage.bubble.cornerRadius = ALKMessageStyle.sentBubble.cornerRadius
-        ImageBubbleTheme.receivedMessage.bubble.color = ALKMessageStyle.receivedBubble.color ?? ALKMessageStyle.Bubble.DefaultColor.receivedBubbleColor
+        ImageBubbleTheme.receivedMessage.bubble.color = receivedMessageBackgroundColor
         ImageBubbleTheme.receivedMessage.bubble.cornerRadius = ALKMessageStyle.receivedBubble.cornerRadius
 
         MessageTheme.sentMessage.message = ALKMessageStyle.sentMessage
-        MessageTheme.sentMessage.bubble.color = sentBackgroundColor
+        MessageTheme.sentMessage.bubble.color = sentMessageBackgroundColor
         MessageTheme.sentMessage.bubble.cornerRadius = ALKMessageStyle.sentBubble.cornerRadius
         MessageTheme.receivedMessage.message = ALKMessageStyle.receivedMessage
-        MessageTheme.receivedMessage.bubble.color = ALKMessageStyle.receivedBubble.color ?? ALKMessageStyle.Bubble.DefaultColor.receivedBubbleColor
+        MessageTheme.receivedMessage.bubble.color = receivedMessageBackgroundColor
         MessageTheme.receivedMessage.bubble.cornerRadius = ALKMessageStyle.receivedBubble.cornerRadius
 
         MessageTheme.receivedMessage.displayName = ALKMessageStyle.displayName

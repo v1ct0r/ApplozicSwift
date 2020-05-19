@@ -17,14 +17,13 @@ final class ALKMyPhotoPortalCell: ALKPhotoCell {
         case uploaded
     }
 
+    let appSettingsUserDefaults = ALKAppSettingsUserDefaults()
     fileprivate var stateView: UIImageView = {
         let sv = UIImageView()
         sv.isUserInteractionEnabled = false
         sv.contentMode = .center
         return sv
     }()
-
-    let appSettings = ALKAppSettingsHelper()
 
     struct Padding {
         struct PhotoView {
@@ -82,7 +81,7 @@ final class ALKMyPhotoPortalCell: ALKPhotoCell {
         captionLabel.textColor = ALKMessageStyle.sentMessage.text
         if ALKMessageStyle.sentBubble.style == .edge {
             bubbleView.layer.cornerRadius = ALKMessageStyle.sentBubble.cornerRadius
-            bubbleView.backgroundColor = appSettings.getSentMessageBackgroundColor()
+            bubbleView.backgroundColor = appSettingsUserDefaults.getSentMessageBackgroundColor()
             photoView.layer.cornerRadius = ALKMessageStyle.sentBubble.cornerRadius
         } else {
             photoView.layer.cornerRadius = ALKMessageStyle.sentBubble.cornerRadius

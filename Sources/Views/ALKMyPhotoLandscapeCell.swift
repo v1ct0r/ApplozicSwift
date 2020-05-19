@@ -11,14 +11,14 @@ import Foundation
 // MARK: - ALKMyPhotoLandscapeCell
 
 final class ALKMyPhotoLandscapeCell: ALKPhotoCell {
+    let appSettingsUserDefaults = ALKAppSettingsUserDefaults()
+
     fileprivate var stateView: UIImageView = {
         let sv = UIImageView()
         sv.isUserInteractionEnabled = false
         sv.contentMode = .center
         return sv
     }()
-
-    let appSettings = ALKAppSettingsHelper()
 
     override func setupViews() {
         super.setupViews()
@@ -56,7 +56,7 @@ final class ALKMyPhotoLandscapeCell: ALKPhotoCell {
         super.setupStyle()
         if ALKMessageStyle.sentBubble.style == .edge {
             bubbleView.layer.cornerRadius = ALKMessageStyle.sentBubble.cornerRadius
-            bubbleView.backgroundColor = appSettings.getSentMessageBackgroundColor()
+            bubbleView.backgroundColor = appSettingsUserDefaults.getSentMessageBackgroundColor()
             photoView.layer.cornerRadius = ALKMessageStyle.sentBubble.cornerRadius
         } else {
             photoView.layer.cornerRadius = ALKMessageStyle.sentBubble.cornerRadius

@@ -11,7 +11,7 @@ import Kingfisher
 import UIKit
 
 class ALKMyDocumentCell: ALKDocumentCell {
-    let appSettings = ALKAppSettingsHelper()
+    let appSettingsUserDefaults = ALKAppSettingsUserDefaults()
     struct Padding {
         struct StateView {
             static let trailing: CGFloat = 2
@@ -70,7 +70,7 @@ class ALKMyDocumentCell: ALKDocumentCell {
     override func setupStyle() {
         super.setupStyle()
         timeLabel.setStyle(ALKMessageStyle.time)
-        bubbleView.backgroundColor = appSettings.getSentMessageBackgroundColor()
+        bubbleView.backgroundColor = appSettingsUserDefaults.getSentMessageBackgroundColor()
         setStatusStyle(statusView: stateView, ALKMessageStyle.messageStatus)
     }
 

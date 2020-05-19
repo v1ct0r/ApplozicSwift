@@ -12,12 +12,8 @@ import UIKit
 extension ALKImageView {
     func setStyle(_ bubbleStyle: ALKMessageStyle.Bubble, isReceiverSide: Bool) {
         if bubbleStyle.style == .edge {
-            if isReceiverSide {
-                tintColor = bubbleStyle.color
-            } else {
-                let appSettings = ALKAppSettingsHelper()
-                tintColor = appSettings.getSentMessageBackgroundColor()
-            }
+            let appSettingsUserDefaults = ALKAppSettingsUserDefaults()
+            tintColor = isReceiverSide ? appSettingsUserDefaults.getReceivedMessageBackgroundColor() : appSettingsUserDefaults.getSentMessageBackgroundColor()
             image = imageBubble(for: bubbleStyle.style, isReceiverSide: isReceiverSide, showHangOverImage: false)
         } else {
             super.setBubbleStyle(bubbleStyle, isReceiverSide: isReceiverSide)

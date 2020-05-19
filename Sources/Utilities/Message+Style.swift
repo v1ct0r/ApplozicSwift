@@ -91,7 +91,7 @@ public enum ALKMessageStyle {
         }
 
         /// Message bubble's background color.
-        public var color: UIColor?
+        public var color: UIColor
 
         /// Message bubble corner Radius
         public var cornerRadius: CGFloat
@@ -107,7 +107,7 @@ public enum ALKMessageStyle {
         /// right and left padding.
         public let widthPadding: CGFloat
 
-        public init(color: UIColor?, style: BubbleStyle) {
+        public init(color: UIColor, style: BubbleStyle) {
             self.color = color
             self.style = style
             widthPadding = 10.0
@@ -115,14 +115,19 @@ public enum ALKMessageStyle {
         }
     }
 
-    public static var sentBubble = Bubble(color: nil, style: .edge) {
+    public static var sentBubble = Bubble(color: UIColor(netHex: 0xF1F0F0), style: .edge) {
         didSet {
-            let appSettings = ALKAppSettingsHelper()
-            appSettings.updateSentMessageBackgroundColor(color: sentBubble.color)
+            let appSettingsUserDefaults = ALKAppSettingsUserDefaults()
+            appSettingsUserDefaults.setSentMessageBackgroundColor(color: sentBubble.color)
         }
     }
 
-    public static var receivedBubble = Bubble(color: Bubble.DefaultColor.receivedBubbleColor, style: .edge)
+    public static var receivedBubble = Bubble(color: UIColor(netHex: 0xF1F0F0), style: .edge) {
+        didSet {
+            let appSettingsUserDefaults = ALKAppSettingsUserDefaults()
+            appSettingsUserDefaults.setReceivedMessageBackgroundColor(color: receivedBubble.color)
+        }
+    }
 
     /// Style for sent message status icon like read, delivered etc.
     public static var messageStatus = SentMessageStatus()

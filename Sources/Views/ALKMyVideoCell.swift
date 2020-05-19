@@ -16,7 +16,7 @@ class ALKMyVideoCell: ALKVideoCell {
         return sv
     }()
 
-    let appSettings = ALKAppSettingsHelper()
+    let appSettingsUserDefaults = ALKAppSettingsUserDefaults()
     override func setupViews() {
         super.setupViews()
 
@@ -53,7 +53,7 @@ class ALKMyVideoCell: ALKVideoCell {
         super.setupStyle()
         if ALKMessageStyle.sentBubble.style == .edge {
             bubbleView.layer.cornerRadius = ALKMessageStyle.sentBubble.cornerRadius
-            bubbleView.backgroundColor = appSettings.getSentMessageBackgroundColor()
+            bubbleView.backgroundColor = appSettingsUserDefaults.getSentMessageBackgroundColor()
         } else {
             photoView.layer.cornerRadius = ALKMessageStyle.sentBubble.cornerRadius
             bubbleView.layer.cornerRadius = ALKMessageStyle.sentBubble.cornerRadius

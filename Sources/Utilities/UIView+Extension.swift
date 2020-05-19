@@ -18,13 +18,13 @@ extension UIView {
     }
 
     func setBubbleStyle(_ style: ALKMessageStyle.Bubble, isReceiverSide: Bool) {
-          layer.cornerRadius = style.cornerRadius
-          tintColor = style.color
-          if style.style == .round {
-              layer.borderColor = style.border.color.cgColor
-              layer.borderWidth = style.border.width
-          }
-          let appSettingsUserDefaults = ALKAppSettingsUserDefaults()
-          backgroundColor = isReceiverSide ? appSettingsUserDefaults.getReceivedMessageBackgroundColor() : appSettingsUserDefaults.getSentMessageBackgroundColor()
-      }
+        layer.cornerRadius = style.cornerRadius
+        tintColor = style.color
+        if style.style == .round {
+            layer.borderColor = style.border.color.cgColor
+            layer.borderWidth = style.border.width
+        }
+        let appSettingsUserDefaults = ALKAppSettingsUserDefaults()
+        backgroundColor = isReceiverSide ? appSettingsUserDefaults.getReceivedMessageBackgroundColor() : appSettingsUserDefaults.getSentMessageBackgroundColor()
+    }
 }
