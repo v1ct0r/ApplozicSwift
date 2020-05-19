@@ -5,6 +5,9 @@ The changelog for [ApplozicSwift](https://github.com/AppLozic/ApplozicSwift). Al
 
 ## [Unreleased]
 
+### Enhancements
+-[CM-224] Add support for rich message templates without any text message
+
 ## [5.4.0] - 2020-05-07
 
 ### Enhancements
@@ -43,7 +46,6 @@ If you don't want to use the above option, You can white list some the websites 
 You can read more on Property List Keys
 [here](https://developer.apple.com/documentation/bundleresources/information_property_list/nsapptransportsecurity/nsexceptiondomains)
 
--[CM-224] Add support for rich message templates without any text message
 ### Fixes
 - [CM-146] Fixed back button issue in searched conversation view.
 - [CM-241] Fixed a crash that could happen when some message updates are delayed.
