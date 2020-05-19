@@ -44,7 +44,7 @@ public struct ALKAppSettingsUserDefaults {
         setAppSettings(appSettings: settings)
     }
 
-    /// App  navigation  bar tint color
+    /// App navigation bar tint color
     public func getAppBarTintColor() -> UIColor {
         if let barTintColor = navigationBarProxy.barTintColor {
             return barTintColor
@@ -130,7 +130,7 @@ public struct ALKAppSettingsUserDefaults {
         return appSettings
     }
 
-    /// This  method is used for clearing the user defaults data.
+    /// This method is used for clearing the user defaults data.
     public func clear() {
         let dictionary = UserDefaults.standard.dictionaryRepresentation()
         let keyArray = dictionary.keys
@@ -179,15 +179,6 @@ public class ALKAppSettings: NSObject, NSCoding {
         self.primaryColor = primaryColor
     }
 
-    public func encode(with coder: NSCoder) {
-        coder.encode(primaryColor, forKey: CoderKey.primaryColor)
-        coder.encode(showPoweredBy, forKey: CoderKey.showPoweredBy)
-        coder.encode(secondaryColor, forKey: CoderKey.secondaryColor)
-        coder.encode(sentMessageBackgroundColor, forKey: CoderKey.sentMessageBackgroundColor)
-        coder.encode(receivedMessageBackgroundColor, forKey: CoderKey.receivedMessageBackgroundColor)
-        coder.encode(attachmentIconsTintColor, forKey: CoderKey.attachmentIconsTintColor)
-    }
-
     public required init?(coder: NSCoder) {
         primaryColor = coder.decodeObject(forKey: CoderKey.primaryColor) as! String
         showPoweredBy = coder.decodeBool(forKey: CoderKey.showPoweredBy)
@@ -195,5 +186,16 @@ public class ALKAppSettings: NSObject, NSCoding {
         sentMessageBackgroundColor = coder.decodeObject(forKey: CoderKey.sentMessageBackgroundColor) as? String
         receivedMessageBackgroundColor = coder.decodeObject(forKey: CoderKey.receivedMessageBackgroundColor) as? String
         attachmentIconsTintColor = coder.decodeObject(forKey: CoderKey.attachmentIconsTintColor) as? String
+    }
+
+    // MARK: - Public methods
+
+    public func encode(with coder: NSCoder) {
+        coder.encode(primaryColor, forKey: CoderKey.primaryColor)
+        coder.encode(showPoweredBy, forKey: CoderKey.showPoweredBy)
+        coder.encode(secondaryColor, forKey: CoderKey.secondaryColor)
+        coder.encode(sentMessageBackgroundColor, forKey: CoderKey.sentMessageBackgroundColor)
+        coder.encode(receivedMessageBackgroundColor, forKey: CoderKey.receivedMessageBackgroundColor)
+        coder.encode(attachmentIconsTintColor, forKey: CoderKey.attachmentIconsTintColor)
     }
 }
