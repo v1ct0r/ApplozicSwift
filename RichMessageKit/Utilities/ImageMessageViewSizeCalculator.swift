@@ -15,7 +15,7 @@ class ImageMessageViewSizeCalculator {
             viewHeight = SentImageMessageCell.Config.TimeLabel.topPadding +
                 SentImageMessageCell.Config.ImageBubbleView.topPadding
             if model.message.isMessageEmpty() {
-                viewHeight =  SentImageMessageCell.Config.MessageView.topPadding
+                viewHeight += SentImageMessageCell.Config.MessageView.topPadding
             } else {
                 messageViewPadding = Padding(
                     left: SentImageMessageCell.Config.MessageView.leftPadding,
@@ -23,7 +23,7 @@ class ImageMessageViewSizeCalculator {
                     top: SentImageMessageCell.Config.MessageView.topPadding,
                     bottom: SentImageMessageCell.Config.MessageView.bottomPadding
                 )
-                viewHeight = SentMessageViewSizeCalculator().rowHeight(messageModel: model.message, maxWidth: maxWidth, padding: messageViewPadding)
+                viewHeight += SentMessageViewSizeCalculator().rowHeight(messageModel: model.message, maxWidth: maxWidth, padding: messageViewPadding)
             }
             viewHeight += model.message.time.rectWithConstrainedWidth(SentImageMessageCell.Config.TimeLabel.maxWidth, font: MessageTheme.sentMessage.time.font).height.rounded(.up)
         } else {
