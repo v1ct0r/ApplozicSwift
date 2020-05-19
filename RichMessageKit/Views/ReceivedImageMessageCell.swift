@@ -24,7 +24,7 @@ public class ReceivedImageMessageCell: UITableViewCell {
             public static var topPadding: CGFloat = 2.0
 
             /// Bottom padding of `MessageView`
-            public static var bottomPadding: CGFloat = 2.0
+            public static var bottomPadding: CGFloat = 0.0
 
             /// Right padding of `MessageView`
             public static var rightPadding: CGFloat = 60.0
@@ -60,7 +60,6 @@ public class ReceivedImageMessageCell: UITableViewCell {
         public struct ImageBubbleView {
             public static var topPadding: CGFloat = 5.0
             public static var leftPadding: CGFloat = 10.0
-            public static var bottomPadding: CGFloat = 10.0
         }
     }
 
@@ -113,7 +112,7 @@ public class ReceivedImageMessageCell: UITableViewCell {
         messageViewPadding = Padding(left: Config.MessageView.leftPadding,
                                      right: Config.MessageView.rightPadding,
                                      top: Config.MessageView.topPadding,
-                                     bottom: Config.ImageBubbleView.topPadding)
+                                     bottom: Config.MessageView.bottomPadding)
         imageBubble = ImageContainer(frame: .zero, maxWidth: Config.maxWidth, isMyMessage: false)
         imageBubbleWidth = Config.maxWidth * ImageBubbleTheme.receivedMessage.widthRatio
         super.init(style: style, reuseIdentifier: reuseIdentifier)

@@ -22,6 +22,7 @@ public class SentImageMessageCell: UITableViewCell {
             /// Bottom padding of `MessageView`
             public static var rightPadding: CGFloat = 10.0
             public static var topPadding: CGFloat = 10.0
+            public static var bottomPadding: CGFloat = 0
         }
 
         public enum StateView {
@@ -40,7 +41,6 @@ public class SentImageMessageCell: UITableViewCell {
         public enum ImageBubbleView {
             public static var topPadding: CGFloat = 2.0
             public static var rightPadding: CGFloat = 10
-            public static var bottomPadding: CGFloat = 10
         }
     }
 
