@@ -14,8 +14,6 @@ import UIKit
 // MARK: - ALKMyMessageCell
 
 open class ALKMyMessageCell: ALKMessageCell {
-    let appSettings = ALKAppSettingsHelper()
-
     fileprivate var stateView: UIImageView = {
         let sv = UIImageView()
         sv.isUserInteractionEnabled = false
