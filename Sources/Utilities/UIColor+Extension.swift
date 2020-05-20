@@ -44,16 +44,6 @@ public extension UIColor {
         return UIColor(red: Int(redBits), green: Int(greenBits), blue: Int(blueBits)).withAlphaComponent(alpha / 255.0)
     }
 
-    static func hexStringFromColor(color: UIColor) -> String {
-        let components = color.cgColor.components
-        let r: CGFloat = components?[0] ?? 0.0
-        let g: CGFloat = components?[1] ?? 0.0
-        let b: CGFloat = ((components?.count ?? 0) > 2 ? components?[2] : g) ?? 0
-
-        let hexString = String(format: "%02lX%02lX%02lX", lroundf(Float(r * 255)), lroundf(Float(g * 255)), lroundf(Float(b * 255)))
-        return hexString
-    }
-
     static func mainRed() -> UIColor {
         return UIColor(netHex: 0xE00909)
     }
