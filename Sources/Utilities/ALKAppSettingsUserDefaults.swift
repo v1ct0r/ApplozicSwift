@@ -33,14 +33,14 @@ public struct ALKAppSettingsUserDefaults {
         var appSettings = getAppSettings()
 
         if appSettings == nil {
-            appSettings = ALKAppSettings(primaryColor: UIColor.hexStringFromColor(color: color))
+            appSettings = ALKAppSettings(primaryColor: color.toHexString())
         }
 
         guard let settings = appSettings else {
             return
         }
 
-        settings.primaryColor = UIColor.hexStringFromColor(color: color)
+        settings.primaryColor = color.toHexString()
         setAppSettings(appSettings: settings)
     }
 
@@ -55,7 +55,7 @@ public struct ALKAppSettingsUserDefaults {
     /// This method is used for set the sent message background color
     public func setSentMessageBackgroundColor(color: UIColor) {
         let appSettings = getDefaultAppSettings()
-        appSettings.sentMessageBackgroundColor = UIColor.hexStringFromColor(color: color)
+        appSettings.sentMessageBackgroundColor = color.toHexString()
         setAppSettings(appSettings: appSettings)
     }
 
@@ -78,14 +78,14 @@ public struct ALKAppSettingsUserDefaults {
     /// This method is used for to set a attachmentIcons tint color
     public func setAttachmentIconsTintColor(color: UIColor) {
         let appSettings = getDefaultAppSettings()
-        appSettings.attachmentIconsTintColor = UIColor.hexStringFromColor(color: color)
+        appSettings.attachmentIconsTintColor = color.toHexString()
         setAppSettings(appSettings: appSettings)
     }
 
     /// This method is used for to set received message background color
     public func setReceivedMessageBackgroundColor(color: UIColor) {
         let appSettings = getDefaultAppSettings()
-        appSettings.receivedMessageBackgroundColor = UIColor.hexStringFromColor(color: color)
+        appSettings.receivedMessageBackgroundColor = color.toHexString()
         setAppSettings(appSettings: appSettings)
     }
 
@@ -146,7 +146,7 @@ public struct ALKAppSettingsUserDefaults {
     /// This method is for app settings with default primary color values init if the appSettings is nil.
     private func getDefaultAppSettings() -> ALKAppSettings {
         guard let appSettings = getAppSettings() else {
-            return ALKAppSettings(primaryColor: UIColor.hexStringFromColor(color: UIColor.navigationOceanBlue()))
+            return ALKAppSettings(primaryColor: UIColor.navigationOceanBlue().toHexString())
         }
         return appSettings
     }
