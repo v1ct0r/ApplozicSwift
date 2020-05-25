@@ -11,7 +11,6 @@ import Foundation
 import UIKit
 
 public extension UIColor {
-
     convenience init(hexString: String, alpha: CGFloat = 1.0) {
         let hexString: String = hexString.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
         let scanner = Scanner(string: hexString)
@@ -29,6 +28,7 @@ public extension UIColor {
         let blue = CGFloat(b) / 255.0
         self.init(red: red, green: green, blue: blue, alpha: alpha)
     }
+
     // 0xAARRGGBB
     static func hex8(_ netHex: Int64) -> UIColor {
         let shiftedRed = netHex >> 16
