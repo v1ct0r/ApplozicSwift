@@ -27,9 +27,10 @@ class ALKCurvedButtonSnapshotTests: QuickSpec {
 
             context("with different font") {
                 beforeEach {
-                    var config = CurvedImageButton.Config()
-                    config.font = UIFont.boldSystemFont(ofSize: 40)
-                    button = CurvedImageButton(title: "Demo text", config: config)
+                    let config = CurvedImageButton.Config()
+                    var style = QuickReplyStyle.sentMessage
+                    style.font = UIFont.boldSystemFont(ofSize: 40)
+                    button = CurvedImageButton(title: "Demo text", config: config, style: style)
                 }
                 it("has a valid snapshot") {
                     expect(button).to(haveValidSnapshot())
@@ -38,15 +39,13 @@ class ALKCurvedButtonSnapshotTests: QuickSpec {
 
             context("with different color") {
                 beforeEach {
-                    var config = CurvedImageButton.Config()
-                    let color = CurvedImageButton.Config.Color(
-                        text: .red,
-                        border: UIColor.red.cgColor,
-                        background: .clear,
-                        tint: .red
-                    )
-                    config.color = color
-                    button = CurvedImageButton(title: "Demo text", config: config)
+                    let config = CurvedImageButton.Config()
+                    var style = QuickReplyStyle.sentMessage
+                    style.color.background = .clear
+                    style.color.text = .red
+                    style.color.border = UIColor.red.cgColor
+                    style.color.tint = .red
+                    button = CurvedImageButton(title: "Demo text", config: config, style: style)
                 }
                 it("has a valid snapshot") {
                     expect(button).to(haveValidSnapshot())

@@ -41,7 +41,7 @@ public class ALKMyMessageQuickReplyCell: ALKChatBaseCell<ALKMessageViewModel> {
     fileprivate lazy var timeLabelHeight = timeLabel.heightAnchor.constraint(equalToConstant: 0)
 
     var messageView = ALKMyMessageView()
-    var quickReplyView = SuggestedReplyView()
+    var quickReplyView = SuggestedReplyView(style: QuickReplyStyle.sentMessage)
     lazy var messageViewHeight = self.messageView.heightAnchor.constraint(equalToConstant: 0)
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -113,7 +113,7 @@ public class ALKMyMessageQuickReplyCell: ALKChatBaseCell<ALKMessageViewModel> {
             (ChatCellPadding.SentMessage.QuickReply.left + ChatCellPadding.SentMessage.QuickReply.right)
 
         return height
-            + SuggestedReplyView.rowHeight(model: suggestedReplies, maxWidth: quickReplyViewWidth)
+            + SuggestedReplyView.rowHeight(model: suggestedReplies, maxWidth: quickReplyViewWidth, font: QuickReplyStyle.sentMessage.font)
             + ChatCellPadding.SentMessage.QuickReply.top
             + ChatCellPadding.SentMessage.QuickReply.bottom + timeLabelSize.height.rounded(.up) + Padding.TimeLabel.bottom
     }

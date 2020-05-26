@@ -67,7 +67,7 @@ public class ALKFriendMessageQuickReplyCell: ALKChatBaseCell<ALKMessageViewModel
     fileprivate lazy var timeLabelHeight = timeLabel.heightAnchor.constraint(equalToConstant: 0)
 
     var messageView = ALKFriendMessageView()
-    var quickReplyView = SuggestedReplyView()
+    var quickReplyView = SuggestedReplyView(style: QuickReplyStyle.receivedMessage)
 
     var quickReplySelected: ((_ index: Int, _ title: String) -> Void)?
 
@@ -142,7 +142,7 @@ public class ALKFriendMessageQuickReplyCell: ALKChatBaseCell<ALKMessageViewModel
         let quickReplyViewWidth = maxWidth -
             (ChatCellPadding.ReceivedMessage.QuickReply.left + ChatCellPadding.ReceivedMessage.Message.right)
         return height
-            + SuggestedReplyView.rowHeight(model: suggestedReplies, maxWidth: quickReplyViewWidth)
+            + SuggestedReplyView.rowHeight(model: suggestedReplies, maxWidth: quickReplyViewWidth, font: QuickReplyStyle.receivedMessage.font)
             + ChatCellPadding.ReceivedMessage.QuickReply.top
             + ChatCellPadding.ReceivedMessage.QuickReply.bottom + timeLabelSize.height.rounded(.up)
             + Padding.TimeLabel.bottom

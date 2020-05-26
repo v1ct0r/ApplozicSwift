@@ -27,7 +27,7 @@ class FAQMessageSizeCalculator {
                 viewHeight += SentMessageViewSizeCalculator().rowHeight(messageModel: model.message, maxWidth: maxWidth, padding: messageViewPadding)
             }
 
-            faqHeight = FAQMessageView.rowHeight(model: model, maxWidth: SentFAQMessageCell.faqWidth, style: FAQMessageTheme.sentMessage)
+            faqHeight = FAQMessageView.rowHeight(model: model, maxWidth: SentFAQMessageCell.faqWidth, style: FAQMessageTheme.sentMessage, quickReplyButtonStyle: QuickReplyStyle.sentMessage)
             viewHeight += model.message.time.rectWithConstrainedWidth(SentFAQMessageCell.Config.TimeLabel.maxWidth, font: MessageTheme.sentMessage.time.font).height.rounded(.up)
         } else {
             viewHeight += ReceivedFAQMessageCell.Config.DisplayName.height + ReceivedFAQMessageCell.Config.DisplayName.topPadding +
@@ -46,7 +46,7 @@ class FAQMessageSizeCalculator {
             }
             viewHeight += model.message.time.rectWithConstrainedWidth(ReceivedFAQMessageCell.Config.TimeLabel.maxWidth, font: MessageTheme.receivedMessage.time.font).height.rounded(.up)
 
-            faqHeight = FAQMessageView.rowHeight(model: model, maxWidth: ReceivedFAQMessageCell.faqWidth, style: FAQMessageTheme.receivedMessage)
+            faqHeight = FAQMessageView.rowHeight(model: model, maxWidth: ReceivedFAQMessageCell.faqWidth, style: FAQMessageTheme.receivedMessage, quickReplyButtonStyle: QuickReplyStyle.receivedMessage)
         }
 
         return viewHeight + faqHeight

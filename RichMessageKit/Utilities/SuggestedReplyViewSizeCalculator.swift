@@ -8,7 +8,7 @@
 import Foundation
 
 class SuggestedReplyViewSizeCalculator {
-    func rowHeight(model: SuggestedReplyMessage, maxWidth: CGFloat, font _: UIFont) -> CGFloat {
+    func rowHeight(model: SuggestedReplyMessage, maxWidth: CGFloat, font: UIFont) -> CGFloat {
         var width: CGFloat = 0
         var totalHeight: CGFloat = 0
         var size = CGSize(width: 0, height: 0)
@@ -18,9 +18,9 @@ class SuggestedReplyViewSizeCalculator {
             let title = suggestion.title
             if suggestion.type == .link {
                 let image = UIImage(named: "link", in: Bundle.richMessageKit, compatibleWith: nil)
-                size = CurvedImageButton.buttonSize(text: title, image: image, maxWidth: maxWidth)
+                size = CurvedImageButton.buttonSize(text: title, image: image, maxWidth: maxWidth, font: font)
             } else {
-                size = CurvedImageButton.buttonSize(text: title, maxWidth: maxWidth)
+                size = CurvedImageButton.buttonSize(text: title, maxWidth: maxWidth, font: font)
             }
             let currWidth = size.width + 10 // Button Padding
             if currWidth > maxWidth {

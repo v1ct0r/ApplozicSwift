@@ -13,20 +13,6 @@ import UIKit
 public class CurvedImageButton: UIView {
     /// Configuration to change UI properties of `CurvedImageButton`
     public struct Config {
-        public struct Color {
-            /// Used for text color
-            public var text = UIColor(red: 85, green: 83, blue: 183)
-
-            /// Used for border color of view
-            public var border = UIColor(red: 85, green: 83, blue: 183).cgColor
-
-            /// Used for background color of view
-            public var background = UIColor.clear
-
-            /// Used for tint color of image
-            public var tint = UIColor(red: 85, green: 83, blue: 183)
-        }
-
         /// Padding of view.
         public var padding = Padding(left: 14, right: 14, top: 8, bottom: 8)
 
@@ -38,12 +24,6 @@ public class CurvedImageButton: UIView {
         /// If image is nil then size will be 0.
         public var imageSize = CGSize(width: 12, height: 12)
 
-        /// Font for text inside view.
-        public var font = UIFont.systemFont(ofSize: 14)
-
-        /// Instance of `Color` type that can be used to change the colors used in view.
-        public var color = Color()
-
         var spaceWithoutText: CGFloat {
             return padding.left + padding.right + textImageSpace + imageSize.width
         }
@@ -53,12 +33,6 @@ public class CurvedImageButton: UIView {
 
         /// Minimum height of the view.
         var minHeight: CGFloat = 35
-
-        /// Corner radius of view.
-        var cornerRadius: CGFloat = 15
-
-        /// Border width of view.
-        var borderWidth: CGFloat = 2
 
         public init() {}
     }
@@ -74,6 +48,7 @@ public class CurvedImageButton: UIView {
     let title: String
     let maxWidth: CGFloat
     let image: UIImage?
+    let style: QuickReplyButtonStyle
     var config: Config
 
     private let label = UILabel()
@@ -91,7 +66,7 @@ public class CurvedImageButton: UIView {
     ///   - maxWidth: Maximum width of button so that it can render in multiple lines of text is large.
     public init(title: String,
                 image: UIImage? = nil,
-                config: Config = Config(),
+                config: Config = Config(), style: QuickReplyButtonStyle = QuickReplyStyle.sentMessage,
                 maxWidth: CGFloat = UIScreen.main.bounds.width) {
         self.title = title
         self.image = image
@@ -101,6 +76,7 @@ public class CurvedImageButton: UIView {
             self.config.imageSize = CGSize(width: 0, height: 0)
         }
         self.maxWidth = maxWidth
+        self.style = style
         super.init(frame: .zero)
         setupView()
         setupConstraint()
@@ -120,7 +96,7 @@ public class CurvedImageButton: UIView {
         let titleWidth =
             title
                 .rectWithConstrainedWidth(maxWidth - config.spaceWithoutText,
-                                          font: config.font)
+                                          font: style.font)
                 .width
                 .rounded(.up)
         let buttonWidth = titleWidth + config.spaceWithoutText
@@ -134,7 +110,7 @@ public class CurvedImageButton: UIView {
         let titleHeight =
             title
                 .rectWithConstrainedWidth(maxWidth - config.spaceWithoutText,
-                                          font: config.font)
+                                          font: style.font)
                 .height
                 .rounded(.up)
         let buttonHeight = titleHeight + config.padding.top + config.padding.bottom
@@ -148,14 +124,14 @@ public class CurvedImageButton: UIView {
     public class func buttonSize(text: String,
                                  image: UIImage? = nil,
                                  maxWidth: CGFloat = UIScreen.main.bounds.width,
-                                 config: Config = Config()) -> CGSize {
+                                 config: Config = Config(), font: UIFont) -> CGSize {
         var config = config
         if image == nil {
             config.textImageSpace = 0
             config.imageSize = CGSize(width: 0, height: 0)
         }
         let textSize = text.rectWithConstrainedWidth(maxWidth - config.spaceWithoutText,
-                                                     font: config.font)
+                                                     font: font)
         let labelWidth = textSize.width.rounded(.up)
         let labelHeight = textSize.height.rounded(.up) + config.padding.top + config.padding.bottom
         return CGSize(width: max(labelWidth + config.spaceWithoutText, config.minWidth),
@@ -176,20 +152,20 @@ public class CurvedImageButton: UIView {
     }
 
     private func setupView() {
-        backgroundColor = config.color.background
-        layer.cornerRadius = config.cornerRadius
-        layer.borderWidth = config.borderWidth
-        layer.borderColor = config.color.border
+        backgroundColor = style.color.background
+        layer.cornerRadius = style.cornerRadius
+        layer.borderWidth = style.borderWidth
+        layer.borderColor = style.color.border
         clipsToBounds = true
 
         label.text = title
-        label.textColor = config.color.text
-        label.font = config.font
+        label.textColor = style.color.text
+        label.font = style.font
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping
 
-        imageView.tintColor = config.color.tint
         imageView.image = image?.withRenderingMode(.alwaysTemplate)
+        imageView.tintColor = style.color.tint
 
         frame.size = CGSize(width: buttonWidth(), height: buttonHeight())
     }

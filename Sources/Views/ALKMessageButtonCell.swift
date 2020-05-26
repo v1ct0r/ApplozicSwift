@@ -40,7 +40,7 @@ open class ALKMyMessageButtonCell: ALKChatBaseCell<ALKMessageViewModel> {
     fileprivate lazy var timeLabelHeight = timeLabel.heightAnchor.constraint(equalToConstant: 0)
 
     var messageView = ALKMyMessageView()
-    var buttonView = SuggestedReplyView()
+    var buttonView = SuggestedReplyView(style: QuickReplyStyle.sentMessage)
     lazy var messageViewHeight = self.messageView.heightAnchor.constraint(equalToConstant: 0)
 
     override func setupViews() {
@@ -102,7 +102,7 @@ open class ALKMyMessageButtonCell: ALKChatBaseCell<ALKMessageViewModel> {
             return height + 10 // Paddding
         }
         let buttonWidth = width - (ChatCellPadding.SentMessage.MessageButton.left + ChatCellPadding.SentMessage.MessageButton.right)
-        let buttonHeight = SuggestedReplyView.rowHeight(model: dict, maxWidth: buttonWidth)
+        let buttonHeight = SuggestedReplyView.rowHeight(model: dict, maxWidth: buttonWidth, font: QuickReplyStyle.sentMessage.font)
         return height
             + buttonHeight
             + ChatCellPadding.SentMessage.MessageButton.top
@@ -209,7 +209,7 @@ class ALKFriendMessageButtonCell: ALKChatBaseCell<ALKMessageViewModel> {
     fileprivate lazy var timeLabelHeight = timeLabel.heightAnchor.constraint(equalToConstant: 0)
 
     var messageView = ALKFriendMessageView()
-    var buttonView = SuggestedReplyView()
+    var buttonView = SuggestedReplyView(style: QuickReplyStyle.receivedMessage)
     lazy var messageViewHeight = self.messageView.heightAnchor.constraint(equalToConstant: 0)
 
     var buttonSelected: ((_ index: Int, _ name: String) -> Void)?
@@ -279,7 +279,7 @@ class ALKFriendMessageButtonCell: ALKChatBaseCell<ALKMessageViewModel> {
         }
 
         let buttonWidth = width - (ChatCellPadding.ReceivedMessage.MessageButton.left + ChatCellPadding.ReceivedMessage.MessageButton.right)
-        let buttonHeight = SuggestedReplyView.rowHeight(model: dict, maxWidth: buttonWidth)
+        let buttonHeight = SuggestedReplyView.rowHeight(model: dict, maxWidth: buttonWidth, font: QuickReplyStyle.receivedMessage.font)
         return height
             + buttonHeight
             + ChatCellPadding.ReceivedMessage.MessageButton.top
