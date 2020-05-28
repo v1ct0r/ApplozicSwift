@@ -46,7 +46,7 @@ public class ReceivedButtonsCell: UITableViewCell {
 
     // MARK: - Fileprivate properties
 
-    fileprivate lazy var buttons = SuggestedReplyView(style: QuickReplyStyle.receivedMessage)
+    fileprivate lazy var buttons = SuggestedReplyView()
     fileprivate lazy var messageView = ReceivedMessageView(
         frame: .zero,
         padding: messageViewPadding,
@@ -101,7 +101,7 @@ public class ReceivedButtonsCell: UITableViewCell {
                                          top: Config.padding.top,
                                          bottom: Config.buttonTopPadding)
         let messageHeight = ReceivedMessageView.rowHeight(model: model.message, maxWidth: Config.maxWidth, padding: messageViewPadding)
-        let buttonHeight = SuggestedReplyView.rowHeight(model: model, maxWidth: Config.buttonWidth, font: QuickReplyStyle.receivedMessage.font)
+        let buttonHeight = SuggestedReplyView.rowHeight(model: model, maxWidth: Config.buttonWidth)
         return messageHeight + buttonHeight + Config.padding.bottom
     }
 

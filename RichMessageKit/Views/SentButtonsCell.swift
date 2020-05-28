@@ -19,7 +19,7 @@ public class SentButtonsCell: UITableViewCell {
 
     // MARK: - Fileprivate properties
 
-    fileprivate lazy var buttons = SuggestedReplyView(style: QuickReplyStyle.sentMessage)
+    fileprivate lazy var buttons = SuggestedReplyView()
     fileprivate lazy var messageView = SentMessageView(
         frame: .zero,
         padding: messageViewPadding,
@@ -73,7 +73,7 @@ public class SentButtonsCell: UITableViewCell {
                                          top: Config.padding.top,
                                          bottom: Config.buttonTopPadding)
         let messageHeight = SentMessageView.rowHeight(model: model.message, maxWidth: Config.maxWidth, padding: messageViewPadding)
-        let buttonHeight = SuggestedReplyView.rowHeight(model: model, maxWidth: Config.buttonWidth, font: QuickReplyStyle.sentMessage.font)
+        let buttonHeight = SuggestedReplyView.rowHeight(model: model, maxWidth: Config.buttonWidth)
         return messageHeight + buttonHeight + Config.padding.bottom
     }
 

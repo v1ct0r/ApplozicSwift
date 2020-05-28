@@ -69,7 +69,7 @@ public class FAQMessageView: UIView {
     public init(frame: CGRect, faqStyle: FAQMessageStyle, alignLeft: Bool) {
         style = faqStyle
         self.alignLeft = alignLeft
-        buttons = SuggestedReplyView(style: self.alignLeft ? QuickReplyStyle.receivedMessage : QuickReplyStyle.sentMessage)
+        buttons = SuggestedReplyView()
         super.init(frame: frame)
         buttons.delegate = self
         setupStyle()
@@ -106,11 +106,11 @@ public class FAQMessageView: UIView {
     ///   - style: style used to configure view, use the same value passed while initialization.
     ///   - quickReplyButtonStyle : Quick reply button style for changing the color, font etc.
     /// - Returns: Exact height of the view.
-    public class func rowHeight(model: FAQMessage, maxWidth: CGFloat, style: FAQMessageStyle, quickReplyButtonStyle: QuickReplyButtonStyle) -> CGFloat {
+    public class func rowHeight(model: FAQMessage, maxWidth: CGFloat, style: FAQMessageStyle) -> CGFloat {
         let padding = style.bubble.padding
         let width = maxWidth - (padding.left + padding.right)
         let buttonModel = SuggestedReplyMessage(suggestion: model.getSuggestion(), message: model.message)
-        let buttonHeight = SuggestedReplyView.rowHeight(model: buttonModel, maxWidth: maxWidth, font: quickReplyButtonStyle.font) + 2 * verticalSpacing
+        let buttonHeight = SuggestedReplyView.rowHeight(model: buttonModel, maxWidth: maxWidth) + 2 * verticalSpacing
         let titleHeight = (model.title?.heightWithConstrainedWidth(width, font: style.title.font) ?? 0) + style.bubble.padding.top + verticalSpacing
         let descriptionHeight = (model.description?.heightWithConstrainedWidth(width, font: style.description.font) ?? 0) + style.bubble.padding.bottom + verticalSpacing
         let buttonLabelHeight = (model.buttonLabel?.heightWithConstrainedWidth(maxWidth, font: style.buttonLabel.font) ?? 0) + verticalSpacing
