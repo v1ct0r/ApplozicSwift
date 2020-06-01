@@ -7,15 +7,32 @@
 
 import Foundation
 
+// MARK: - ALKRichMessageStyle
+
 public struct ALKRichMessageStyle {
-    public static let richmessageStyles: [ColorProtocol.Type] = [ALKListTemplateCell.ListStyle.self, ALKGenericCardCell.CardStyle.self, CurvedImageButton.QuickReplyButtonStyle.self]
+    static let styles: [ColorProtocol.Type] = [
+        ALKListTemplateCell.ListStyle.self,
+        ALKGenericCardCell.CardStyle.self,
+        CurvedImageButton.QuickReplyButtonStyle.self,
+    ]
+
+    public static var primaryColor = UIColor.actionButtonColor() {
+        didSet {
+            let appSettingsUserDefaults = ALKAppSettingsUserDefaults()
+            appSettingsUserDefaults.setButtonPrimaryColor(color: primaryColor)
+            styles.forEach {
+                style in
+                style.setPrimaryColor(primaryColor: primaryColor)
+            }
+        }
+    }
 }
 
 extension ALKListTemplateCell {
     /// `ListStyle` struct is used for config the sent and received list template color style
     public struct ListStyle: ColorProtocol {
         static var shared = ListStyle()
-        public static func setPrimaryColor(primaryColor: UIColor) {
+        static func setPrimaryColor(primaryColor: UIColor) {
             ALKListTemplateCell.ListStyle.shared.setColor(primaryColor)
         }
 
@@ -60,7 +77,7 @@ extension ALKGenericCardCell {
     /// `CardStyle` struct is used for config the sent and received  card template color style
     public struct CardStyle: ColorProtocol {
         static var shared = CardStyle()
-        public static func setPrimaryColor(primaryColor: UIColor) {
+        static func setPrimaryColor(primaryColor: UIColor) {
             CardStyle.shared.setColor(primaryColor: primaryColor)
         }
 

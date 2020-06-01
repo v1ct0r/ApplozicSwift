@@ -28,11 +28,7 @@ class ALKCurvedButtonSnapshotTests: QuickSpec {
 
             context("with different font") {
                 beforeEach {
-                    ALKRichMessageStyle.richmessageStyles.forEach { type in
-                        if type is CurvedImageButton.QuickReplyButtonStyle.Type {
-                            type.setPrimaryColor(primaryColor: UIColor(85, green: 83, blue: 183))
-                        }
-                    }
+                    ALKRichMessageStyle.primaryColor = UIColor(85, green: 83, blue: 183)
                     let config = CurvedImageButton.Config()
                     CurvedImageButton.QuickReplyButtonStyle.shared.font = UIFont.boldSystemFont(ofSize: 40)
                     button = CurvedImageButton(title: "Demo text", config: config)
@@ -45,11 +41,7 @@ class ALKCurvedButtonSnapshotTests: QuickSpec {
             context("with different color") {
                 beforeEach {
                     let config = CurvedImageButton.Config()
-                    ALKRichMessageStyle.richmessageStyles.forEach { type in
-                        if type is CurvedImageButton.QuickReplyButtonStyle.Type {
-                            type.setPrimaryColor(primaryColor: .red)
-                        }
-                    }
+                    ALKRichMessageStyle.primaryColor = .red
                     CurvedImageButton.QuickReplyButtonStyle.shared.font = UIFont.systemFont(ofSize: 14)
                     button = CurvedImageButton(title: "Demo text", config: config)
                 }
@@ -60,11 +52,7 @@ class ALKCurvedButtonSnapshotTests: QuickSpec {
 
             context("with different width") {
                 beforeEach {
-                    ALKRichMessageStyle.richmessageStyles.forEach { type in
-                        if type is CurvedImageButton.QuickReplyButtonStyle.Type {
-                            type.setPrimaryColor(primaryColor: UIColor(85, green: 83, blue: 183))
-                        }
-                    }
+                    ALKRichMessageStyle.primaryColor = UIColor(85, green: 83, blue: 183)
                     CurvedImageButton.QuickReplyButtonStyle.shared.font = UIFont.systemFont(ofSize: 14)
                     button = CurvedImageButton(title: "Very long text for button", maxWidth: 100)
                 }
