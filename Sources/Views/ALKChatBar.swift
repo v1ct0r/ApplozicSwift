@@ -299,7 +299,10 @@ open class ALKChatBar: UIView, Localizable {
         micButton.setButtonTintColor(color: sendButtonTintColor)
         var image = configuration.sendMessageIcon
         image = image?.imageFlippedForRightToLeftLayoutDirection().withRenderingMode(.alwaysTemplate)
-        sendButton.imageView?.tintColor = sendButtonTintColor
+
+        if !configuration.disableSendButtonTintColor {
+            sendButton.imageView?.tintColor = sendButtonTintColor
+        }
         sendButton.setImage(image, for: .normal)
 
         if configuration.hideLineImageFromChatBar {
