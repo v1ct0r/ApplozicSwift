@@ -293,15 +293,15 @@ open class ALKChatBar: UIView, Localizable {
         locationButton.addTarget(self, action: #selector(tapped(button:)), for: .touchUpInside)
         contactButton.addTarget(self, action: #selector(tapped(button:)), for: .touchUpInside)
         let appSettingsUserDefaults = ALKAppSettingsUserDefaults()
-        let sendButtonTintColor = appSettingsUserDefaults.getAttachmentIconsTintColor()
-        setupAttachment(buttonIcons: chatBarConfiguration.attachmentIcons, tintColor: sendButtonTintColor)
+        let buttonTintColor = appSettingsUserDefaults.getAttachmentIconsTintColor()
+        setupAttachment(buttonIcons: chatBarConfiguration.attachmentIcons, tintColor: buttonTintColor)
         setupConstraints()
-        micButton.setButtonTintColor(color: sendButtonTintColor)
+        micButton.setButtonTintColor(color: buttonTintColor)
         var image = configuration.sendMessageIcon
-        image = image?.imageFlippedForRightToLeftLayoutDirection().withRenderingMode(.alwaysTemplate)
-
-        if !configuration.disableSendButtonTintColor {
-            sendButton.imageView?.tintColor = sendButtonTintColor
+        image = image?.imageFlippedForRightToLeftLayoutDirection()
+        if !configuration.disableButtonTintColor {
+            image = image?.withRenderingMode(.alwaysTemplate)
+            sendButton.imageView?.tintColor = buttonTintColor
         }
         sendButton.setImage(image, for: .normal)
 
@@ -641,11 +641,13 @@ open class ALKChatBar: UIView, Localizable {
             withSize size: CGSize = CGSize(width: 25, height: 25)
         ) {
             var image = image?.imageFlippedForRightToLeftLayoutDirection()
-            image = image?.scale(with: size)?.withRenderingMode(.alwaysTemplate)
-            button.setImage(image, for: .normal)
-            if tintColor != nil {
+            image = image?.scale(with: size)
+            if tintColor != nil,
+                !configuration.disableButtonTintColor {
+                image = image?.withRenderingMode(.alwaysTemplate)
                 button.imageView?.tintColor = tintColor
             }
+            button.setImage(image, for: .normal)
         }
 
         for option in AttachmentType.allCases {

@@ -42,8 +42,8 @@ public struct ALKConfiguration {
     /// Send message icon in chat bar.
     public var sendMessageIcon = UIImage(named: "send", in: Bundle.applozic, compatibleWith: nil)
 
-    /// If true then send button tint color will be disabled.
-    public var disableSendButtonTintColor = false
+    /// If true then  button tint color will be disabled for attachment buttons, send button.
+    public var disableButtonTintColor = false
 
     /// Image for navigation bar right side icon in conversation view.
     @available(*, deprecated, message: "Use navigationItemsForConversationView instead")
