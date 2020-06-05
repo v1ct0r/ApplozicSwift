@@ -2,11 +2,11 @@
 
 ### Migrating from versions <= 5.5.0
 
-#### Removed the depricated configuration for navigation bar 
+#### Removed the deprecated configuration for navigation bar
 
 The configuration for changing `navigationBarTitleColor`, `navigationBarBackgroundColor`, `navigationBarItemColor` has been removed from `ALKConfiguration`.
 
-Instead use the `UINavigationBar.appearance` to config navigation bar the title, background, bar item color
+Instead use `UINavigationBar.appearance` to change the navigation bar title, background and bar item color
 
 ```swift
 let navigationBarProxy = UINavigationBar.appearance(whenContainedInInstancesOf: [ALKBaseNavigationViewController.self])
