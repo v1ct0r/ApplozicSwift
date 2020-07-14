@@ -1460,12 +1460,9 @@ open class ALKConversationViewController: ALKBaseViewController, Localizable {
     func formSubmitButtonSelected(formSubmitData: FormDataSubmit?, messageModel: ALKMessageViewModel, isButtonClickDisabled: Bool ) {
 
         guard let formData = formSubmitData,
-            let listOfUITextFieldWithPos = formData.listOfUITextFieldWithPos,
-            let singleSelect = formData.singleSelect,
-            let multiSelect = formData.multiSelect,
-            !multiSelect.isEmpty ||
-                !listOfUITextFieldWithPos.isEmpty ||
-                !singleSelect.isEmpty else {
+            !formData.multiSelectFields.isEmpty ||
+                !formData.textFields.isEmpty ||
+                !formData.singleSelectFields.isEmpty else {
                     print("Invalid empty form data for submit")
                     return
         }
@@ -1508,17 +1505,15 @@ open class ALKConversationViewController: ALKBaseViewController, Localizable {
 
         guard let viewModelItems = messageModel.formTemplate()?.viewModeItems
             else { return }
-        for (pos, textField) in listOfUITextFieldWithPos {
+        for (pos, text) in formData.textFields {
             let element = viewModelItems[pos]
             switch element.type {
             case .text:
-                if let textModel = element as? FormViewModelTextItem,
-                    let text  = textField.text {
+                if let textModel = element as? FormViewModelTextItem {
                     postFormData[textModel.label] = text
                 }
             case .password:
-                if let passwordModel = element as? FormViewModelPasswordItem,
-                    let text  = textField.text {
+                if let passwordModel = element as? FormViewModelPasswordItem {
                     postFormData[passwordModel.label] = text
                 }
             default:
@@ -1526,7 +1521,7 @@ open class ALKConversationViewController: ALKBaseViewController, Localizable {
             }
         }
 
-        for (section, pos) in singleSelect {
+        for (section, pos) in formData.singleSelectFields {
             guard let singleSelectModel = viewModelItems[section] as? FormViewModelSingleselectItem else {
                 return
             }
@@ -1534,7 +1529,7 @@ open class ALKConversationViewController: ALKBaseViewController, Localizable {
             postFormData[singleSelectModel.name] = value
         }
 
-        for (section, pos) in multiSelect {
+        for (section, pos) in formData.multiSelectFields {
             guard let multiSelect = viewModelItems[section] as? FormViewModelMultiselectItem else {
                 return
             }

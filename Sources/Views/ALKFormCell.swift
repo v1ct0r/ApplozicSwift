@@ -45,10 +45,10 @@ class ALKFormCell: ALKChatBaseCell<ALKMessageViewModel>, UITextFieldDelegate {
     }
     func textFieldDidEndEditing(_ textField: UITextField) {
         activeTextField = nil
-        guard formDataSubmit.listOfUITextFieldWithPos != nil else {
+        guard let text = textField.text else {
             return
         }
-        formDataSubmit.listOfUITextFieldWithPos?[textField.tag] = textField
+        formDataSubmit.textFields[textField.tag] = text
     }
 
     private func setUpTableView() {
@@ -106,11 +106,8 @@ extension ALKFormCell: UITableViewDataSource, UITableViewDelegate {
             }
             let cell: ALKFormSingleSelectItemCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
             cell.cellSelected = {
-                guard self.formDataSubmit.singleSelect != nil else {
-                    return
-                }
                 self.selectedIndexes[indexPath.section] = indexPath.row
-                self.formDataSubmit.singleSelect?[indexPath.section] = indexPath.row
+                self.formDataSubmit.singleSelectFields[indexPath.section] = indexPath.row
                 tableView.reloadSections([indexPath.section], with: .none)
             }
             cell.item = singleselectItem.options[indexPath.row]
@@ -126,27 +123,21 @@ extension ALKFormCell: UITableViewDataSource, UITableViewDelegate {
             }
             let cell: ALKFormMultiSelectItemCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
             cell.cellSelected = {
-                guard var multiSelect = self.formDataSubmit.multiSelect else {
-                    return
-                }
-
-                if let array = multiSelect[indexPath.section] {
+                if let array = self.formDataSubmit.multiSelectFields[indexPath.section] {
                     var newArray = array
                     if array.contains(indexPath.row) {
                         newArray.remove(at: indexPath.row)
                     } else {
-                        newArray.append(indexPath.row)
+                        newArray.insert(indexPath.row, at: indexPath.row)
                     }
 
                     if newArray.isEmpty {
-                        multiSelect.removeValue(forKey: indexPath.section)
+                        self.formDataSubmit.multiSelectFields.removeValue(forKey: indexPath.section)
                     } else {
-                        multiSelect[indexPath.section] = newArray
+                        self.formDataSubmit.multiSelectFields[indexPath.section] = newArray
                     }
-
-                    self.formDataSubmit.multiSelect = multiSelect
                 } else {
-                    self.formDataSubmit.multiSelect?[indexPath.section] = [indexPath.row]
+                    self.formDataSubmit.multiSelectFields[indexPath.section] = [indexPath.row]
                 }
             }
 
@@ -191,14 +182,8 @@ class NestedCellTableView: UITableView {
     }
 }
 
-class FormDataSubmit {
-    var listOfUITextFieldWithPos : [Int: UITextField]?
-    var singleSelect : [Int : Int]?
-    var multiSelect : [Int : [Int]]?
-
-    init() {
-        listOfUITextFieldWithPos = [Int: UITextField]()
-        singleSelect = [Int : Int]()
-        multiSelect = [Int : [Int]]()
-    }
+struct FormDataSubmit {
+    var textFields = [Int: String]()
+    var singleSelectFields = [Int : Int]()
+    var multiSelectFields = [Int : [Int]]()
 }
