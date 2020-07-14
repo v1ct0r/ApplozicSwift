@@ -1157,13 +1157,15 @@ open class ALKConversationViewController: ALKBaseViewController, Localizable {
                             title: String,
                             message: ALKMessageViewModel,
                             isButtonClickDisabled: Bool) {
-        guard
-            !isButtonClickDisabled,
-            let payload = message.payloadFromMetadata()?[index],
+
+        guard !isButtonClickDisabled else {
+            return
+        }
+        guard let payload = message.payloadFromMetadata()?[index],
             let action = payload["action"] as? [String: Any],
             let type = action["type"] as? String
-        else {
-            return
+            else {
+                return
         }
         switch type {
         case "link":
@@ -1453,6 +1455,164 @@ open class ALKConversationViewController: ALKBaseViewController, Localizable {
             request.addValue(contentType, forHTTPHeaderField: "Content-Type")
             submitButtonResponse(request: request)
         }
+    }
+
+    func formSubmitButtonSelected(formSubmitData: FormDataSubmit?, messageModel: ALKMessageViewModel, isButtonClickDisabled: Bool ) {
+
+        guard let formData = formSubmitData,
+            let listOfUITextFieldWithPos = formData.listOfUITextFieldWithPos,
+            let singleSelect = formData.singleSelect,
+            let multiSelect = formData.multiSelect,
+            !multiSelect.isEmpty ||
+                !listOfUITextFieldWithPos.isEmpty ||
+                !singleSelect.isEmpty else {
+                    print("Invalid empty form data for sumbit")
+                    return
+        }
+
+        guard !isButtonClickDisabled, let formTemplate = messageModel.formTemplate() else {
+            return
+        }
+        var postFormData = [String : Any]()
+        var requestType : String?
+        var formAction : String?
+        var message : String?
+
+        for element in formTemplate.elements {
+
+            if element.contentType == .hidden {
+                if let hiddenName = element.name {
+                    if let hiddenValue = element.value {
+                        postFormData[hiddenName] = hiddenValue
+                    }
+                }
+            }
+
+            if let formTemplateRequest = element.requestType {
+                requestType = formTemplateRequest
+            }
+            if let formTemplateAction = element.formAction {
+                formAction = formTemplateAction
+            }
+
+            if let formTemplateMessage = element.message {
+                message = formTemplateMessage
+            }
+        }
+
+        guard let viewModelItems = messageModel.formTemplate()?.viewModeItems
+            else {
+                return
+        }
+        for (pos, textField) in listOfUITextFieldWithPos {
+            let element = viewModelItems[pos]
+            switch element.type {
+            case .text:
+                if let textModel = element as? FormViewModelTextItem,
+                    let text  = textField.text {
+                    postFormData[textModel.name] = text
+                }
+            case .password:
+                if let passwordModel = element as? FormViewModelPasswordItem,
+                    let text  = textField.text {
+                    postFormData[passwordModel.name] = text
+                }
+            default:
+                break
+            }
+        }
+
+        for (section, pos) in singleSelect {
+            guard let singleSelectModel = viewModelItems[section] as? FormViewModelSingleselectItem else {
+                return
+            }
+            let value = singleSelectModel.options[pos].value
+            postFormData[singleSelectModel.name] = value
+        }
+
+        for (section, pos) in multiSelect {
+            guard let multiSelect = viewModelItems[section] as? FormViewModelMultiselectItem else {
+                return
+            }
+            var selectedArray = [String]()
+            for selectedPos  in pos {
+                let value = multiSelect.options[selectedPos].value
+                selectedArray.append(value)
+            }
+
+            let data = self.json(from: selectedArray)
+            postFormData[multiSelect.name] = data
+        }
+
+        guard let formJsonValue = ALUtilityClass.generateJsonString(from: postFormData) else {
+            print("Faild to convert the formdata to json")
+            return
+        }
+
+        var formJsonData = [String: Any]()
+        formJsonData["formData"] = formJsonValue
+
+        guard let chatContextData = self.getUpdateMessageMetadata(with: formJsonData) else {
+            print("Faild to convert the chat context data to json")
+            return
+        }
+
+        if let type = requestType,
+            type == "postBackToBotPlatform" {
+            if let messageString = message {
+                viewModel.send(message: messageString, metadata: chatContextData)
+            }
+        } else {
+            if let messageString = message {
+                viewModel.send(message: messageString, metadata: chatContextData)
+            }
+            guard
+                let urlString = formAction,
+                let url = URL(string: urlString)
+                else {
+                    print("URL for posting is not valid")
+                    return
+            }
+            var request: URLRequest!
+            guard let jsonData = try? JSONSerialization.data(withJSONObject:chatContextData),
+                let jsonString = String(data: jsonData, encoding: .utf8),
+                let data = jsonString.data(using: .utf8),
+                let urlRequest = postRequestUsing(url: url, data: data)
+                else { return }
+
+            request = urlRequest
+            if  requestType == "json" {
+                let contentType = "application/json"
+                request.addValue(contentType, forHTTPHeaderField: "Content-Type")
+                requestHandler(request) { _, _, _ in }
+            } else {
+                let contentType = "application/x-www-form-urlencoded"
+                request.addValue(contentType, forHTTPHeaderField: "Content-Type")
+                submitButtonResponse(request: request)
+            }
+        }
+    }
+
+    func getUpdateMessageMetadata(with info: [String: Any]) -> [String: Any]? {
+
+        var metadata = [String: Any]()
+        do {
+            let messageInfoData = try JSONSerialization
+                .data(withJSONObject: info, options: .prettyPrinted)
+            let messageInfoString = String(data: messageInfoData, encoding: .utf8) ?? ""
+            metadata["KM_CHAT_CONTEXT"] = messageInfoString
+
+        } catch {
+            print("Failed to convert json ")
+        }
+        return metadata
+    }
+
+    func json(from object:Any) -> String? {
+        guard let data = try? JSONSerialization.data(withJSONObject: object, options: []) else {
+            return nil
+        }
+        return String(data: data, encoding: String.Encoding.utf8)
     }
 
     private func shareContact() {

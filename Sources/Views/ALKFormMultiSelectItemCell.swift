@@ -8,6 +8,7 @@
 import Foundation
 
 class ALKFormMultiSelectItemCell: UITableViewCell {
+    var cellSelected: (() -> Void)?
     var item: FormViewModelMultiselectItem.Option? {
         didSet {
             guard let item = item else {
@@ -39,6 +40,7 @@ class ALKFormMultiSelectItemCell: UITableViewCell {
 
     @objc private func onSelection() {
         accessoryType = (accessoryType == .none) ? .checkmark:.none
+        cellSelected?()
     }
 
     private func addConstraints() {

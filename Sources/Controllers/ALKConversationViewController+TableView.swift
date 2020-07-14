@@ -501,6 +501,13 @@ extension ALKConversationViewController: UITableViewDelegate, UITableViewDataSou
                     self.activeTextField = textField
                 }
                 cell.update(viewModel: message)
+                cell.tapped = { [weak self] index, name, submitData in
+                    guard let weakSelf = self else { return }
+                    weakSelf.formSubmitButtonSelected(formSubmitData: submitData,
+                                                      messageModel: message,
+                                                      isButtonClickDisabled:
+                        weakSelf.configuration.disableRichMessageButtonAction)
+                }
                 return cell
             }
         }

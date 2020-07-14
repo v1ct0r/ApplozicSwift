@@ -35,14 +35,17 @@ class FormViewModelSingleselectItem: FormViewModelItem {
         return .singleselect
     }
     var title: String
+    var name: String
     var options: [Option]
     var sectionTitle: String {
         return title
     }
+    var selectedValue: String?
     var rowCount: Int {
         return options.count
     }
-    init(title: String, options: [Option]) {
+    init(name: String, title: String, options: [Option]) {
+        self.name = name
         self.title = title
         self.options = options
     }
@@ -54,6 +57,7 @@ class FormViewModelMultiselectItem: FormViewModelItem {
         return .multiselect
     }
     var title: String
+    var name: String
     var options: [Option]
     var sectionTitle: String {
         return title
@@ -61,7 +65,8 @@ class FormViewModelMultiselectItem: FormViewModelItem {
     var rowCount: Int {
         return options.count
     }
-    init(title: String, options: [Option]) {
+    init(name: String, title: String, options: [Option]) {
+        self.name = name
         self.title = title
         self.options = options
     }
@@ -111,16 +116,20 @@ extension FormTemplate {
                     placeholder: element.placeholder
                 ))
             case .singleSelect:
-                guard let title = element.title, let options = element.options else { return }
-                items.append(FormViewModelSingleselectItem(
-                    title: title,
-                    options: options
+                guard let title = element.title,
+                    let options = element.options,
+                    let name = element.name else { return }
+                items.append(FormViewModelSingleselectItem(name:name,
+                                                           title: title,
+                                                           options: options
                 ))
             case .multiselect:
-                guard let title = element.title, let options = element.options else { return }
-                items.append(FormViewModelMultiselectItem(
-                    title: title,
-                    options: options
+                guard let title = element.title,
+                    let options = element.options,
+                    let name = element.name else { return }
+                items.append(FormViewModelMultiselectItem(name:name,
+                                                          title: title,
+                                                          options: options
                 ))
             default:
                 print("\(element.contentType) form template type is not part of the form list view")

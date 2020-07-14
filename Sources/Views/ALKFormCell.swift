@@ -8,7 +8,9 @@
 import UIKit
 
 class ALKFormCell: ALKChatBaseCell<ALKMessageViewModel>, UITextFieldDelegate {
+    public var tapped: ((_ index: Int, _ name: String, _ formDataSubmit: FormDataSubmit) -> Void)?
     let itemListView = NestedCellTableView()
+    var formDataSubmit = FormDataSubmit()
     var submitButton: CurvedImageButton?
     var activeTextField: UITextField? {
         didSet {
@@ -43,6 +45,10 @@ class ALKFormCell: ALKChatBaseCell<ALKMessageViewModel>, UITextFieldDelegate {
     }
     func textFieldDidEndEditing(_ textField: UITextField) {
         activeTextField = nil
+        guard formDataSubmit.listOfUITextFieldWithPos != nil else {
+            return
+        }
+        formDataSubmit.listOfUITextFieldWithPos?[textField.tag] = textField
     }
 
     private func setUpTableView() {
@@ -65,7 +71,7 @@ class ALKFormCell: ALKChatBaseCell<ALKMessageViewModel>, UITextFieldDelegate {
     private func setUpSubmitButton(title: String) {
         let button = CurvedImageButton(title: title)
         button.delegate = self
-        button.index = 1111
+        button.index = 1
         submitButton = button
     }
 }
@@ -86,11 +92,13 @@ extension ALKFormCell: UITableViewDataSource, UITableViewDelegate {
             let cell: ALKFormTextItemCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
             cell.item = item
             cell.valueTextField.delegate = self
+            cell.valueTextField.tag = indexPath.section
             return cell
         case .password:
             let cell: ALKFormPasswordItemCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
             cell.item = item
             cell.valueTextField.delegate = self
+            cell.valueTextField.tag = indexPath.section
             return cell
         case .singleselect:
             guard let singleselectItem = item as? FormViewModelSingleselectItem else {
@@ -98,7 +106,11 @@ extension ALKFormCell: UITableViewDataSource, UITableViewDelegate {
             }
             let cell: ALKFormSingleSelectItemCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
             cell.cellSelected = {
+                guard self.formDataSubmit.singleSelect != nil else {
+                    return
+                }
                 self.selectedIndexes[indexPath.section] = indexPath.row
+                self.formDataSubmit.singleSelect?[indexPath.section] = indexPath.row
                 tableView.reloadSections([indexPath.section], with: .none)
             }
             cell.item = singleselectItem.options[indexPath.row]
@@ -113,6 +125,31 @@ extension ALKFormCell: UITableViewDataSource, UITableViewDelegate {
                 return UITableViewCell()
             }
             let cell: ALKFormMultiSelectItemCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
+            cell.cellSelected = {
+                guard var multiSelect = self.formDataSubmit.multiSelect else {
+                    return
+                }
+
+                if let array = multiSelect[indexPath.section] {
+                    var newArray = array
+                    if array.contains(indexPath.row) {
+                        newArray.remove(at: indexPath.row)
+                    } else {
+                        newArray.append(indexPath.row)
+                    }
+
+                    if newArray.isEmpty {
+                        multiSelect.removeValue(forKey: indexPath.section)
+                    } else {
+                        multiSelect[indexPath.section] = newArray
+                    }
+
+                    self.formDataSubmit.multiSelect = multiSelect
+                } else {
+                    self.formDataSubmit.multiSelect?[indexPath.section] = [indexPath.row]
+                }
+            }
+
             cell.item = multiselectItem.options[indexPath.row]
             return cell
         }
@@ -136,6 +173,8 @@ extension ALKFormCell: UITableViewDataSource, UITableViewDelegate {
 extension ALKFormCell: Tappable {
     func didTap(index: Int?, title: String) {
         print("tapped submit button in the form")
+        guard let tapped = tapped, let index = index else { return }
+        tapped(index, title, formDataSubmit)
     }
 }
 
@@ -149,5 +188,17 @@ class NestedCellTableView: UITableView {
         didSet {
             self.invalidateIntrinsicContentSize()
         }
+    }
+}
+
+class FormDataSubmit {
+    var listOfUITextFieldWithPos : [Int: UITextField]?
+    var singleSelect : [Int : Int]?
+    var multiSelect : [Int : [Int]]?
+
+    init() {
+        listOfUITextFieldWithPos = [Int: UITextField]()
+        singleSelect = [Int : Int]()
+        multiSelect = [Int : [Int]]()
     }
 }
