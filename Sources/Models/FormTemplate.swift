@@ -11,7 +11,7 @@ struct FormTemplate: Decodable {
     let elements: [Element]
 
     struct Element: Decodable {
-        let type: String?
+        let type: String
         let data: Details?
     }
     struct Details: Decodable {
@@ -45,17 +45,11 @@ extension FormTemplate.Element {
         case singleSelect = "radio"
         case hidden
         case submit
+        case action
         case unknown
     }
 
     var contentType: ContentType {
-        guard let templateMessageType = type else {
-            guard let dataType = self.data,
-                let submitType = dataType.type else {
-                    return .unknown
-            }
-            return ContentType(rawValue: submitType) ?? .unknown
-        }
-        return ContentType(rawValue: templateMessageType) ?? .unknown
+        return ContentType(rawValue: type) ?? .unknown
     }
 }

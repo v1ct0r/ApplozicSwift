@@ -14,7 +14,7 @@ class ALKFormSingleSelectItemCell: UITableViewCell {
             guard let item = item else {
                 return
             }
-            nameLabel.text = item.value
+            nameLabel.text = item.label
         }
     }
 
