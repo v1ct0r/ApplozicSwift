@@ -30,7 +30,7 @@ extension FormViewModelItem {
 }
 
 class FormViewModelSingleselectItem: FormViewModelItem {
-    typealias Option = FormTemplate.Element.Option
+    typealias Option = FormTemplate.Option
     var type: FormViewModelItemType {
         return .singleselect
     }
@@ -52,7 +52,7 @@ class FormViewModelSingleselectItem: FormViewModelItem {
 }
 
 class FormViewModelMultiselectItem: FormViewModelItem {
-    typealias Option = FormTemplate.Element.Option
+    typealias Option = FormTemplate.Option
     var type: FormViewModelItemType {
         return .multiselect
     }
@@ -76,11 +76,11 @@ class FormViewModelTextItem: FormViewModelItem {
     var type: FormViewModelItemType {
         return .text
     }
-    let name: String
+    let label: String
     let placeholder: String?
 
-    init(name: String, placeholder: String?) {
-        self.name = name
+    init(label: String, placeholder: String?) {
+        self.label = label
         self.placeholder = placeholder
     }
 }
@@ -89,11 +89,11 @@ class FormViewModelPasswordItem: FormViewModelItem {
     var type: FormViewModelItemType {
         return .password
     }
-    let name: String
+    let label: String
     let placeholder: String?
 
-    init(name: String, placeholder: String?) {
-        self.name = name
+    init(label: String, placeholder: String?) {
+        self.label = label
         self.placeholder = placeholder
     }
 }
@@ -104,29 +104,35 @@ extension FormTemplate {
         elements.forEach { element in
             switch element.contentType {
             case .text:
-                guard let name = element.label else { return }
+                guard let elementData = element.data,
+                    let label = elementData.label,
+                    let placeHolder = elementData.placeholder else { return }
                 items.append(FormViewModelTextItem(
-                    name: name,
-                    placeholder: element.placeholder
+                    label: label,
+                    placeholder: placeHolder
                 ))
             case .password:
-                guard let name = element.label else { return }
+                guard let elementData = element.data ,
+                    let label = elementData.label,
+                    let placeHolder = elementData.placeholder else { return }
                 items.append(FormViewModelPasswordItem(
-                    name: name,
-                    placeholder: element.placeholder
+                    label: label,
+                    placeholder: placeHolder
                 ))
             case .singleSelect:
-                guard let title = element.title,
-                    let options = element.options,
-                    let name = element.name else { return }
+                guard let elementData = element.data,
+                    let title = elementData.title,
+                    let options = elementData.options,
+                    let name = elementData.name else { return }
                 items.append(FormViewModelSingleselectItem(name:name,
                                                            title: title,
                                                            options: options
                 ))
             case .multiselect:
-                guard let title = element.title,
-                    let options = element.options,
-                    let name = element.name else { return }
+                guard let elementData = element.data,
+                    let title = elementData.title,
+                    let options = elementData.options,
+                    let name = elementData.name else { return }
                 items.append(FormViewModelMultiselectItem(name:name,
                                                           title: title,
                                                           options: options
@@ -139,7 +145,16 @@ extension FormTemplate {
     }
 
     var submitButtonTitle: String? {
-        guard let submitButton = elements.filter({ $0.contentType == .submit }).first else { return nil }
-        return submitButton.label
+        guard let submitButton = elements.filter({ $0.contentType == .submit }).first,
+            let submitButtonData = submitButton.data,
+            let buttonName = submitButtonData.name  else {
+                guard let submitButtonInData = elements.filter({ $0.data?.type == "submit" }).first,
+                    let data = submitButtonInData.data,
+                    let name =  data.name else {
+                        return nil
+                }
+                return name
+        }
+        return buttonName
     }
 }

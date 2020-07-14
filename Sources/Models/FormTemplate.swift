@@ -11,15 +11,21 @@ struct FormTemplate: Decodable {
     let elements: [Element]
 
     struct Element: Decodable {
-        let type: String
-        let label, placeholder, name, value: String?
-        let title: String?
+        let type: String?
+        let data: Details?
+    }
+    struct Details: Decodable {
+        let label, placeholder, name, value, title, type: String?
+        let action : Action?
         let options: [Option]?
-        let requestType, formAction, message: String?
+    }
 
-        struct Option: Decodable {
-            let label, value: String
-        }
+    struct Option: Decodable {
+        let label, value: String
+    }
+
+    struct Action: Decodable {
+        let formAction, message,requestType: String?
     }
 }
 
@@ -43,6 +49,13 @@ extension FormTemplate.Element {
     }
 
     var contentType: ContentType {
-        return ContentType(rawValue: type) ?? .unknown
+        guard let templateMessageType = type else {
+            guard let dataType = self.data,
+                let submitType = dataType.type else {
+                    return .unknown
+            }
+            return ContentType(rawValue: submitType) ?? .unknown
+        }
+        return ContentType(rawValue: templateMessageType) ?? .unknown
     }
 }

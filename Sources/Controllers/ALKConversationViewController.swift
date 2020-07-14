@@ -1481,24 +1481,29 @@ open class ALKConversationViewController: ALKBaseViewController, Localizable {
 
         for element in formTemplate.elements {
 
-            if element.contentType == .hidden {
-                if let hiddenName = element.name {
-                    if let hiddenValue = element.value {
-                        postFormData[hiddenName] = hiddenValue
-                    }
+            if element.contentType == .hidden,
+                let elementData = element.data,
+                let hiddenName = elementData.name,
+                let hiddenValue = elementData.value {
+                postFormData[hiddenName] = hiddenValue
+            }
+
+            if element.contentType == .submit,
+                let elementData = element.data,
+                let action = elementData.action {
+
+                if let formTemplateRequest = action.requestType {
+                    requestType = formTemplateRequest
+                }
+
+                if let formTemplateAction = action.formAction {
+                    formAction = formTemplateAction
+                }
+                if let formTemplateMessage = action.message {
+                    message = formTemplateMessage
                 }
             }
 
-            if let formTemplateRequest = element.requestType {
-                requestType = formTemplateRequest
-            }
-            if let formTemplateAction = element.formAction {
-                formAction = formTemplateAction
-            }
-
-            if let formTemplateMessage = element.message {
-                message = formTemplateMessage
-            }
         }
 
         guard let viewModelItems = messageModel.formTemplate()?.viewModeItems
@@ -1509,12 +1514,12 @@ open class ALKConversationViewController: ALKBaseViewController, Localizable {
             case .text:
                 if let textModel = element as? FormViewModelTextItem,
                     let text  = textField.text {
-                    postFormData[textModel.name] = text
+                    postFormData[textModel.label] = text
                 }
             case .password:
                 if let passwordModel = element as? FormViewModelPasswordItem,
                     let text  = textField.text {
-                    postFormData[passwordModel.name] = text
+                    postFormData[passwordModel.label] = text
                 }
             default:
                 break

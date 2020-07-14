@@ -13,7 +13,7 @@ class ALKFormTextItemCell: UITableViewCell {
             guard let item = item as? FormViewModelTextItem else {
                 return
             }
-            nameLabel.text = item.name
+            nameLabel.text = item.label
             valueTextField.placeholder = item.placeholder
         }
     }
