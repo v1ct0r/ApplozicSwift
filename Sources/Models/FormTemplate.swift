@@ -45,7 +45,6 @@ extension FormTemplate.Element {
         case singleSelect = "radio"
         case hidden
         case submit
-        case action
         case unknown
     }
 

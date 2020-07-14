@@ -146,7 +146,7 @@ extension FormTemplate {
 
     var submitButtonTitle: String? {
         guard let submitButton = elements
-            .filter({ $0.contentType == .submit || $0.contentType == .action })
+            .filter({ $0.contentType == .submit})
             .first, let submitButtonData = submitButton.data,
             let buttonName = submitButtonData.name  else { return nil }
         return buttonName
