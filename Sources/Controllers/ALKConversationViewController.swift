@@ -1466,12 +1466,13 @@ open class ALKConversationViewController: ALKBaseViewController, Localizable {
             !multiSelect.isEmpty ||
                 !listOfUITextFieldWithPos.isEmpty ||
                 !singleSelect.isEmpty else {
-                    print("Invalid empty form data for sumbit")
+                    print("Invalid empty form data for submit")
                     return
         }
 
-        guard !isButtonClickDisabled, let formTemplate = messageModel.formTemplate() else {
-            return
+        guard !isButtonClickDisabled,
+            let formTemplate = messageModel.formTemplate() else {
+                return
         }
         var postFormData = [String : Any]()
         var requestType : String?
@@ -1501,9 +1502,7 @@ open class ALKConversationViewController: ALKBaseViewController, Localizable {
         }
 
         guard let viewModelItems = messageModel.formTemplate()?.viewModeItems
-            else {
-                return
-        }
+            else { return }
         for (pos, textField) in listOfUITextFieldWithPos {
             let element = viewModelItems[pos]
             switch element.type {
@@ -1545,7 +1544,7 @@ open class ALKConversationViewController: ALKBaseViewController, Localizable {
         }
 
         guard let formJsonValue = ALUtilityClass.generateJsonString(from: postFormData) else {
-            print("Faild to convert the formdata to json")
+            print("Failed to convert the formdata to json")
             return
         }
 
@@ -1553,7 +1552,7 @@ open class ALKConversationViewController: ALKBaseViewController, Localizable {
         formJsonData["formData"] = formJsonValue
 
         guard let chatContextData = self.getUpdateMessageMetadata(with: formJsonData) else {
-            print("Faild to convert the chat context data to json")
+            print("Failed to convert the chat context data to json")
             return
         }
 
@@ -1594,7 +1593,6 @@ open class ALKConversationViewController: ALKBaseViewController, Localizable {
     }
 
     func getUpdateMessageMetadata(with info: [String: Any]) -> [String: Any]? {
-
         var metadata = [String: Any]()
         do {
             let messageInfoData = try JSONSerialization
