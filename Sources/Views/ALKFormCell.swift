@@ -126,9 +126,9 @@ extension ALKFormCell: UITableViewDataSource, UITableViewDelegate {
                 if let array = self.formDataSubmit.multiSelectFields[indexPath.section] {
                     var newArray = array
                     if array.contains(indexPath.row) {
-                        newArray.remove(at: indexPath.row)
+                        newArray.remove(object: indexPath.row)
                     } else {
-                        newArray.insert(indexPath.row, at: indexPath.row)
+                        newArray.append(indexPath.row)
                     }
 
                     if newArray.isEmpty {
