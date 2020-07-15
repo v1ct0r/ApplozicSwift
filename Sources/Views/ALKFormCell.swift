@@ -59,6 +59,7 @@ class ALKFormCell: ALKChatBaseCell<ALKMessageViewModel>, UITextFieldDelegate {
         itemListView.separatorStyle = .singleLine
         itemListView.allowsSelection = false
         itemListView.isScrollEnabled = false
+        itemListView.alwaysBounceVertical = false
         itemListView.delegate = self
         itemListView.dataSource = self
         itemListView.tableFooterView = UIView(frame: .zero)

@@ -80,6 +80,7 @@ class ALKFriendFormCell: ALKFormCell {
     }
 
     override func update(viewModel: ALKMessageViewModel) {
+        super.update(viewModel: viewModel)
         let isMessageEmpty = viewModel.isMessageEmpty
         let maxWidth = UIScreen.main.bounds.width
         let messageWidth = maxWidth - (ChatCellPadding.ReceivedMessage.Message.left +
@@ -103,7 +104,6 @@ class ALKFriendFormCell: ALKFormCell {
         timeLabelHeight.constant = timeLabelSize.height.rounded(.up)
         timeLabelWidth.constant = timeLabelSize.width.rounded(.up)
         layoutIfNeeded()
-        super.update(viewModel: viewModel)
     }
 
     private func setupConstraints() {
