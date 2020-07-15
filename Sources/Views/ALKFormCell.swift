@@ -53,11 +53,12 @@ class ALKFormCell: ALKChatBaseCell<ALKMessageViewModel>, UITextFieldDelegate {
 
     private func setUpTableView() {
         itemListView.backgroundColor = .white
-        itemListView.estimatedRowHeight = 50
-        itemListView.estimatedSectionHeaderHeight = 50
+        itemListView.estimatedRowHeight = 40
+        itemListView.estimatedSectionHeaderHeight = 40
         itemListView.rowHeight = UITableView.automaticDimension
         itemListView.separatorStyle = .singleLine
         itemListView.allowsSelection = false
+        itemListView.isScrollEnabled = false
         itemListView.delegate = self
         itemListView.dataSource = self
         itemListView.tableFooterView = UIView(frame: .zero)
