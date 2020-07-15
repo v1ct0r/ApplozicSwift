@@ -14,7 +14,9 @@ class ALKFormPasswordItemCell: UITableViewCell {
                 return
             }
             nameLabel.text = item.label
-            valueTextField.placeholder = item.placeholder
+            valueTextField.attributedPlaceholder =
+                NSAttributedString(string: item.placeholder ?? "")
+            valueTextField.placeholderColor = .lightGray
         }
     }
 
@@ -35,6 +37,9 @@ class ALKFormPasswordItemCell: UITableViewCell {
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        valueTextField.textColor = .black
+        backgroundColor = .clear
+        contentView.backgroundColor = .clear
         addConstraints()
     }
 

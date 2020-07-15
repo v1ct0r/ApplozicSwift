@@ -31,6 +31,8 @@ class ALKFormSingleSelectItemCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(onSelection))
         contentView.addGestureRecognizer(tapRecognizer)
+        backgroundColor = .clear
+        contentView.backgroundColor = .clear
         addConstraints()
     }
 
