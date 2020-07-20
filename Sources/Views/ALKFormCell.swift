@@ -165,6 +165,7 @@ extension ALKFormCell: UITableViewDataSource, UITableViewDelegate {
 
 extension ALKFormCell: Tappable {
     func didTap(index: Int?, title: String) {
+        self.endEditing(true)
         print("tapped submit button in the form")
         guard let tapped = tapped, let index = index else { return }
         tapped(index, title, formDataSubmit)
