@@ -8,10 +8,10 @@
 import UIKit
 
 class ALKFormCell: ALKChatBaseCell<ALKMessageViewModel>, UITextFieldDelegate {
-    public var tapped: ((_ index: Int, _ name: String, _ formDataSubmit: FormDataSubmit) -> Void)?
+    public var tapped: ((_ index: Int, _ name: String, _ formDataSubmit: FormDataSubmit?) -> Void)?
     let itemListView = NestedCellTableView()
-    var formDataSubmit = FormDataSubmit()
     var submitButton: CurvedImageButton?
+    var identifier: String?
     var activeTextField: UITextField? {
         didSet {
             activeTextFieldChanged?(activeTextField)
@@ -28,8 +28,6 @@ class ALKFormCell: ALKChatBaseCell<ALKMessageViewModel>, UITextFieldDelegate {
             setUpSubmitButton(title: submitButtonTitle)
         }
     }
-    private var selectedIndexes: [Int: Int] = [:]
-
     override func setupViews() {
         super.setupViews()
         setUpTableView()
@@ -45,10 +43,19 @@ class ALKFormCell: ALKChatBaseCell<ALKMessageViewModel>, UITextFieldDelegate {
     }
     func textFieldDidEndEditing(_ textField: UITextField) {
         activeTextField = nil
-        guard let text = textField.text else {
-            return
+
+        if let key = self.identifier {
+            guard let text = textField.text,
+                !text.trim().isEmpty else {
+                    let formDataSubmit = ALKFormDataCache.shared.getFormDataWithDefaultObject(for: key)
+                    formDataSubmit.textFields.removeValue(forKey: textField.tag)
+                    ALKFormDataCache.shared.set(formDataSubmit, for: key)
+                    return
+            }
+            let formDataSubmit = ALKFormDataCache.shared.getFormDataWithDefaultObject(for: key)
+            formDataSubmit.textFields[textField.tag] = text
+            ALKFormDataCache.shared.set(formDataSubmit, for: key)
         }
-        formDataSubmit.textFields[textField.tag] = text
     }
 
     private func setUpTableView() {
@@ -108,16 +115,24 @@ extension ALKFormCell: UITableViewDataSource, UITableViewDelegate {
             }
             let cell: ALKFormSingleSelectItemCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
             cell.cellSelected = {
-                self.selectedIndexes[indexPath.section] = indexPath.row
-                self.formDataSubmit.singleSelectFields[indexPath.section] = indexPath.row
+                if let key = self.identifier {
+                    let formDataSubmit = ALKFormDataCache.shared.getFormDataWithDefaultObject(for:key)
+                    formDataSubmit.singleSelectFields[indexPath.section] = indexPath.row
+                    ALKFormDataCache.shared.set(formDataSubmit, for: key)
+                }
                 tableView.reloadSections([indexPath.section], with: .none)
             }
             cell.item = singleselectItem.options[indexPath.row]
-            if let rowSelected = selectedIndexes[indexPath.section], rowSelected == indexPath.row {
+
+            if let key = self.identifier,
+                let formDataSubmit = ALKFormDataCache.shared.getFormData(for:key),
+                let singleSelectFields = formDataSubmit.singleSelectFields[indexPath.section],
+                singleSelectFields == indexPath.row {
                 cell.accessoryType = .checkmark
             } else {
                 cell.accessoryType = .none
             }
+
             return cell
         case .multiselect:
             guard let multiselectItem = item as? FormViewModelMultiselectItem else {
@@ -125,24 +140,35 @@ extension ALKFormCell: UITableViewDataSource, UITableViewDelegate {
             }
             let cell: ALKFormMultiSelectItemCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
             cell.cellSelected = {
-                if let array = self.formDataSubmit.multiSelectFields[indexPath.section] {
-                    var newArray = array
-                    if array.contains(indexPath.row) {
-                        newArray.remove(object: indexPath.row)
-                    } else {
-                        newArray.append(indexPath.row)
-                    }
+                if let key = self.identifier {
+                    let formDataSubmit = ALKFormDataCache.shared.getFormDataWithDefaultObject(for: key)
+                    if let array = formDataSubmit.multiSelectFields[indexPath.section] {
+                        var newArray = array
+                        if array.contains(indexPath.row) {
+                            newArray.remove(object: indexPath.row)
+                        } else {
+                            newArray.append(indexPath.row)
+                        }
 
-                    if newArray.isEmpty {
-                        self.formDataSubmit.multiSelectFields.removeValue(forKey: indexPath.section)
+                        if newArray.isEmpty {
+                            formDataSubmit.multiSelectFields.removeValue(forKey: indexPath.section)
+                        } else {
+                            formDataSubmit.multiSelectFields[indexPath.section] = newArray
+                        }
                     } else {
-                        self.formDataSubmit.multiSelectFields[indexPath.section] = newArray
+                        formDataSubmit.multiSelectFields[indexPath.section] = [indexPath.row]
                     }
-                } else {
-                    self.formDataSubmit.multiSelectFields[indexPath.section] = [indexPath.row]
+                    ALKFormDataCache.shared.set(formDataSubmit, for: key)
                 }
             }
 
+            if let key = self.identifier,
+                let formDataSubmit = ALKFormDataCache.shared.getFormData(for:key),
+                let multiSelectFields = formDataSubmit.multiSelectFields[indexPath.section], multiSelectFields.contains(indexPath.row)  {
+                cell.accessoryType = .checkmark
+            } else {
+                cell.accessoryType = .none
+            }
             cell.item = multiselectItem.options[indexPath.row]
             return cell
         }
@@ -167,8 +193,8 @@ extension ALKFormCell: Tappable {
     func didTap(index: Int?, title: String) {
         self.endEditing(true)
         print("tapped submit button in the form")
-        guard let tapped = tapped, let index = index else { return }
-        tapped(index, title, formDataSubmit)
+        guard let tapped = tapped, let index = index, let key = self.identifier else { return }
+        tapped(index, title, ALKFormDataCache.shared.getFormData(for: key))
     }
 }
 
@@ -185,7 +211,7 @@ class NestedCellTableView: UITableView {
     }
 }
 
-struct FormDataSubmit {
+class FormDataSubmit {
     var textFields = [Int: String]()
     var singleSelectFields = [Int : Int]()
     var multiSelectFields = [Int : [Int]]()

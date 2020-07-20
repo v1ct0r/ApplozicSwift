@@ -493,6 +493,7 @@ extension ALKConversationViewController: UITableViewDelegate, UITableViewDataSou
                 cell.activeTextFieldChanged = { textField in
                     self.activeTextField = textField
                 }
+                cell.identifier = message.identifier
                 cell.update(viewModel: message)
                 return cell
             } else {
@@ -500,6 +501,7 @@ extension ALKConversationViewController: UITableViewDelegate, UITableViewDataSou
                 cell.activeTextFieldChanged = { textField in
                     self.activeTextField = textField
                 }
+                cell.identifier = message.identifier
                 cell.update(viewModel: message)
                 cell.tapped = { [weak self] index, name, submitData in
                     guard let weakSelf = self else { return }
