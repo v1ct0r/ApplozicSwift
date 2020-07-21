@@ -18,20 +18,19 @@ class ALKFormCell: ALKChatBaseCell<ALKMessageViewModel>, UITextFieldDelegate {
         }
     }
     var activeTextFieldChanged: ((UITextField?) -> Void)?
-    var shared = ALKFormDataCache.shared
+    var formDataCacheStore = ALKFormDataCache.shared
 
     var formData: FormDataSubmit? {
         get {
-
             guard let key = identifier else {
                 return nil
             }
-            return shared.getFormDataWithDefaultObject(for: key)
+            return formDataCacheStore.getFormDataWithDefaultObject(for: key)
         }
         set(newFormData) {
             guard let key = identifier,
                 let formData = newFormData else { return }
-            shared.set(formData, for: key)
+            formDataCacheStore.set(formData, for: key)
         }
     }
 
@@ -141,8 +140,7 @@ extension ALKFormCell: UITableViewDataSource, UITableViewDelegate {
             }
             cell.item = singleselectItem.options[indexPath.row]
 
-            if let key = self.identifier,
-                let formDataSubmit = shared.getFormData(for:key),
+            if let formDataSubmit = formData,
                 let singleSelectFields = formDataSubmit.singleSelectFields[indexPath.section],
                 singleSelectFields == indexPath.row {
                 cell.accessoryType = .checkmark
@@ -178,8 +176,7 @@ extension ALKFormCell: UITableViewDataSource, UITableViewDelegate {
                 }
             }
 
-            if let key = self.identifier,
-                let formDataSubmit = shared.getFormData(for:key),
+            if let formDataSubmit = formData,
                 let multiSelectFields = formDataSubmit.multiSelectFields[indexPath.section], multiSelectFields.contains(indexPath.row) {
                 cell.accessoryType = .checkmark
             } else {
