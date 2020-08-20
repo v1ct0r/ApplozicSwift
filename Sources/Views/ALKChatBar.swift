@@ -559,6 +559,14 @@ open class ALKChatBar: UIView, Localizable {
         }
     }
 
+    public func disableSendButton(isSendButtonDisabled: Bool) {
+        sendButton.isEnabled = !isSendButtonDisabled
+    }
+
+    public func addTextView(delegate: UITextViewDelegate) {
+        textView.add(delegate: delegate)
+    }
+
     private func changeButton() {
         if soundRec.isHidden {
             soundRec.isHidden = false
@@ -679,14 +687,6 @@ open class ALKChatBar: UIView, Localizable {
                 setup(image: buttonIcons[AttachmentType.document] ?? nil, to: documentButton)
             }
         }
-    }
-
-    public func disableSendButton(isSendButtonDisabled: Bool) {
-        sendButton.isEnabled = !isSendButtonDisabled
-    }
-
-    public func addTextView(delegate: UITextViewDelegate) {
-        textView.add(delegate: delegate)
     }
 }
 
