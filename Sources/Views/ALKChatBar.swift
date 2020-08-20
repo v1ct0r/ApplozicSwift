@@ -680,6 +680,14 @@ open class ALKChatBar: UIView, Localizable {
             }
         }
     }
+
+    public func disableSendButton(isSendButtonDisabled: Bool) {
+        sendButton.isEnabled = !isSendButtonDisabled
+    }
+
+    public func addTextView(delegate: UITextViewDelegate) {
+        textView.add(delegate: delegate)
+    }
 }
 
 extension ALKChatBar: UITextViewDelegate {
@@ -759,14 +767,6 @@ extension ALKChatBar: UITextViewDelegate {
         }
         textView.inputView = nil
         textView.reloadInputViews()
-    }
-
-    public func disableSendButton(isSendButtonDisabled:Bool) {
-        self.sendButton.isEnabled = !isSendButtonDisabled
-    }
-
-    public func addTextView(delegate: UITextViewDelegate) {
-        textView.add(delegate: delegate)
     }
 }
 
