@@ -64,13 +64,12 @@ public class ReceivedMessageView: UIView {
     /// - Parameters:
     ///   - model: Model containing information to update view.
     public func update(model: Message) {
-        let message = model.text ?? "" /// Don't support nil right now
         /// Set frame
         let height = ReceivedMessageView.rowHeight(model: model, maxWidth: maxWidth, padding: padding)
         frame.size = CGSize(width: maxWidth, height: height)
 
         // Set message
-        messageView.update(model: message)
+        messageView.update(model: model)
     }
 
     /// It's used to get exact height of messageView.

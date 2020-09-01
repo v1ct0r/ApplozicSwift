@@ -10,12 +10,14 @@ import Foundation
 extension ALKMessageViewModel {
     private func messageDetails() -> Message {
         return Message(
+            identifier: identifier,
             text: message,
             isMyMessage: isMyMessage,
             time: time!,
             displayName: displayName,
             status: messageStatus(),
-            imageURL: avatarURL
+            imageURL: avatarURL,
+            contentType: contentType
         )
     }
 

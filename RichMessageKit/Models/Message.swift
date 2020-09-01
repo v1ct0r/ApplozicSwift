@@ -17,6 +17,10 @@ public enum MessageStatus: CaseIterable {
 
 /// It defines the properties that are used by cells to render views.
 public struct Message {
+
+    /// Identifier of the message
+    public var identifier: String
+
     /// Text to be displayed as message.
     public var text: String?
 
@@ -48,4 +52,7 @@ public struct Message {
         }
         return false
     }
+    /// Content type of the message.
+    public var contentType: Int16
+
 }

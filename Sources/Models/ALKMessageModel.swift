@@ -64,9 +64,11 @@ public protocol ALKMessageViewModel {
     var isReplyMessage: Bool { get }
     var metadata: [String: Any]? { get }
     var source: Int16 { get }
+    var contentType : Int16 { get }
 }
 
 public class ALKMessageModel: ALKMessageViewModel {
+    public var contentType: Int16 = 0
     public var message: String? = ""
     public var isMyMessage: Bool = false
     public var messageType: ALKMessageType = .text
@@ -128,7 +130,7 @@ extension ALKMessageViewModel {
         guard let message = message,
             let metadata = metadata,
             !metadata.isEmpty else {
-            return nil
+                return nil
         }
         let mentionParser = MessageMentionDecoder(message: message, metadata: metadata)
         return mentionParser
@@ -147,7 +149,7 @@ extension ALKMessageViewModel {
                 attributesForMention: mentionAttributes,
                 defaultAttributes: defaultAttributes
             ) else {
-            return nil
+                return nil
         }
         return attributedText
     }

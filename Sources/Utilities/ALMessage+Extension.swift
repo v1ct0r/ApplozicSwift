@@ -216,7 +216,7 @@ extension ALMessage {
         case ALMESSAGE_CHANNEL_NOTIFICATION:
             return .information
         case ALMESSAGE_CONTENT_TEXT_HTML:
-            return .html
+            return richMessageType()
         case ALMESSAGE_CONTENT_VCARD:
             return .contact
         default:
@@ -358,8 +358,15 @@ extension ALMessage {
         guard let metadata = metadata,
             let contentType = metadata["contentType"] as? String, contentType == "300",
             let templateId = metadata["templateId"] as? String
-        else {
-            return .text
+            else {
+                switch Int32(self.contentType) {
+                case ALMESSAGE_CONTENT_DEFAULT:
+                    return .text
+                case ALMESSAGE_CONTENT_TEXT_HTML:
+                    return .html
+                default:
+                    return .text
+                }
         }
         switch templateId {
         case "3":
@@ -412,6 +419,7 @@ extension ALMessage {
         messageModel.isReplyMessage = isAReplyMessage()
         messageModel.metadata = metadata as? [String: Any]
         messageModel.source = source
+        messageModel.contentType = contentType
         return messageModel
     }
 }
