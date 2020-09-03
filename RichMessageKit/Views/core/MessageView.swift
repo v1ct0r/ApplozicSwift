@@ -125,7 +125,6 @@ public class MessageView: UIView {
         messageTextView.textColor = messageStyle.text
 
         switch model.contentType {
-
         case Int16(0):
             messageTextView.text = model.text
             layoutIfNeeded()
@@ -167,7 +166,7 @@ public class MessageView: UIView {
         switch model.contentType {
         case Int16(0):
             self.dummyMessageView.font = font
-            return MessageViewSizeCalculator().height(self.dummyMessageView, text: model.text ?? "", maxWidth: maxWidth, padding: padding)
+            return MessageViewSizeCalculator().height(self.dummyMessageView, text: model.text ?? "", maxWidth: maxWidth, padding: padding) + 3
 
         case Int16(3):
             guard let attributedText = attributedStringFrom(model.text ?? "", for: model.identifier) else {
@@ -176,25 +175,22 @@ public class MessageView: UIView {
 
             self.dummyAttributedMessageView.font = font
 
-            return  MessageViewSizeCalculator().height(self.dummyAttributedMessageView, attributedText: attributedText, maxWidth: maxWidth, padding: padding)
+            return  MessageViewSizeCalculator().height(self.dummyAttributedMessageView, attributedText: attributedText, maxWidth: maxWidth, padding: padding) + 3
         default:
             return 0;
         }
     }
 
-    public func updateHeighOfView(hideView: Bool, model: String) {
+    public func updateHeighOfView(hideView: Bool, model: Message) {
         let messageHeight = hideView ? 0 :
-            MessageViewSizeCalculator().rowHeight(text: model,
-                                                  font: messageStyle.font,
-                                                  maxWidth: maxWidth,
-                                                  padding: bubbleStyle.padding)
+            MessageView.rowHeight(model: model,
+                                  maxWidth: maxWidth,
+                                  font: messageStyle.font,
+                                  padding: bubbleStyle.padding)
+
         messageTextView
             .constraint(withIdentifier: ConstraintIdentifier.MessageLabel.height)?.constant = messageHeight
-
-        bubbleView
-            .constraint(withIdentifier: ConstraintIdentifier.BubbleView.height)?.constant = messageHeight
     }
-
 
     // MARK: Private methods
 
@@ -211,9 +207,8 @@ public class MessageView: UIView {
         NSLayoutConstraint.activate([
             bubbleView.leadingAnchor.constraint(equalTo: leadingAnchor),
             bubbleView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            bubbleView.heightAnchor.constraintEqualToAnchor(constant: 0, identifier: ConstraintIdentifier.BubbleView.height),
-            bubbleView.topAnchor.constraint(equalTo: topAnchor),
             bubbleView.bottomAnchor.constraint(equalTo: bottomAnchor),
+            bubbleView.topAnchor.constraint(equalTo: topAnchor, constant: 3),
             messageTextView.topAnchor.constraint(equalTo: topAnchor, constant: padding.top),
             messageTextView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -1 * padding.bottom),
             messageTextView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: padding.left),

@@ -100,7 +100,7 @@ public class ReceivedMessageView: UIView {
         ])
     }
 
-    func updateHeightOfView(hideView: Bool, model: String?) {
-        messageView.updateHeighOfView(hideView: hideView, model: model ?? "")
+    func updateHeightOfView(hideView: Bool, model: Message) {
+        messageView.updateHeighOfView(hideView: hideView, model: model)
     }
 }

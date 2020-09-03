@@ -8,7 +8,7 @@
 import Foundation
 
 extension ALKMessageViewModel {
-    private func messageDetails() -> Message {
+    func messageDetails() -> Message {
         return Message(
             identifier: identifier,
             text: message,

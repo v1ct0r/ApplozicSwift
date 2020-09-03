@@ -146,7 +146,7 @@ public class ReceivedImageMessageCell: UITableViewCell {
             messageView.update(model: model.message)
         }
 
-        messageView.updateHeighOfView(hideView: isMessageEmpty, model: model.message.text ?? "")
+        messageView.updateHeighOfView(hideView: isMessageEmpty, model: model.message)
         /// Set frame
         let height = ReceivedImageMessageCell.rowHeight(model: model)
         frame.size = CGSize(width: Config.maxWidth, height: height)

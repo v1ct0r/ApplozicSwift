@@ -8,15 +8,11 @@
 import Foundation
 
 class MessageViewSizeCalculator {
-    func rowHeight(text: String, font: UIFont, maxWidth: CGFloat, padding: Padding) -> CGFloat {
-        let messageWidth = maxWidth - (padding.left + padding.right)
-        let size = text.rectWithConstrainedWidth(messageWidth, font: font)
-        return size.height.rounded(.up) + padding.top + padding.bottom
-    }
-
+    
      func height(_ textView: UITextView,
                        text: String,
-                       maxWidth: CGFloat, padding: Padding) -> CGFloat {
+                       maxWidth: CGFloat,
+                       padding: Padding) -> CGFloat {
         textView.text = text
         let messageWidth = maxWidth - (padding.left + padding.right)
         let size = textView.sizeThatFits(CGSize(width: messageWidth, height: CGFloat.greatestFiniteMagnitude))
@@ -25,7 +21,8 @@ class MessageViewSizeCalculator {
 
     func height(_ textView: UITextView,
                         attributedText: NSAttributedString,
-                        maxWidth: CGFloat, padding: Padding) -> CGFloat {
+                        maxWidth: CGFloat,
+                        padding: Padding) -> CGFloat {
         let messageWidth = maxWidth - (padding.left + padding.right)
          textView.attributedText = attributedText
         let size = textView.sizeThatFits(CGSize(width: messageWidth, height: CGFloat.greatestFiniteMagnitude))
