@@ -11,7 +11,7 @@ import UIKit
 // MARK: - `ALKMyMessageListTemplateCell` for sender side.
 
 public class ALKMyMessageListTemplateCell: ALKListTemplateCell {
-    enum Padding {
+    enum ViewPadding {
         enum StateView {
             static let top: CGFloat = 3
             static let right: CGFloat = 2
@@ -25,6 +25,14 @@ public class ALKMyMessageListTemplateCell: ALKListTemplateCell {
             static let top: CGFloat = 2
             static let maxWidth: CGFloat = 200
         }
+        enum ListTemplateView {
+            static var top: CGFloat = 5.0
+        }
+        static let maxWidth = UIScreen.main.bounds.width
+        static let messageViewPadding = Padding(left: ChatCellPadding.SentMessage.Message.left,
+                                                right: ChatCellPadding.SentMessage.Message.right,
+                                                top: 0,
+                                                bottom: 0)
     }
 
     fileprivate var timeLabel: UILabel = {
@@ -43,21 +51,27 @@ public class ALKMyMessageListTemplateCell: ALKListTemplateCell {
     fileprivate lazy var timeLabelWidth = timeLabel.widthAnchor.constraint(equalToConstant: 0)
     fileprivate lazy var timeLabelHeight = timeLabel.heightAnchor.constraint(equalToConstant: 0)
 
-    var messageView = ALKMyMessageView()
+    fileprivate lazy var messageView = MessageView(
+        bubbleStyle: MessageTheme.sentMessage.bubble,
+        messageStyle: MessageTheme.sentMessage.message,
+        maxWidth: ViewPadding.maxWidth
+    )
     lazy var messageViewHeight = messageView.heightAnchor.constraint(equalToConstant: 0)
 
     public override func update(viewModel: ALKMessageViewModel, maxWidth: CGFloat) {
         super.update(viewModel: viewModel)
         let isMessageEmpty = viewModel.isMessageEmpty
-        let messageWidth = maxWidth -
-            (ChatCellPadding.SentMessage.Message.left + ChatCellPadding.SentMessage.Message.right)
+        let model = viewModel.messageDetails()
 
-        messageViewHeight.constant = isMessageEmpty ? 0 : ALKMyMessageView.rowHeight(viewModel: viewModel, width: messageWidth)
-
+        messageViewHeight.constant = isMessageEmpty ? 0 :
+            SentMessageViewSizeCalculator().rowHeight(messageModel: model,
+                                                      maxWidth: ViewPadding.maxWidth,
+                                                      padding: ViewPadding.messageViewPadding)
         if !isMessageEmpty {
-            messageView.update(viewModel: viewModel)
+            messageView.update(model: model)
         }
-        messageView.updateHeightOfView(hideView: isMessageEmpty, viewModel: viewModel, maxWidth: maxWidth)
+
+        messageView.updateHeighOfView(hideView: isMessageEmpty, model: model)
 
         super.update(viewModel: viewModel, maxWidth: maxWidth)
 
@@ -66,7 +80,7 @@ public class ALKMyMessageListTemplateCell: ALKListTemplateCell {
         timeLabel.setStyle(ALKMessageStyle.time)
 
         let timeLabelSize = viewModel.time!.rectWithConstrainedWidth(
-            Padding.TimeLabel.maxWidth,
+            ViewPadding.TimeLabel.maxWidth,
             font: ALKMessageStyle.time.font
         )
         timeLabelHeight.constant = timeLabelSize.height.rounded(.up)
@@ -77,20 +91,26 @@ public class ALKMyMessageListTemplateCell: ALKListTemplateCell {
 
     public override class func rowHeight(viewModel: ALKMessageViewModel, maxWidth: CGFloat) -> CGFloat {
         var height: CGFloat = 0
+        let model = viewModel.messageDetails()
 
         let timeLabelSize = viewModel.time!.rectWithConstrainedWidth(
-            Padding.TimeLabel.maxWidth,
+            ViewPadding.TimeLabel.maxWidth,
             font: ALKMessageStyle.time.font
         )
 
         if !viewModel.isMessageEmpty {
-            let messageWidth = maxWidth -
-                (ChatCellPadding.SentMessage.Message.left + ChatCellPadding.SentMessage.Message.right)
-            height = ALKMyMessageView.rowHeight(viewModel: viewModel, width: messageWidth)
+            height = SentMessageViewSizeCalculator().rowHeight(messageModel: model,
+                                                               maxWidth: ViewPadding.maxWidth,
+                                                               padding: ViewPadding.messageViewPadding)
         }
 
         let templateHeight = super.rowHeight(viewModel: viewModel, maxWidth: maxWidth)
-        return height + templateHeight + paddingBelowCell + timeLabelSize.height.rounded(.up) + Padding.TimeLabel.top
+        return height +
+            templateHeight +
+            paddingBelowCell +
+            timeLabelSize.height.rounded(.up) +
+            ViewPadding.TimeLabel.top +
+            ViewPadding.ListTemplateView.top
     }
 
     override func setupConstraints() {
@@ -98,29 +118,29 @@ public class ALKMyMessageListTemplateCell: ALKListTemplateCell {
         let rightPadding = ChatCellPadding.SentMessage.Message.right
         contentView.addViewsForAutolayout(views: [messageView, listTemplateView, stateView, timeLabel])
         messageView.topAnchor.constraint(equalTo: contentView.topAnchor).isActive = true
-        messageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: leftPadding).isActive = true
+        messageView.leadingAnchor.constraint(greaterThanOrEqualTo: contentView.leadingAnchor, constant: leftPadding).isActive = true
         messageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -1 * rightPadding).isActive = true
         messageViewHeight.isActive = true
 
         let width = CGFloat(ALKMessageStyle.sentBubble.widthPadding)
         let templateLeftPadding = leftPadding + width
         let templateRightPadding = rightPadding - width
-        listTemplateView.topAnchor.constraint(equalTo: messageView.bottomAnchor).isActive = true
+        listTemplateView.topAnchor.constraint(equalTo: messageView.bottomAnchor, constant: ViewPadding.ListTemplateView.top).isActive = true
         listTemplateView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: templateLeftPadding).isActive = true
         listTemplateView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -1 * templateRightPadding).isActive = true
         listTemplateHeight.isActive = true
 
-        stateView.topAnchor.constraint(equalTo: listTemplateView.bottomAnchor, constant: Padding.StateView.top).isActive = true
-        stateView.trailingAnchor.constraint(equalTo: listTemplateView.trailingAnchor, constant: -1 * Padding.StateView.right).isActive = true
-        stateView.heightAnchor.constraint(equalToConstant: Padding.StateView.height).isActive = true
+        stateView.topAnchor.constraint(equalTo: listTemplateView.bottomAnchor, constant: ViewPadding.StateView.top).isActive = true
+        stateView.trailingAnchor.constraint(equalTo: listTemplateView.trailingAnchor, constant: -1 * ViewPadding.StateView.right).isActive = true
+        stateView.heightAnchor.constraint(equalToConstant: ViewPadding.StateView.height).isActive = true
         stateView.bottomAnchor.constraint(lessThanOrEqualTo: bottomAnchor).isActive = true
-        stateView.widthAnchor.constraint(equalToConstant: Padding.StateView.width).isActive = true
-        timeLabel.topAnchor.constraint(equalTo: listTemplateView.bottomAnchor, constant: Padding.TimeLabel.top).isActive = true
+        stateView.widthAnchor.constraint(equalToConstant: ViewPadding.StateView.width).isActive = true
+        timeLabel.topAnchor.constraint(equalTo: listTemplateView.bottomAnchor, constant: ViewPadding.TimeLabel.top).isActive = true
         timeLabel.bottomAnchor.constraint(lessThanOrEqualTo: bottomAnchor).isActive = true
-        timeLabel.leadingAnchor.constraint(greaterThanOrEqualTo: contentView.leadingAnchor, constant: Padding.TimeLabel.left).isActive = true
+        timeLabel.leadingAnchor.constraint(greaterThanOrEqualTo: contentView.leadingAnchor, constant: ViewPadding.TimeLabel.left).isActive = true
         timeLabelWidth.isActive = true
         timeLabelHeight.isActive = true
-        timeLabel.trailingAnchor.constraint(equalTo: stateView.leadingAnchor, constant: -1 * Padding.TimeLabel.right).isActive = true
+        timeLabel.trailingAnchor.constraint(equalTo: stateView.leadingAnchor, constant: -1 * ViewPadding.TimeLabel.right).isActive = true
     }
 }
 
@@ -148,6 +168,11 @@ public class ALKFriendMessageListTemplateCell: ALKListTemplateCell {
             static var top: CGFloat = 2.0
             static let maxWidth: CGFloat = 200
         }
+
+        enum ListTemplateView {
+            static var top: CGFloat = 5.0
+        }
+
         static let maxWidth = UIScreen.main.bounds.width
         static let messageViewPadding = Padding(left: ChatCellPadding.ReceivedMessage.Message.left,
                                                 right: ChatCellPadding.ReceivedMessage.Message.right,
@@ -240,7 +265,9 @@ public class ALKFriendMessageListTemplateCell: ALKListTemplateCell {
                 ViewPadding.NameLabel.top +
                 ChatCellPadding.ReceivedMessage.Message.top
         } else {
-            height = ReceivedMessageViewSizeCalculator().rowHeight(messageModel: model, maxWidth: ViewPadding.maxWidth, padding: ViewPadding.messageViewPadding) +
+            height = ReceivedMessageViewSizeCalculator().rowHeight(messageModel: model,
+                                                                   maxWidth: ViewPadding.maxWidth,
+                                                                   padding: ViewPadding.messageViewPadding) +
                 ViewPadding.NameLabel.height +
                 ViewPadding.NameLabel.top
         }
@@ -249,7 +276,7 @@ public class ALKFriendMessageListTemplateCell: ALKListTemplateCell {
         return height +
             templateHeight +
             paddingBelowCell +
-            5 +
+            ViewPadding.ListTemplateView.top +
             ViewPadding.TimeLabel.top +
             ViewPadding.TimeLabel.bottom +
             timeLabelSize.height.rounded(.up)  // Padding between messages
