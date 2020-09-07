@@ -10,10 +10,6 @@ import UIKit
 /// Its a view that displays text on top of a bubble.
 public class MessageView: UIView {
     enum ConstraintIdentifier {
-        enum BubbleView {
-            static let height = "BubbleViewViewHeight"
-        }
-
         enum MessageLabel {
             static let height = "MessageLabelHeight"
         }
@@ -125,11 +121,11 @@ public class MessageView: UIView {
         messageTextView.textColor = messageStyle.text
 
         switch model.contentType {
-        case Int16(0):
+        case Message.ContentType.text.rawValue:
             messageTextView.text = model.text
             layoutIfNeeded()
             return;
-        case Int16(3):
+        case Message.ContentType.html.rawValue:
             /// Comes here for html
             DispatchQueue.global(qos: .utility).async {
                 let attributedText = MessageView.attributedStringFrom(model.text ?? "", for: model.identifier)
@@ -164,18 +160,18 @@ public class MessageView: UIView {
         }
 
         switch model.contentType {
-        case Int16(0):
+        case Message.ContentType.text.rawValue:
             self.dummyMessageView.font = font
-            return MessageViewSizeCalculator().height(self.dummyMessageView, text: model.text ?? "", maxWidth: maxWidth, padding: padding) + 3
+            return MessageViewSizeCalculator().height(dummyMessageView, text: model.text ?? "", maxWidth: maxWidth, padding: padding) + 3
 
-        case Int16(3):
+        case Message.ContentType.html.rawValue:
             guard let attributedText = attributedStringFrom(model.text ?? "", for: model.identifier) else {
                 return 0
             }
 
             self.dummyAttributedMessageView.font = font
 
-            return  MessageViewSizeCalculator().height(self.dummyAttributedMessageView, attributedText: attributedText, maxWidth: maxWidth, padding: padding) + 3
+            return  MessageViewSizeCalculator().height(dummyAttributedMessageView, attributedText: attributedText, maxWidth: maxWidth, padding: padding) + 3
         default:
             return 0;
         }

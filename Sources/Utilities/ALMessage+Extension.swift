@@ -97,24 +97,22 @@ extension ALMessage: ALKChatViewModelProtocol {
         case .video:
             return "Video"
         case .html:
-            return "Text"
+            return "Message"
         case .faqTemplate:
             return isMessageEmpty ? "FAQ" : message
-        case .quickReply:
-            return isMessageEmpty ? "Message" : message
-        case .button, .form:
-            return isMessageEmpty ? "Message" : message
-        case .listTemplate:
-            return isMessageEmpty ? "Message" : message
-        case .cardTemplate:
-            return isMessageEmpty ? "Message" : message
+        case .button,
+             .form,
+             .quickReply,
+             .listTemplate,
+             .cardTemplate:
+            return latestRichMessageText()
         case .imageMessage:
             return isMessageEmpty ? "Photo" : message
         case .email:
             guard let channelMetadata = alChannel?.metadata,
                 let messageText = channelMetadata[ChannelMetadataKey.conversationSubject]
-            else {
-                return message
+                else {
+                    return message
             }
             return messageText as? String
         case .document:
@@ -387,6 +385,17 @@ extension ALMessage {
             return .form
         default:
             return .text
+        }
+    }
+
+    func latestRichMessageText() -> String {
+        switch Int32(contentType) {
+        case ALMESSAGE_CONTENT_DEFAULT:
+            return isMessageEmpty ? "Message" : message
+        case ALMESSAGE_CONTENT_TEXT_HTML:
+            return "Message"
+        default:
+            return isMessageEmpty ? "Message" : message
         }
     }
 }
