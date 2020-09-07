@@ -6,6 +6,7 @@ The changelog for [ApplozicSwift](https://github.com/AppLozic/ApplozicSwift). Al
 ## [Unreleased]
 
 ### Enhancements
+- [CM-380] Support HTML message type with rich messages.
 - [CM-213] Added support for sharing photos saved on iCloud.
 
 ## [5.9.2] - 2020-08-21
