@@ -15,6 +15,12 @@ public class MessageView: UIView {
         }
     }
 
+    enum ViewPadding {
+        enum BubbleView {
+            static let top: CGFloat = 3
+        }
+    }
+
     // MARK: Internal Properties
 
     let maxWidth: CGFloat
@@ -121,11 +127,11 @@ public class MessageView: UIView {
         messageTextView.textColor = messageStyle.text
 
         switch model.contentType {
-        case Message.ContentType.text.rawValue:
+        case Message.ContentType.text:
             messageTextView.text = model.text
             layoutIfNeeded()
             return;
-        case Message.ContentType.html.rawValue:
+        case Message.ContentType.html:
             /// Comes here for html
             DispatchQueue.global(qos: .utility).async {
                 let attributedText = MessageView.attributedStringFrom(model.text ?? "", for: model.identifier)
@@ -141,7 +147,7 @@ public class MessageView: UIView {
 
     /// It calculates height for `MessageView` based on the text passed and maximum width allowed for the view
     /// - Parameters:
-    ///   - model: it will have message model  set in messageView.
+    ///   - model: Message for which height is to be calculated..
     ///   - maxWidth: Maximum allowable width for the view.
     ///   - font: message text font. Use same as passed while initialization in `messageStyle`.
     ///   - padding: message bubble padding. Use the same passed while initialization in `bubbleStyle`.
@@ -160,18 +166,19 @@ public class MessageView: UIView {
         }
 
         switch model.contentType {
-        case Message.ContentType.text.rawValue:
+        case Message.ContentType.text:
             self.dummyMessageView.font = font
-            return MessageViewSizeCalculator().height(dummyMessageView, text: model.text ?? "", maxWidth: maxWidth, padding: padding) + 3
-
-        case Message.ContentType.html.rawValue:
+            return MessageViewSizeCalculator().height(dummyMessageView, text: model.text ?? "", maxWidth: maxWidth, padding: padding) +
+                ViewPadding.BubbleView.top
+        case Message.ContentType.html:
             guard let attributedText = attributedStringFrom(model.text ?? "", for: model.identifier) else {
                 return 0
             }
 
             self.dummyAttributedMessageView.font = font
 
-            return  MessageViewSizeCalculator().height(dummyAttributedMessageView, attributedText: attributedText, maxWidth: maxWidth, padding: padding) + 3
+            return  MessageViewSizeCalculator().height(dummyAttributedMessageView, attributedText: attributedText, maxWidth: maxWidth, padding: padding) +
+                ViewPadding.BubbleView.top
         default:
             return 0;
         }
@@ -204,7 +211,7 @@ public class MessageView: UIView {
             bubbleView.leadingAnchor.constraint(equalTo: leadingAnchor),
             bubbleView.trailingAnchor.constraint(equalTo: trailingAnchor),
             bubbleView.bottomAnchor.constraint(equalTo: bottomAnchor),
-            bubbleView.topAnchor.constraint(equalTo: topAnchor, constant: 3),
+            bubbleView.topAnchor.constraint(equalTo: topAnchor, constant: ViewPadding.BubbleView.top),
             messageTextView.topAnchor.constraint(equalTo: topAnchor, constant: padding.top),
             messageTextView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -1 * padding.bottom),
             messageTextView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: padding.left),

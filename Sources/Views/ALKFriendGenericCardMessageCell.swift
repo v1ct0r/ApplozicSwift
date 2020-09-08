@@ -140,10 +140,8 @@ open class ALKFriendGenericCardMessageCell: ALKGenericCardBaseCell {
         messageView.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor, constant: -1 * rightPadding).isActive = true
         messageViewHeight.isActive = true
 
-        let width = CGFloat(ALKMessageStyle.receivedBubble.widthPadding)
-        let templateLeftPadding = leftPadding + 64 - width
-
-        collectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: templateLeftPadding).isActive = true
+        let templateLeftPadding = CGFloat(ALKMessageStyle.receivedBubble.widthPadding)
+        collectionView.leadingAnchor.constraint(equalTo: avatarImageView.trailingAnchor, constant: templateLeftPadding).isActive = true
         collectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor).isActive = true
         collectionView.topAnchor.constraint(equalTo: messageView.bottomAnchor, constant: ALKFriendGenericCardMessageCell.cardTopPadding).isActive = true
         collectionView.heightAnchor.constraintEqualToAnchor(constant: 0, identifier: CommonConstraintIdentifier.collectionView.rawValue).isActive = true

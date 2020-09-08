@@ -303,10 +303,10 @@ public class ALKFriendMessageListTemplateCell: ALKListTemplateCell {
         messageViewHeight.isActive = true
 
         let width = CGFloat(ALKMessageStyle.receivedBubble.widthPadding)
-        let templateLeftPadding = leftPadding + 64 - width
+        let templateLeftPadding = width
         let templateRightPadding = rightPadding - width
-        listTemplateView.topAnchor.constraint(equalTo: messageView.bottomAnchor, constant: 5).isActive = true
-        listTemplateView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: templateLeftPadding).isActive = true
+        listTemplateView.topAnchor.constraint(equalTo: messageView.bottomAnchor, constant: ViewPadding.ListTemplateView.top).isActive = true
+        listTemplateView.leadingAnchor.constraint(equalTo: avatarImageView.trailingAnchor, constant: templateLeftPadding).isActive = true
         listTemplateView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -1 * templateRightPadding).isActive = true
         listTemplateHeight.isActive = true
 

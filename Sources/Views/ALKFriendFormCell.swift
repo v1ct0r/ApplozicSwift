@@ -147,8 +147,7 @@ class ALKFriendFormCell: ALKFormCell {
 
         let leftPadding = ChatCellPadding.ReceivedMessage.Message.left
         let rightPadding = ChatCellPadding.ReceivedMessage.Message.right
-        let widthPadding = CGFloat(ALKMessageStyle.receivedBubble.widthPadding)
-        let templateLeftPadding = leftPadding + 64 - widthPadding
+        let templateLeftPadding = CGFloat(ALKMessageStyle.receivedBubble.widthPadding)
         messageViewHeight.isActive = true
         submitButtonViewHeight.isActive = true
         messageView.layout {
@@ -159,7 +158,7 @@ class ALKFriendFormCell: ALKFormCell {
         itemListView.layout {
             $0.top == messageView.bottomAnchor + ChatCellPadding.ReceivedMessage.MessageButton.top
             $0.bottom == submitButtonView.topAnchor - ChatCellPadding.ReceivedMessage.MessageButton.bottom
-            $0.leading == leadingAnchor + templateLeftPadding
+            $0.leading == avatarImageView.trailingAnchor + templateLeftPadding
             $0.trailing == trailingAnchor - ChatCellPadding.ReceivedMessage.MessageButton.right
         }
         submitButtonView.layout {
