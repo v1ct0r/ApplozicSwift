@@ -167,7 +167,7 @@ public class MessageView: UIView {
 
         switch model.contentType {
         case Message.ContentType.text:
-            self.dummyMessageView.font = font
+            dummyMessageView.font = font
             return MessageViewSizeCalculator().height(dummyMessageView, text: model.text ?? "", maxWidth: maxWidth, padding: padding) +
                 ViewPadding.BubbleView.top
         case Message.ContentType.html:
@@ -175,12 +175,12 @@ public class MessageView: UIView {
                 return 0
             }
 
-            self.dummyAttributedMessageView.font = font
+            dummyAttributedMessageView.font = font
 
-            return  MessageViewSizeCalculator().height(dummyAttributedMessageView, attributedText: attributedText, maxWidth: maxWidth, padding: padding) +
+            return MessageViewSizeCalculator().height(dummyAttributedMessageView, attributedText: attributedText, maxWidth: maxWidth, padding: padding) +
                 ViewPadding.BubbleView.top
         default:
-            return 0;
+            return 0
         }
     }
 

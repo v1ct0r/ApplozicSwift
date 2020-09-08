@@ -27,12 +27,12 @@ public class ALKFriendMessageQuickReplyCell: ALKChatBaseCell<ALKMessageViewModel
             static var bottom: CGFloat = 2.0
             static let maxWidth: CGFloat = 200
         }
-        static let maxWidth = UIScreen.main.bounds.width
-        static let  messageViewPadding = Padding(left: ChatCellPadding.ReceivedMessage.Message.left,
-                                                 right: ChatCellPadding.ReceivedMessage.Message.right,
-                                                 top: ChatCellPadding.ReceivedMessage.Message.top,
-                                                 bottom: 0)
 
+        static let maxWidth = UIScreen.main.bounds.width
+        static let messageViewPadding = Padding(left: ChatCellPadding.ReceivedMessage.Message.left,
+                                                right: ChatCellPadding.ReceivedMessage.Message.right,
+                                                top: ChatCellPadding.ReceivedMessage.Message.top,
+                                                bottom: 0)
     }
 
     fileprivate var timeLabel: UILabel = {
@@ -121,7 +121,7 @@ public class ALKFriendMessageQuickReplyCell: ALKChatBaseCell<ALKMessageViewModel
         timeLabelWidth.constant = timeLabelSize.width.rounded(.up)
         timeLabel.setStyle(ALKMessageStyle.time)
         let quickReplyViewWidth = maxWidth -
-            (ChatCellPadding.ReceivedMessage.QuickReply.left +  ChatCellPadding.ReceivedMessage.Message.right + ViewPadding.AvatarImageView.leading + ViewPadding.AvatarImageView.width + ChatCellPadding.ReceivedMessage.Message.left)
+            (ChatCellPadding.ReceivedMessage.QuickReply.left + ChatCellPadding.ReceivedMessage.Message.right + ViewPadding.AvatarImageView.leading + ViewPadding.AvatarImageView.width + ChatCellPadding.ReceivedMessage.Message.left)
         quickReplyView.update(model: suggestedReplies, maxWidth: quickReplyViewWidth)
     }
 
@@ -148,7 +148,7 @@ public class ALKFriendMessageQuickReplyCell: ALKChatBaseCell<ALKMessageViewModel
         }
 
         let quickReplyViewWidth = maxWidth -
-            (ChatCellPadding.ReceivedMessage.QuickReply.left +  ChatCellPadding.ReceivedMessage.Message.right + ViewPadding.AvatarImageView.leading + ViewPadding.AvatarImageView.width + ChatCellPadding.ReceivedMessage.Message.left)
+            (ChatCellPadding.ReceivedMessage.QuickReply.left + ChatCellPadding.ReceivedMessage.Message.right + ViewPadding.AvatarImageView.leading + ViewPadding.AvatarImageView.width + ChatCellPadding.ReceivedMessage.Message.left)
         return height
             + SuggestedReplyView.rowHeight(model: suggestedReplies, maxWidth: quickReplyViewWidth)
             + ChatCellPadding.ReceivedMessage.QuickReply.top

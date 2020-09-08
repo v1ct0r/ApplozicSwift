@@ -120,7 +120,7 @@ extension ALKMessageViewModel {
         guard let payload = payloadFromMetadata() else { return nil }
         do {
             return try FormTemplate(payload: payload)
-        } catch let error {
+        } catch {
             print("Error while decoding form template: \(error.localizedDescription)")
             return nil
         }

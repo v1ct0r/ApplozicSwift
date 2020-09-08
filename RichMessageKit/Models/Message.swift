@@ -17,7 +17,6 @@ public enum MessageStatus: CaseIterable {
 
 /// It defines the properties that are used by cells to render views.
 public struct Message {
-
     public enum ContentType: Int16 {
         case text = 0
         case attachment = 1
@@ -65,7 +64,7 @@ public struct Message {
         }
         return false
     }
+
     /// Content type of the message.
     public var contentType: Message.ContentType
-
 }

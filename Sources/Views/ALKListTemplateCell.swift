@@ -25,9 +25,11 @@ public class ALKMyMessageListTemplateCell: ALKListTemplateCell {
             static let top: CGFloat = 2
             static let maxWidth: CGFloat = 200
         }
+
         enum ListTemplateView {
             static var top: CGFloat = 5.0
         }
+
         static let maxWidth = UIScreen.main.bounds.width
         static let messageViewPadding = Padding(left: ChatCellPadding.SentMessage.Message.left,
                                                 right: ChatCellPadding.SentMessage.Message.right,
@@ -58,7 +60,7 @@ public class ALKMyMessageListTemplateCell: ALKListTemplateCell {
     )
     lazy var messageViewHeight = messageView.heightAnchor.constraint(equalToConstant: 0)
 
-    public override func update(viewModel: ALKMessageViewModel, maxWidth: CGFloat) {
+    override public func update(viewModel: ALKMessageViewModel, maxWidth: CGFloat) {
         super.update(viewModel: viewModel)
         let isMessageEmpty = viewModel.isMessageEmpty
         let model = viewModel.messageDetails()
@@ -89,7 +91,7 @@ public class ALKMyMessageListTemplateCell: ALKListTemplateCell {
         setStatusStyle(statusView: stateView, ALKMessageStyle.messageStatus)
     }
 
-    public override class func rowHeight(viewModel: ALKMessageViewModel, maxWidth: CGFloat) -> CGFloat {
+    override public class func rowHeight(viewModel: ALKMessageViewModel, maxWidth: CGFloat) -> CGFloat {
         var height: CGFloat = 0
         let model = viewModel.messageDetails()
 
@@ -215,7 +217,7 @@ public class ALKFriendMessageListTemplateCell: ALKListTemplateCell {
 
     lazy var messageViewHeight = self.messageView.heightAnchor.constraint(equalToConstant: 0)
 
-    public override func update(viewModel: ALKMessageViewModel, maxWidth: CGFloat) {
+    override public func update(viewModel: ALKMessageViewModel, maxWidth: CGFloat) {
         super.update(viewModel: viewModel)
         let isMessageEmpty = viewModel.isMessageEmpty
         let model = viewModel.messageDetails()
@@ -250,7 +252,7 @@ public class ALKFriendMessageListTemplateCell: ALKListTemplateCell {
         super.update(viewModel: viewModel, maxWidth: maxWidth)
     }
 
-    public override class func rowHeight(viewModel: ALKMessageViewModel,
+    override public class func rowHeight(viewModel: ALKMessageViewModel,
                                          maxWidth: CGFloat) -> CGFloat {
         let isMessageEmpty = viewModel.isMessageEmpty
         var height: CGFloat = 0
@@ -279,7 +281,7 @@ public class ALKFriendMessageListTemplateCell: ALKListTemplateCell {
             ViewPadding.ListTemplateView.top +
             ViewPadding.TimeLabel.top +
             ViewPadding.TimeLabel.bottom +
-            timeLabelSize.height.rounded(.up)  // Padding between messages
+            timeLabelSize.height.rounded(.up) // Padding between messages
     }
 
     override func setupConstraints() {
@@ -299,7 +301,7 @@ public class ALKFriendMessageListTemplateCell: ALKListTemplateCell {
         let rightPadding = ChatCellPadding.ReceivedMessage.Message.right
         messageView.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: ChatCellPadding.ReceivedMessage.Message.top).isActive = true
         messageView.leadingAnchor.constraint(equalTo: avatarImageView.trailingAnchor, constant: leftPadding).isActive = true
-        messageView.trailingAnchor.constraint(lessThanOrEqualTo:  contentView.trailingAnchor, constant: -1 * rightPadding).isActive = true
+        messageView.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor, constant: -1 * rightPadding).isActive = true
         messageViewHeight.isActive = true
 
         let width = CGFloat(ALKMessageStyle.receivedBubble.widthPadding)
@@ -353,9 +355,9 @@ public class ALKListTemplateCell: ALKChatBaseCell<ALKMessageViewModel> {
     public func update(viewModel: ALKMessageViewModel, maxWidth _: CGFloat) {
         guard let metadata = viewModel.metadata,
             let template = try? TemplateDecoder.decode(ListTemplate.self, from: metadata) else {
-                listTemplateView.isHidden = true
-                layoutIfNeeded()
-                return
+            listTemplateView.isHidden = true
+            layoutIfNeeded()
+            return
         }
         listTemplateView.isHidden = false
         listTemplateView.update(item: template)
@@ -366,7 +368,7 @@ public class ALKListTemplateCell: ALKChatBaseCell<ALKMessageViewModel> {
     public class func rowHeight(viewModel: ALKMessageViewModel, maxWidth _: CGFloat) -> CGFloat {
         guard let metadata = viewModel.metadata,
             let template = try? TemplateDecoder.decode(ListTemplate.self, from: metadata) else {
-                return CGFloat(0)
+            return CGFloat(0)
         }
         return ListTemplateView.rowHeight(template: template)
     }

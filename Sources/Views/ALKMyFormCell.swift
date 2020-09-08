@@ -22,6 +22,7 @@ class ALKMyFormCell: ALKFormCell {
             static let bottom: CGFloat = 2
             static let maxWidth: CGFloat = 200
         }
+
         static let maxWidth = UIScreen.main.bounds.width
         static let messageViewPadding = Padding(left: ChatCellPadding.SentMessage.Message.left,
                                                 right: ChatCellPadding.SentMessage.Message.right,
@@ -59,7 +60,7 @@ class ALKMyFormCell: ALKFormCell {
     }
 
     override func update(viewModel: ALKMessageViewModel) {
-        self.identifier = viewModel.identifier
+        identifier = viewModel.identifier
         let isMessageEmpty = viewModel.isMessageEmpty
         let model = viewModel.messageDetails()
 
@@ -91,7 +92,7 @@ class ALKMyFormCell: ALKFormCell {
             messageView,
             itemListView,
             stateView,
-            timeLabel
+            timeLabel,
         ])
         stateView.topAnchor.constraint(equalTo: timeLabel.topAnchor, constant: ViewPadding.StateView.top).isActive = true
         stateView.trailingAnchor.constraint(equalTo: itemListView.trailingAnchor, constant: -ViewPadding.StateView.right).isActive = true

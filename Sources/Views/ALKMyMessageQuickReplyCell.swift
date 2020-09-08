@@ -22,6 +22,7 @@ public class ALKMyMessageQuickReplyCell: ALKChatBaseCell<ALKMessageViewModel> {
             static let bottom: CGFloat = 2
             static let maxWidth: CGFloat = 200
         }
+
         static let maxWidth = UIScreen.main.bounds.width
         static let messageViewPadding = Padding(left: ChatCellPadding.SentMessage.Message.left,
                                                 right: ChatCellPadding.SentMessage.Message.right,

@@ -5,8 +5,8 @@
 //  Created by Mukesh on 09/07/20.
 //
 
-import UIKit
 import Kingfisher
+import UIKit
 
 class ALKFriendFormCell: ALKFormCell {
     enum ViewPadding {
@@ -29,6 +29,7 @@ class ALKFriendFormCell: ALKFormCell {
             static var bottom: CGFloat = 2.0
             static let maxWidth: CGFloat = 200
         }
+
         static var maxWidth = UIScreen.main.bounds.width
         static let messageViewPadding = Padding(left: ChatCellPadding.ReceivedMessage.Message.left,
                                                 right: ChatCellPadding.ReceivedMessage.Message.right,
@@ -80,7 +81,7 @@ class ALKFriendFormCell: ALKFormCell {
     }
 
     override func update(viewModel: ALKMessageViewModel) {
-        self.identifier = viewModel.identifier
+        identifier = viewModel.identifier
         super.update(viewModel: viewModel)
         let isMessageEmpty = viewModel.isMessageEmpty
         let model = viewModel.messageDetails()
@@ -126,7 +127,7 @@ class ALKFriendFormCell: ALKFormCell {
             messageView,
             itemListView,
             submitButtonView,
-            timeLabel
+            timeLabel,
         ])
         nameLabel.topAnchor.constraint(equalTo: topAnchor, constant: ViewPadding.NameLabel.top).isActive = true
         nameLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: ViewPadding.NameLabel.leading).isActive = true

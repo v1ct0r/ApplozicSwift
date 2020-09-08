@@ -20,12 +20,12 @@ open class ALKMyGenericCardMessageCell: ALKGenericCardBaseCell {
             static let top: CGFloat = 2
             static let maxWidth: CGFloat = 200
         }
+
         static let maxWidth = UIScreen.main.bounds.width
         static let messageViewPadding = Padding(left: ChatCellPadding.SentMessage.Message.left,
                                                 right: ChatCellPadding.SentMessage.Message.right,
                                                 top: 0,
                                                 bottom: 0)
-
     }
 
     fileprivate var timeLabel: UILabel = {
@@ -51,7 +51,7 @@ open class ALKMyGenericCardMessageCell: ALKGenericCardBaseCell {
     )
     lazy var messageViewHeight = messageView.heightAnchor.constraint(equalToConstant: 0)
 
-    public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+    override public init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
     }
 
@@ -59,7 +59,7 @@ open class ALKMyGenericCardMessageCell: ALKGenericCardBaseCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    open override func update(viewModel: ALKMessageViewModel, width: CGFloat) {
+    override open func update(viewModel: ALKMessageViewModel, width: CGFloat) {
         self.viewModel = viewModel
 
         let isMessageEmpty = viewModel.isMessageEmpty
@@ -127,7 +127,7 @@ open class ALKMyGenericCardMessageCell: ALKGenericCardBaseCell {
         timeLabel.trailingAnchor.constraint(equalTo: stateView.leadingAnchor, constant: -1 * ViewPadding.TimeLabel.right).isActive = true
     }
 
-    public override class func rowHeigh(viewModel: ALKMessageViewModel, width: CGFloat) -> CGFloat {
+    override public class func rowHeigh(viewModel: ALKMessageViewModel, width: CGFloat) -> CGFloat {
         var height: CGFloat = 0
         let model = viewModel.messageDetails()
 
@@ -175,7 +175,7 @@ open class ALKGenericCardBaseCell: ALKChatBaseCell<ALKMessageViewModel> {
         collectionView.constraint(withIdentifier: CommonConstraintIdentifier.collectionView.rawValue)?.constant = collectionViewHeight
     }
 
-    open override func draw(_ rect: CGRect) {
+    override open func draw(_ rect: CGRect) {
         super.draw(rect)
         guard UIApplication.shared.userInterfaceLayoutDirection == .rightToLeft else {
             return

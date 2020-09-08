@@ -111,8 +111,8 @@ extension ALMessage: ALKChatViewModelProtocol {
         case .email:
             guard let channelMetadata = alChannel?.metadata,
                 let messageText = channelMetadata[ChannelMetadataKey.conversationSubject]
-                else {
-                    return message
+            else {
+                return message
             }
             return messageText as? String
         case .document:
@@ -356,15 +356,15 @@ extension ALMessage {
         guard let metadata = metadata,
             let contentType = metadata["contentType"] as? String, contentType == "300",
             let templateId = metadata["templateId"] as? String
-            else {
-                switch Int32(self.contentType) {
-                case ALMESSAGE_CONTENT_DEFAULT:
-                    return .text
-                case ALMESSAGE_CONTENT_TEXT_HTML:
-                    return .html
-                default:
-                    return .text
-                }
+        else {
+            switch Int32(self.contentType) {
+            case ALMESSAGE_CONTENT_DEFAULT:
+                return .text
+            case ALMESSAGE_CONTENT_TEXT_HTML:
+                return .html
+            default:
+                return .text
+            }
         }
         switch templateId {
         case "3":
@@ -436,7 +436,7 @@ extension ALMessage {
 }
 
 extension ALMessage {
-    open override func isEqual(_ object: Any?) -> Bool {
+    override open func isEqual(_ object: Any?) -> Bool {
         if let object = object as? ALMessage, let objectKey = object.key, let key = self.key {
             return key == objectKey
         } else {

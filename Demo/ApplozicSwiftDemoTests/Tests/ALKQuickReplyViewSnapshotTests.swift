@@ -65,7 +65,7 @@ class ALKQuickReplyViewSnapshotTests: QuickSpec {
             displayName: "",
             status: .read,
             imageURL: nil,
-            contentType: 0
+            contentType: Message.ContentType.text
         )
         return SuggestedReplyMessage(suggestion: buttons, message: message)
     }
