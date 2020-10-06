@@ -152,12 +152,33 @@ extension ALKFormCell: UITableViewDataSource, UITableViewDelegate {
             cell.item = item
             cell.valueTextField.delegate = self
             cell.valueTextField.tag = indexPath.section
+            if let formDataSubmit = formData,
+                let text = formDataSubmit.textFields[indexPath.section]
+            {
+                cell.valueTextField.text = text
+            } else {
+                cell.valueTextField.text = ""
+            }
+            if let validationField = formData?.validationFields[indexPath.section], validationField == 2 {
+                let formViewModelTextItem = item as? FormViewModelTextItem
+                cell.errorLabel.text = formViewModelTextItem?.validation?.errorText ?? "Please enter valid data"
+                cell.errorLabel.isHidden = false
+            } else {
+                cell.errorLabel.isHidden = true
+            }
             return cell
         case .password:
             let cell: ALKFormPasswordItemCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
             cell.item = item
             cell.valueTextField.delegate = self
             cell.valueTextField.tag = indexPath.section
+            if let formDataSubmit = formData,
+                let text = formDataSubmit.textFields[indexPath.section]
+            {
+                cell.valueTextField.text = text
+            } else {
+                cell.valueTextField.text = ""
+            }
             return cell
         case .singleselect:
             guard let singleselectItem = item as? FormViewModelSingleselectItem else {
@@ -331,6 +352,60 @@ extension ALKFormCell: ALKDatePickerButtonClickProtocol {
     }
 }
 
+extension ALKFormCell {
+    func isFormDataValid() -> Bool {
+        var isValid: Bool = true
+
+        guard let formDataSubmit = formData,
+            let viewModelItems = template?.viewModeItems
+        else {
+            return false
+        }
+
+        for index in 0 ..< viewModelItems.count {
+            let element = viewModelItems[index]
+
+            switch element.type {
+            case .text:
+                var enterdText = ""
+                let textFieldModel = element as? FormViewModelTextItem
+
+                if formDataSubmit.textFields.isEmpty {
+                    enterdText = ""
+                } else {
+                    enterdText = formDataSubmit.textFields[index] ?? ""
+                }
+
+                if let validation = textFieldModel?.validation,
+                    let regxPattern = validation.regex
+                {
+                    let range = NSRange(enterdText.startIndex ..< enterdText.endIndex, in: enterdText)
+
+                    do {
+                        let regex = try NSRegularExpression(pattern: regxPattern, options: [])
+                        let matches = regex.numberOfMatches(in: enterdText, options: [], range: range)
+                        print("Form data text matches: \(matches)")
+                        if matches > 0 {
+                            formDataSubmit.validationFields[index] = 1
+                        } else {
+                            // Make the valid flag as false there is invalid data in textFields
+                            isValid = false
+                            formDataSubmit.validationFields[index] = 2
+                        }
+                        formData = formDataSubmit
+                    } catch {
+                        isValid = false
+                        print("Error while matching restricted text: \(error.localizedDescription)")
+                    }
+                }
+            default:
+                break
+            }
+        }
+        return isValid
+    }
+}
+
 class NestedCellTableView: UITableView {
     override var intrinsicContentSize: CGSize {
         self.layoutIfNeeded()
@@ -349,4 +424,5 @@ class FormDataSubmit {
     var singleSelectFields = [Int: Int]()
     var multiSelectFields = [Int: [Int]]()
     var dateFields = [Int: Int64]()
+    var validationFields = [Int: Int]()
 }

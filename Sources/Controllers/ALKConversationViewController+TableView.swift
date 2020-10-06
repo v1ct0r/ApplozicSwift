@@ -516,10 +516,34 @@ extension ALKConversationViewController: UITableViewDelegate, UITableViewDataSou
                 cell.update(viewModel: message)
                 cell.tapped = { [weak self] _, _, submitData in
                     guard let weakSelf = self else { return }
-                    weakSelf.formSubmitButtonSelected(formSubmitData: submitData,
-                                                      messageModel: message,
-                                                      isButtonClickDisabled:
-                                                      weakSelf.configuration.disableRichMessageButtonAction)
+
+                    // If not valid reload the table view section for a form to show the error message below the text fields.
+                    if !cell.isFormDataValid() {
+                        guard let index = weakSelf.viewModel.sectionFor(identifier: message.identifier),
+                            index < weakSelf.tableView.numberOfSections
+                        else {
+                            print("Can't be updated form cell due to incorrect index")
+                            return
+                        }
+                        weakSelf.tableView.reloadSections([index], with: .fade)
+                    } else {
+                        guard let index = weakSelf.viewModel.sectionFor(identifier: message.identifier),
+                            index < weakSelf.tableView.numberOfSections
+                        else {
+                            print("Can't be updated form cell due to incorrect index")
+                            return
+                        }
+                        // The form data is valid to reload the existing form cell to remove error labels in the form.
+                        if let validationFields = submitData?.validationFields,
+                            !validationFields.isEmpty
+                        {
+                            weakSelf.tableView.reloadSections([index], with: .fade)
+                        }
+                        weakSelf.formSubmitButtonSelected(formSubmitData: submitData,
+                                                          messageModel: message,
+                                                          isButtonClickDisabled:
+                                                          weakSelf.configuration.disableRichMessageButtonAction)
+                    }
                 }
 
                 cell.onTapOfDateSelect = { [weak self] index,
