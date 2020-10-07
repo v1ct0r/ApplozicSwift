@@ -47,7 +47,6 @@ class ALKFormTextItemCell: UITableViewCell {
         let label = UILabel(frame: .zero)
         label.textColor = .red
         label.font = Font.normal(size: 15).font()
-        label.text = "This is error lol"
         label.textAlignment = .left
         return label
     }()

@@ -519,25 +519,13 @@ extension ALKConversationViewController: UITableViewDelegate, UITableViewDataSou
 
                     // If not valid reload the table view section for a form to show the error message below the text fields.
                     if !cell.isFormDataValid() {
-                        guard let index = weakSelf.viewModel.sectionFor(identifier: message.identifier),
-                            index < weakSelf.tableView.numberOfSections
-                        else {
-                            print("Can't be updated form cell due to incorrect index")
-                            return
-                        }
-                        weakSelf.tableView.reloadSections([index], with: .fade)
+                        weakSelf.reloadSectionFor(identifier: message.identifier)
                     } else {
-                        guard let index = weakSelf.viewModel.sectionFor(identifier: message.identifier),
-                            index < weakSelf.tableView.numberOfSections
-                        else {
-                            print("Can't be updated form cell due to incorrect index")
-                            return
-                        }
                         // The form data is valid to reload the existing form cell to remove error labels in the form.
                         if let validationFields = submitData?.validationFields,
                             !validationFields.isEmpty
                         {
-                            weakSelf.tableView.reloadSections([index], with: .fade)
+                            weakSelf.reloadSectionFor(identifier: message.identifier)
                         }
                         weakSelf.formSubmitButtonSelected(formSubmitData: submitData,
                                                           messageModel: message,
@@ -654,6 +642,16 @@ extension ALKConversationViewController: UITableViewDelegate, UITableViewDataSou
                 cell.collectionView.setContentOffset(CGPoint(x: collectionViewOffsetFromIndex(index), y: 0), animated: false)
             }
         }
+    }
+
+    func reloadSectionFor(identifier: String) {
+        guard let index = viewModel.sectionFor(identifier: identifier),
+            index < tableView.numberOfSections
+        else {
+            print("Can't be updated form cell due to incorrect index")
+            return
+        }
+        tableView.reloadSections([index], with: .fade)
     }
 
     // MARK: Paging
