@@ -250,8 +250,7 @@ open class ALKConversationViewController: ALKBaseViewController, Localizable {
             let msgArray = notification.object as? [ALMessage]
             print("new notification received: ", msgArray?.first?.message as Any, msgArray?.count ?? "")
             guard let list = notification.object as? [Any], !list.isEmpty, weakSelf.isViewLoaded else { return }
-            weakSelf.viewModel.addMessagesToList(list)
-            //            weakSelf.handlePushNotification = false
+            weakSelf.addMessagesToList(list)
         })
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: "notificationIndividualChat"), object: nil, queue: nil, using: {
@@ -503,6 +502,10 @@ open class ALKConversationViewController: ALKBaseViewController, Localizable {
         }
         // Disable group details for support group, open group and when user is not a member.
         navigationBar.disableTitleAction = channel.type == 10 || channel.type == 6 || !members.contains(ALUserDefaultsHandler.getUserId())
+    }
+
+    open func addMessagesToList(_ messageList: [Any]) {
+        viewModel.addMessagesToList(messageList)
     }
 
     func prepareContextView() {
