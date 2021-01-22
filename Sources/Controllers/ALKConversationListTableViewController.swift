@@ -40,9 +40,10 @@ public class ALKConversationListTableViewController: UITableViewController, Loca
     public var hideNoConversationView = false
     public lazy var dataSource = ConversationListTableViewDataSource(
         viewModel: self.viewModel,
-        cellConfigurator: { message, tableCell in
+        cellConfigurator: { message, tableCell, index in
             let cell = tableCell as! ALKChatCell
-            cell.update(viewModel: message, identity: nil, disableSwipe: self.configuration.disableSwipeInChatCell)
+            cell.update(viewModel: message, chatBotTopik: self.chatBotTopiсs[index])
+//            cell.update(viewModel: message, identity: nil, disableSwipe: self.configuration.disableSwipeInChatCell)
             cell.chatCellDelegate = self
         }
     )
@@ -63,6 +64,8 @@ public class ALKConversationListTableViewController: UITableViewController, Loca
         bar.autocapitalizationType = .sentences
         return bar
     }()
+
+    private var chatBotTopiсs: [ChatBotTopiс] = []
 
     /**
      Creates a ConversationListTableViewController object.
@@ -114,6 +117,7 @@ public class ALKConversationListTableViewController: UITableViewController, Loca
             ALKEmptyView.reuseIdentifier
         )
         tableView.estimatedRowHeight = 0
+        getData()
     }
 
     override public func viewWillDisappear(_: Bool) {
@@ -125,17 +129,65 @@ public class ALKConversationListTableViewController: UITableViewController, Loca
         tableView.reloadData()
     }
 
+
+    func getData() {
+        SnapFakeDataDecoder.shared.decode(
+            UserModel.self,
+            from: .documentDirectory) { [weak self] result in
+
+            switch result {
+            case .success(let user):
+                switch user.illnessType {
+                case .diabetes:
+                    self?.setupDiabetesChatTopics()
+                case .hemophilia:
+                    self?.setupHemophiliaChatTopics()
+                }
+
+            case .failure(let err):
+                print(err.localizedDescription)
+            }
+        }
+    }
+
+    func setupDiabetesChatTopics() {
+        chatBotTopiсs = [ChatBotTopiс(name: "Knowledge Library",
+                                        imageName: "KnowledgeLibrary",
+                                        triggerMessage: "Knowledge Library"),
+                        ChatBotTopiс(name: "Find a Provider",
+                                      imageName: "Provider",
+                                      triggerMessage: "Find a Provider"),
+                        ChatBotTopiс(name: "Social Support",
+                                      imageName: "SocialSupport",
+                                      triggerMessage: "Social Support")]
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
+        }
+    }
+
+    func setupHemophiliaChatTopics() {
+        chatBotTopiсs = [ChatBotTopiс(name: "Knowledge Library",
+                                        imageName: "KnowledgeLibrary",
+                                        triggerMessage: "Hemophilia Knowledge Library"),
+                        ChatBotTopiс(name: "Find a Provider",
+                                      imageName: "Provider",
+                                      triggerMessage: "Find a Provider"),
+                        ChatBotTopiс(name: "Social Support",
+                                      imageName: "SocialSupport",
+                                      triggerMessage: "Social Support")]
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
+        }
+    }
+
     // MARK: - TABLE VIEW DATA SOURCE METHODS
 
     override public func numberOfSections(in tableView: UITableView) -> Int {
-        return dataSource.numberOfSections(in: tableView)
+        return 1
     }
 
     override public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if searchActive {
-            return searchFilteredChat.count
-        }
-        return dataSource.tableView(tableView, numberOfRowsInSection: section)
+        return chatBotTopiсs.count
     }
 
     override public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -163,11 +215,17 @@ public class ALKConversationListTableViewController: UITableViewController, Loca
                 return
             }
             delegate?.tapped(message, at: indexPath.row)
-        } else {
-            guard let message = viewModel.chatFor(indexPath: indexPath) else {
-                return
+        }
+        else {
+//            if let message = viewModel.chatFor(indexPath: indexPath) {
+//                delegate?.tapped(message, at: indexPath.row)
+//            }
+            if let delegate = delegate as? KMConversationListViewController {
+                if chatBotTopiсs.count > indexPath.row {
+                    let topicName = chatBotTopiсs[indexPath.row].triggerMessage
+                    delegate.createConversationAndLaunch(topicName: topicName)
+                }
             }
-            delegate?.tapped(message, at: indexPath.row)
         }
     }
 

@@ -1367,13 +1367,16 @@ open class ALKConversationViewController: ALKBaseViewController, Localizable {
         })
     }
 
-    private func sendNotification(withName: String, buttonName: String, buttonIndex: Int, template: [[String: Any]], messageKey: String) {
+    private func sendNotification(withName: String, buttonName: String, buttonIndex: Int, template: [[String: Any]],
+                                  messageKey: String, messageText: String? = nil) {
+
         var infoDict = [String: Any]()
         infoDict["buttonName"] = buttonName
         infoDict["buttonIndex"] = buttonIndex
         infoDict["template"] = template
         infoDict["messageKey"] = messageKey
         infoDict["userId"] = viewModel.contactId
+        infoDict["messageText"] = messageText
         NotificationCenter.default.post(name: Notification.Name(rawValue: withName), object: infoDict)
     }
 

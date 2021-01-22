@@ -585,6 +585,16 @@ open class ALKConversationViewModel: NSObject, Localizable {
         _ = sortedArray.map { self.alMessageWrapper.addALMessage(toMessageArray: $0) }
         alMessages.append(contentsOf: sortedArray)
         let models = sortedArray.map { $0.messageModel }
+
+        if models.first(where: { $0.message == "Redirecting to reminder…" }) != nil {
+            NotificationCenter.default.post(name: .redirectToReminders, object: nil)
+        }
+
+        if models.first(where: { $0.message?.localizedCaseInsensitiveContains("medical diary completed") ?? false }) != nil {
+            let object: [String : Any] = ["newTabIndex": 0]
+            NotificationCenter.default.post(name: .changeTabItem, object: object)
+        }
+
         messageModels.append(contentsOf: models)
         //        print("new messages: ", models.map { $0.message })
         delegate?.newMessagesAdded()
