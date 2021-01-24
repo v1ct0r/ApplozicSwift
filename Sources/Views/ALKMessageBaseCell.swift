@@ -200,6 +200,11 @@ open class ALKMessageCell: ALKChatBaseCell<ALKMessageViewModel> {
             emailBottomViewHeight.constant = 0
             setMessageText(viewModel: viewModel, mentionStyle: mentionStyle)
             return
+        case .quickReply:
+            emailTopHeight.constant = 0
+            emailBottomViewHeight.constant = 0
+            setMessageText(viewModel: viewModel, mentionStyle: mentionStyle)
+            return
         case .html:
             emailTopHeight.constant = 0
             emailBottomViewHeight.constant = 0
@@ -262,6 +267,17 @@ open class ALKMessageCell: ALKChatBaseCell<ALKMessageViewModel> {
 
         switch viewModel.messageType {
         case .text:
+            if let attributedText = viewModel
+                .attributedTextWithMentions(
+                    defaultAttributes: dummyMessageView.typingAttributes,
+                    mentionAttributes: mentionStyle.toAttributes,
+                    displayNames: displayNames
+                )
+            {
+                return TextViewSizeCalculator.height(dummyMessageView, attributedText: attributedText, maxWidth: width)
+            }
+            return TextViewSizeCalculator.height(dummyMessageView, text: message, maxWidth: width)
+        case .quickReply:
             if let attributedText = viewModel
                 .attributedTextWithMentions(
                     defaultAttributes: dummyMessageView.typingAttributes,

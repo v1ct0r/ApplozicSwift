@@ -333,10 +333,25 @@ extension ALKConversationViewController: UITableViewDelegate, UITableViewDataSou
                 return cell
             } else {
                 let cell: ALKFriendMessageQuickReplyCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
+                cell.menuOptionsToShow = configuration.messageMenuOptions
+                cell.showReport = true
+                cell.avatarTapped = { [weak self] in
+                    guard let currentModel = cell.viewModel else { return }
+                    self?.messageAvatarViewDidTap(messageVM: currentModel, indexPath: indexPath)
+                }
                 cell.setLocalizedStringFileName(configuration.localizedStringFileName)
-                cell.update(viewModel: message)
+                cell.displayNames = { [weak self] userIds in
+                    self?.viewModel.displayNames(ofUserIds: userIds)
+                }
                 cell.update(viewModel: message, maxWidth: UIScreen.main.bounds.width)
                 cell.update(chatBar: chatBar)
+                cell.delegate = self
+                cell.menuAction = { [weak self] action in
+                    self?.menuItemSelected(action: action, message: message)
+                }
+                cell.replyViewAction = { [weak self] in
+                    self?.scrollTo(message: message)
+                }
                 guard let template = message.payloadFromMetadata() else {
                     return cell
                 }

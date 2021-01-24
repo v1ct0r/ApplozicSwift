@@ -280,6 +280,7 @@ open class ALKConversationViewModel: NSObject, Localizable {
                     let height = ALKFriendMessageCell.rowHeigh(viewModel: messageModel, width: maxWidth, displayNames: { userIds in
                         self.displayNames(ofUserIds: userIds)
                     })
+                    print("heightForRow ", indexPath, " ALKFriendMessageCell.rowHeigh = ", height)
                     return height.cached(with: cacheIdentifier)
                 }
             }
@@ -361,10 +362,12 @@ open class ALKConversationViewModel: NSObject, Localizable {
                         .rowHeight(viewModel: messageModel, maxWidth: UIScreen.main.bounds.width)
                         .cached(with: cacheIdentifier)
             } else {
-                return
-                    ALKFriendMessageQuickReplyCell
-                        .rowHeight(viewModel: messageModel, maxWidth: UIScreen.main.bounds.width)
+                let height = ALKFriendMessageQuickReplyCell
+                        .rowHeight(viewModel: messageModel, width: maxWidth, displayNames: { userIds in
+                                    self.displayNames(ofUserIds: userIds)})
                         .cached(with: cacheIdentifier)
+                print("heightForRow ", indexPath, " ALKFriendMessageQuickReplyCell.rowHeigh = ", height)
+                return height
             }
         case .button:
             if messageModel.isMyMessage {
